@@ -1,7 +1,12 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +16,7 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 
 // Implementación de la lógica de negocio para empleados
 @Service
-public class EmpleadoServiceImpl implements IEmpleadoService {
+public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService {
 
 	@Autowired
 	private IEmpleadoDAO empleadoDAO;
@@ -40,10 +45,22 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 		// Retorna el empleado o null si no existe (manejado por el Controller)
 		return empleadoDAO.findById(id).orElse(null);
 	}
-	
+
+	@Override
+	@Transactional(readOnly = true)
+	public Optional<Empleado> findByEmail(String email) {
+		return empleadoDAO.findByEmail(email);
+	}
+
 	@Override
 	@Transactional
 	public void delete(Long id) {
 		empleadoDAO.deleteById(id);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		return empleadoDAO.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Email no encontrado: " + username));
 	}
 }
