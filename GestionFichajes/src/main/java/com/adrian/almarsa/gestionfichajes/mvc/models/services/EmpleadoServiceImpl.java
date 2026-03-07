@@ -46,7 +46,6 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 		return empleadoDAO.findById(id).orElse(null);
 	}
 
-	@Override
 	@Transactional(readOnly = true)
 	public Optional<Empleado> findByEmail(String email) {
 		return empleadoDAO.findByEmail(email);
