@@ -211,7 +211,7 @@ body {
   cursor: pointer;
 }
 
-.choice-row button + button {
+.choice-row button+button {
   border-left: 3px solid var(--line);
 }
 
@@ -419,4 +419,9 @@ body {
   font-weight: 800;
   cursor: pointer;
   background: linear-gradient(180deg, var(--orange-100), #ffcda5);
+}
+
+#horarioPersonal {
+  text-decoration: none;
+
 }
