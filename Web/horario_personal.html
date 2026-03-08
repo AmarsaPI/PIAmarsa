@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Horario - Gestor de horarios y fichajes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="horario.css" />
+
+
+</head>
+
+<body>
+    <main class="app-shell">
+        <header class="browser-top">
+            <div class="browser-icons" aria-hidden="true">
+                <button class="icon-btn">←</button>
+                <button class="icon-btn">→</button>
+                <button class="icon-btn">×</button>
+                <button class="icon-btn">⌂</button>
+            </div>
+            <div class="url-bar">https://migestordehorariosyfichajes.com/horario</div>
+            <div class="search-pill" aria-label="buscar">
+                <span>🔎</span>
+            </div>
+        </header>
+
+        <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div class="search-area">
+                    <span>🔍</span>
+                    <input type="text" placeholder="search" aria-label="buscar" />
+                </div>
+                <button class="help-btn">?</button>
+            </div>
+
+            <img src="logo.png" alt="Logo del gestor" class="brand-logo" />
+
+            <div class="content-grid">
+                <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li data-submenu="none">Fichar</li>
+                            <li data-submenu="none" class="active-menu">Horario</li>
+                            <li data-submenu="none">Vacaciones y permisos</li>
+                            <li data-submenu="none">Perfil</li>
+                        </ul>
+                    </div>
+
+                    <article class="notification-card">
+                        <h2>Notificaciones</h2>
+                        <p>Leer notificaciones<br />pendientes</p>
+                        <div class="choice-row">
+                            <button class="no">No</button>
+                            <button class="yes">Sí</button>
+                        </div>
+                    </article>
+                </section>
+
+                <aside class="schedule-panel">
+                    <div class="schedule-head">
+                        <h2>Mi Horario Semanal</h2>
+                        <span class="date-range">Semana del 02 al 08 de Mayo, 2024</span>
+                    </div>
+
+                    <div class="schedule-body">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Entrada</th>
+                                    <th>Salida</th>
+                                    <th>Descanso</th>
+                                    <th>Total Hrs</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Lunes, 02</strong></td>
+                                    <td>08:00</td>
+                                    <td>17:00</td>
+                                    <td>1:00h</td>
+                                    <td>8:00h</td>
+                                    <td> Completado</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Martes, 03</strong></td>
+                                    <td>08:00</td>
+                                    <td>17:00</td>
+                                    <td>1:00h</td>
+                                    <td>8:00h</td>
+                                    <td> Completado</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Miércoles, 04</strong></td>
+                                    <td>08:00</td>
+                                    <td>17:00</td>
+                                    <td>1:00h</td>
+                                    <td>8:00h</td>
+                                    <td> Pendiente</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Jueves, 05</strong></td>
+                                    <td>08:00</td>
+                                    <td>17:00</td>
+                                    <td>1:00h</td>
+                                    <td>8:00h</td>
+                                    <td> Pendiente</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Viernes, 06</strong></td>
+                                    <td>08:00</td>
+                                    <td>15:00</td>
+                                    <td>0:00h</td>
+                                    <td>7:00h</td>
+                                    <td> Pendiente</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="schedule-actions">
+                        <button class="btn-secondary">Exportar PDF</button>
+                        <button class="btn-primary">Solicitar Ausencia</button>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
