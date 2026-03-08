@@ -18,10 +18,10 @@
     <main class="app-shell">
         <header class="browser-top">
             <div class="browser-icons" aria-hidden="true">
-                <button class="icon-btn">←</button>
-                <button class="icon-btn">→</button>
-                <button class="icon-btn">×</button>
-                <button class="icon-btn">⌂</button>
+                <button id="icon-back-btn" class="icon-btn">←</button>
+                <button id="icon-next-btn" class="icon-btn">→</button>
+                <button id="icon-close-btn" class="icon-btn">×</button>
+                <button id="icon-home-btn" class="icon-btn">⌂</button>
             </div>
             <div class="url-bar">https://migestordehorariosyfichajes.com/horario</div>
             <div class="search-pill" aria-label="buscar">
@@ -46,9 +46,15 @@
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown">
                             <li data-submenu="none">Fichar</li>
-                            <li data-submenu="none" class="active-menu">Horario</li>
+                            <li data-submenu="schedule" class="active-menu">Horario</li>
                             <li data-submenu="none">Vacaciones y permisos</li>
                             <li data-submenu="none">Perfil</li>
+                        </ul>
+                        <ul id="subMenu" class="submenu-dropdown" hidden>
+                            <li> <a id="horarioPersonal" href="horario_personal.html">Ver horario personal</a></li>
+                            <li>Ver horario equipo</li>
+                            <li>Solicitar cambio de horario</li>
+                            <li>Ver propuestas de horario</li>
                         </ul>
                     </div>
 
@@ -134,7 +140,7 @@
         </section>
     </main>
 
-    <script src="app.js"></script>
+    <script src="common.js"></script>
 </body>
 
 </html>

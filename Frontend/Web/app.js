@@ -1,12 +1,9 @@
-﻿const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
+const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 const monthNames = [
   "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
   "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
 ];
 
-const menuToggle = document.getElementById("menuToggle");
-const mainMenu = document.getElementById("mainMenu");
-const subMenu = document.getElementById("subMenu");
 const weekdaysEl = document.getElementById("weekdays");
 const daysGrid = document.getElementById("daysGrid");
 const monthLabel = document.getElementById("monthLabel");
@@ -69,17 +66,6 @@ function renderCalendar(date) {
     daysGrid.appendChild(day);
   }
 }
-
-menuToggle.addEventListener("click", () => {
-  mainMenu.hidden = !mainMenu.hidden;
-  subMenu.hidden = true;
-});
-
-mainMenu.addEventListener("click", (event) => {
-  const item = event.target.closest("li");
-  if (!item) return;
-  subMenu.hidden = item.dataset.submenu !== "schedule";
-});
 
 prevMonth.addEventListener("click", () => {
   currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
