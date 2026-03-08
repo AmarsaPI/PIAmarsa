@@ -59,7 +59,7 @@ public class EmpleadoRestController {
     private PasswordEncoder passwordEncoder;
 
     // Busca empleado por Email
-    @GetMapping("/empleados/login/{email}/{password}")
+    @GetMapping("/login/{email}/{password}")
     public ResponseEntity<?> showEmail(@PathVariable String email, @PathVariable String password) {
         Empleado empleado = null;
         Map<String, Object> response = new HashMap<>();

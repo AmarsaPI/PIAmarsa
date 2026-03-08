@@ -20,10 +20,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Desactiva CSRF para permitir peticiones POST/PUT desde clientes externos
             .authorizeHttpRequests(auth -> auth
                 // Solo usuarios con rol ADMINISTRADOR pueden gestionar empleados
-                //.requestMatchers("/api/empleados/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/api/empleados/**").hasRole("ADMINISTRADOR")
                 // El resto de la API requiere al menos estar autenticado
-                //.anyRequest().authenticated()
-                    .anyRequest().permitAll()
+                .anyRequest().permitAll()
             )
             // Habilita el formulario de login por defecto de Spring
             .formLogin(Customizer.withDefaults())
