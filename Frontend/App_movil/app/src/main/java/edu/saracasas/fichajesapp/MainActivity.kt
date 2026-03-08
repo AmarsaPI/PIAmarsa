@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
@@ -35,11 +34,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,24 +48,108 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import edu.saracasas.fichajesapp.ui.theme.FichajesAppTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.saracasas.fichajesapp.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            FichajesApp()
+            LoginScreen()
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FichajesApp(){
+fun LoginScreen(vm: MainViewModel = viewModel()) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var intentoLogin by remember { mutableStateOf(false) }
+    val empleadoLogueado by vm.empleadoLogueado.collectAsState()
+
+    if (empleadoLogueado == null) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            "Login",
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFF5C6BC0),
+                        titleContentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f)
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f),
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                Button(
+                    onClick = {
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            intentoLogin = true
+                            // Se llama a la función para loguearse del ViewModel
+                            vm.loginEmpleado(email, password)
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f)
+                ) {
+                    Text("Iniciar Sesión")
+                }
+                if (intentoLogin) {
+                    Text(
+                        text = "Credenciales incorrectas",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
+    } else {
+        FichajesApp(vm)
+    }
+}
+
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun FichajesApp(vm: MainViewModel = viewModel()){
     var selectedScreen by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -73,10 +158,12 @@ fun FichajesApp(){
         }
     ) { padding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(padding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
             when (selectedScreen) {
-                0 -> MainScreen()
+                0 -> MainScreen(vm)
                 1 -> FicharScreen()
                 /*2 -> PlaceHolderScreen("Calendario")
                 3 -> PlaceHolderScreen("Enviar")*/
@@ -87,10 +174,14 @@ fun FichajesApp(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(){
+fun MainScreen(vm: MainViewModel) {
     val azulPrincipal = Color(0xFF5C6BC0)
     val azulCard = Color(0xFF7986CB)
     val rojoDia = Color(0xFFD32F2F)
+
+    val empleadoLogueado by vm.empleadoLogueado.collectAsState()
+    val empleados by vm.allEmpleados.collectAsState()
+    val fichajes by vm.allFichajes.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -113,7 +204,9 @@ fun MainScreen(){
             )
         )
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp),
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
 
             //Card fichajes
@@ -125,8 +218,9 @@ fun MainScreen(){
                     modifier = Modifier.padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    println(empleados.toString())
                     Text(
-                        text = "Mi horario semanal",
+                        text = "Mi Horario",
                         color = Color.White,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.fillMaxWidth(),
@@ -134,7 +228,7 @@ fun MainScreen(){
                     )
 
                     Text(
-                        text = "Usuario: Alberto González",
+                        text = "Usuario: " + empleadoLogueado?.nombre,
                         color = Color.White
                     )
 
@@ -155,7 +249,9 @@ fun MainScreen(){
                 Column(modifier = Modifier.padding(16.dp)) {
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -231,11 +327,15 @@ fun MainScreen(){
 @Composable
 fun HorarioRow(dia: String, entrada: String, salida: String, total: String, rojo: Color){
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.width(60.dp).background(rojo, shape = RoundedCornerShape(6.dp))
+            modifier = Modifier
+                .width(60.dp)
+                .background(rojo, shape = RoundedCornerShape(6.dp))
                 .padding(vertical = 4.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -276,7 +376,9 @@ fun FicharScreen(){
         )
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = azulCard),

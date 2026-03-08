@@ -23,7 +23,7 @@ public class DataSeedConfig implements CommandLineRunner {
         String adminEmail = "admin@piamarsa.com";
 
         // 1. Verificamos si el administrador ya existe para no duplicarlo
-        if (empleadoDAO.findByEmail(adminEmail).isEmpty()) {
+        if (empleadoDAO.findByEmail(adminEmail) == null) {
             
             Empleado admin = new Empleado();
             admin.setNombre("Administrador");

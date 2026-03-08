@@ -26,9 +26,7 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 	
 	@Override
 	@Transactional(readOnly = true) // Optimiza la consulta al ser solo de lectura
-	public List<Empleado> findAll() {
-		return (List<Empleado>) empleadoDAO.findAll();
-	}
+	public List<Empleado> findAll() { return (List<Empleado>) empleadoDAO.findAll(); }
 	
 	@Override
 	@Transactional
@@ -47,8 +45,8 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<Empleado> findByEmail(String email) {
-		return empleadoDAO.findByEmail(email);
+	public Empleado findByEmail(String email) {
+		return empleadoDAO.findByEmail(email).orElse(null);
 	}
 
 	@Override

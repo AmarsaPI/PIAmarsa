@@ -1,11 +1,14 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.net.PasswordAuthentication;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +48,36 @@ public class EmpleadoRestController {
         }
 
         if (empleado == null) {
-            response.put("mensaje", "El empleado ID: ".concat(id.toString()).concat(" no existe en la base de datos"));
+            response.put("mensaje", "El ID: ".concat(id.toString()).concat(" no existe en la base de datos"));
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(empleado, HttpStatus.OK);
+    }
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // Busca empleado por Email
+    @GetMapping("/empleados/login/{email}/{password}")
+    public ResponseEntity<?> showEmail(@PathVariable String email, @PathVariable String password) {
+        Empleado empleado = null;
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            empleado = empleadoService.findByEmail(email);
+        } catch (DataAccessException e) {
+            response.put("mensaje", "Error al realizar la consulta en la base de datos");
+            response.put("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (empleado == null) {
+            response.put("mensaje", "El email: ".concat(email.toString()).concat(" no existe en la base de datos"));
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } else if (!passwordEncoder.matches(password, empleado.getPassword())) {
+            response.put("mensaje", "Contraseña incorrecta");
+            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
         return new ResponseEntity<>(empleado, HttpStatus.OK);
