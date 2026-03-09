@@ -41,17 +41,26 @@ public class FichajeServiceImpl implements IFichajeService {
     @Override
     @Transactional
     public Fichaje registrarEntrada(Fichaje fichaje) {
-        Long empleadoId = fichaje.getEmpleado().getId();
-
-        // Busca si el empleado tiene algún fichaje con fecha_salida NULL
-        Optional<Fichaje> fichajeActivo =
-                fichajeDAO.findByEmpleadoIdAndFechaSalidaIsNull(empleadoId);
-
-        if (fichajeActivo.isPresent()) {
-            throw new RuntimeException("Ya existe un fichaje activo para este empleado");
+        // 1. Verificación de seguridad: ¿Viene el empleado?
+        if (fichaje.getEmpleado() == null || fichaje.getEmpleado().getId() == null) {
+            throw new RuntimeException("Error: Debe especificar un empleado válido para fichar.");
         }
 
-        fichaje.setFechaEntrada(java.time.LocalDateTime.now());
+        Long empleadoId = fichaje.getEmpleado().getId();
+
+        // 2. Usamos el método correcto del DAO que definimos antes
+        Optional<Fichaje> fichajeActivo = fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId);
+
+        if (fichajeActivo.isPresent()) {
+            throw new RuntimeException("Ya existe una jornada activa para este empleado. Debe cerrar la anterior.");
+        }
+
+        // 3. Si la fecha viene vacía (desde la web), le ponemos la actual
+        if (fichaje.getFechaEntrada() == null) {
+            fichaje.setFechaEntrada(java.time.LocalDateTime.now());
+        }
+        
+        // Aseguramos que la salida sea NULL al empezar
         fichaje.setFechaSalida(null);
 
         return fichajeDAO.save(fichaje);
@@ -84,5 +93,13 @@ public class FichajeServiceImpl implements IFichajeService {
     @Transactional(readOnly = true)
     public List<Fichaje> findByEmpleado(Long empleadoId) {
         return fichajeDAO.findByEmpleado_Id(empleadoId);
+    }
+    
+    //Devuelve el último fichaje sin salida
+    @Override
+    @Transactional(readOnly = true)
+    public Fichaje findUltimoSinCerrar(Long empleadoId) {
+        return fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId)
+                         .orElse(null); // Si no hay nada abierto, devuelve null
     }
 }

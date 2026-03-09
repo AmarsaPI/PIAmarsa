@@ -12,7 +12,7 @@ public interface IFichajeDAO extends CrudRepository<Fichaje, Long> {
 	
     // Busca un fichaje abierto (sin fecha de salida) para un empleado específico
     // Se usa para validar que un empleado no fiche entrada dos veces seguidas
-    Optional<Fichaje> findByEmpleadoIdAndFechaSalidaIsNull(Long empleadoId);
+	Optional<Fichaje> findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(Long empleadoId);
 
     // Obtiene el historial completo de fichajes de un empleado
     // El uso de "_" (Empleado_Id) garantiza que JPA busque por el ID del objeto Empleado

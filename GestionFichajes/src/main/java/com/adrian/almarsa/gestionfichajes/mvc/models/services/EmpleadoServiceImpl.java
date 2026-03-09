@@ -1,8 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,7 +24,9 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 	
 	@Override
 	@Transactional(readOnly = true) // Optimiza la consulta al ser solo de lectura
-	public List<Empleado> findAll() { return (List<Empleado>) empleadoDAO.findAll(); }
+	public List<Empleado> findAll() {
+		return (List<Empleado>) empleadoDAO.findAll();
+	}
 	
 	@Override
 	@Transactional
@@ -44,11 +44,6 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 		return empleadoDAO.findById(id).orElse(null);
 	}
 
-	@Transactional(readOnly = true)
-	public Empleado findByEmail(String email) {
-		return empleadoDAO.findByEmail(email).orElse(null);
-	}
-
 	@Override
 	@Transactional
 	public void delete(Long id) {
@@ -59,5 +54,11 @@ public class EmpleadoServiceImpl implements IEmpleadoService, UserDetailsService
 	@Transactional(readOnly = true)
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		return empleadoDAO.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Email no encontrado: " + username));
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Empleado findByEmail(String email) {
+	    return empleadoDAO.findByEmail(email).orElse(null);
 	}
 }

@@ -136,4 +136,14 @@ public class FichajeRestController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    // Obtiene el fichaje activo (sin fecha de salida) de un empleado
+    @GetMapping("/fichajes/activo/{empleadoId}")
+    public ResponseEntity<?> obtenerFichajeActivo(@PathVariable Long empleadoId) {
+        Fichaje activo = fichajeService.findUltimoSinCerrar(empleadoId);
+        if (activo == null) {
+            return ResponseEntity.ok(Map.of("enJornada", false, "mensaje", "No hay jornada activa"));
+        }
+        return ResponseEntity.ok(activo);
+    }
 }

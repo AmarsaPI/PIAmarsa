@@ -26,4 +26,7 @@ public interface IFichajeService {
     
     // Recupera todos los fichajes realizados por un empleado específico
     List<Fichaje> findByEmpleado(Long empleadoId);
+    
+    //Encuentra el último fichaje sin fichaje de salida
+    public Fichaje findUltimoSinCerrar(Long empleadoId);
 }

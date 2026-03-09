@@ -1,0 +1,37 @@
+﻿﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Gestor de horarios y fichajes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <h1>HoraFlow</h1>
+    <p>Gestor de horarios y fichajes</p>
+
+    <div th:if="${error}" style="color: #dc3545; margin-bottom: 1rem; font-weight: 600;" th:text="${error}"></div>
+    <div th:if="${msg}" style="color: #198754; margin-bottom: 1rem; font-weight: 600;" th:text="${msg}"></div>
+
+    <form class="login-form" th:action="@{/auth-check}" method="post">
+      
+      <label for="usuario">
+        Usuario
+        <input id="usuario" name="username" type="text" required autofocus />
+      </label>
+
+      <label for="password">
+        Contraseña
+        <input id="password" name="password" type="password" required />
+      </label>
+
+      <button type="submit">Entrar en la aplicación</button>
+    </form>
+  </main>
+</body>
+</html>

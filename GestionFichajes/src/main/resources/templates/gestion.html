@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión - Gestor de horarios y fichajes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+
+<body>
+  <main class="app-shell management-shell">
+    <header class="browser-top">
+      <div class="browser-icons" aria-hidden="true">
+        <button class="icon-btn">←</button>
+        <button class="icon-btn">→</button>
+        <button class="icon-btn">×</button>
+        <button class="icon-btn">⌂</button>
+      </div>
+      <div class="url-bar">https://migestordehorariosyfichajes.com/gestion</div>
+      <div class="search-pill" aria-label="buscar">
+        <span>🔎</span>
+      </div>
+    </header>
+
+    <section class="workspace management-page">
+      <div class="top-tools">
+        <a class="menu-toggle" th:href="@{/index}" style="text-decoration: none; font-weight: bold; color: #4a90e2;">
+            ← Volver al inicio
+        </a>
+        
+        <h1 class="management-title">Panel de Gestión</h1>
+
+        <a th:href="@{/logout}" style="text-decoration: none; color: #dc3545; font-weight: bold; padding: 10px; border: 1px solid #dc3545; border-radius: 5px;">
+            🚪 Cerrar Sesión
+        </a>
+      </div>
+
+      <div style="padding: 0 40px; color: #666;">
+          Administrador: <span th:text="${usuario.nombre}" style="font-weight: bold;">Nombre</span>
+      </div>
+
+      <section class="management-options">
+        <a class="management-card" th:href="@{/api/empleados/nuevo}">
+          <h2>Agregar usuario nuevo</h2>
+          <p>Alta de un nuevo trabajador con sus datos personales.</p>
+        </a>
+
+        <a class="management-card" th:href="@{/api/empleados/lista}">
+          <h2>Listado de usuarios</h2>
+          <p>Consulta y revisión de trabajadores registrados.</p>
+        </a>
+
+        <article class="management-card">
+          <h2>Asignación de roles</h2>
+          <p>Definición de permisos de acceso por perfil.</p>
+        </article>
+
+        <article class="management-card">
+          <h2>Configuración de turnos</h2>
+          <p>Organización de plantillas y turnos por departamento.</p>
+        </article>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
