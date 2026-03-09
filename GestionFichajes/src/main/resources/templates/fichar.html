@@ -31,8 +31,8 @@
       <div class="content-grid" style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
         
         <article class="notification-card" style="max-width: 500px; width: 100%; text-align: center; padding: 40px;">
-	       <div th:if="${mensajeExito}" style="..."> ✅ <span th:text="${mensajeExito}"></span></div>
-	  	   <div th:if="${mensajeError}" style="..."> ⚠️ <span th:text="${mensajeError}"></span></div>
+	       <div th:if="${mensajeExito}"> ✅ <span th:text="${mensajeExito}"></span></div>
+	  	   <div th:if="${mensajeError}"> ⚠️ <span th:text="${mensajeError}"></span></div>
           <h2 style="font-size: 1.8rem; margin-bottom: 10px;">Control de Jornada</h2>
           <p style="color: #666; margin-bottom: 30px;">
             Hola, <span th:text="${usuario.nombre}" style="font-weight: bold; color: #333;">Empleado</span>.<br>
