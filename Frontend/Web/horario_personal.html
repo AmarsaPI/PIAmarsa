@@ -67,11 +67,16 @@
 
                 <aside class="schedule-panel">
                     <div class="schedule-head">
-                        <h2>Mi Horario Semanal</h2>
+                        <h2 id="scheduleTitle">Mi Horario Semanal</h2>
                         <span class="date-range">Semana del 02 al 08 de Mayo, 2024</span>
+                        
+                        <!--BOTÓN CAMBIO DE VISTA MENSUAL-->
+                        <button id="toggleViewBtn" class="btn-secondary">
+                            Ver horario mensual
+                        </button>
                     </div>
 
-                    <div class="schedule-body">
+                    <div class="schedule-body" id="weeklyView">
                         <table class="schedule-table">
                             <thead>
                                 <tr>
@@ -128,6 +133,18 @@
                         </table>
                     </div>
 
+                    <!--VISTA MENSUAL (OCULTA)-->
+                    <div id="monthlyView" style="display: none;">
+                        <div class="calendar-header">
+                            <button id="prevMonth">←</button>
+                            <h3 id="monthLabel"></h3>
+                            <button id="nextMonth">→</button>
+                        </div>
+
+                        <div id="weekdays" class="weekdays"></div>
+                        <div id="daysGrid" class="days-grid"></div>
+                    </div>
+
                     <div class="schedule-actions">
                         <button class="btn-secondary">Exportar PDF</button>
                         <button class="btn-primary">Solicitar Ausencia</button>
@@ -137,7 +154,9 @@
         </section>
     </main>
 
+    
     <script src="common.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>
