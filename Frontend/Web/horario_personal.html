@@ -17,35 +17,21 @@
 <body>
     <main class="app-shell">
         <header class="browser-top">
-            <img src="logo.png" alt="Logo del gestor" class="brand-logo" />
+            <div class="browser-icons" aria-hidden="true">
+                <button class="icon-btn">←</button>
+                <button class="icon-btn">→</button>
+                <button class="icon-btn">×</button>
+                <button class="icon-btn">⌂</button>
+            </div>
+            <div class="url-bar">https://migestordehorariosyfichajes.com/horario</div>
+            <div class="search-pill" aria-label="buscar">
+                <span>🔎</span>
+            </div>
         </header>
 
         <section class="workspace">
             <div class="top-tools">
-                <div class="left-tools">
-                    <div class="menu-container">
-                        <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
-                        <div class="menu-wrap">
-                            <ul id="mainMenu" class="menu-dropdown" hidden>
-                                <li data-submenu="none">Fichar</li>
-                                <li data-submenu="schedule" class="active-menu">Horario</li>
-                                <li data-submenu="none">Vacaciones y permisos</li>
-                                <li data-submenu="none">Perfil</li>
-                            </ul>
-                            <ul id="subMenu" class="submenu-dropdown" hidden>
-                                <li> <a id="horarioPersonal" href="horario_personal.html">Ver horario personal</a></li>
-                                <li>Ver horario equipo</li>
-                                <li>Solicitar cambio de horario</li>
-                                <li>Ver propuestas de horario</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="browser-icons" aria-hidden="true">
-                        <button id="icon-back-btn" class="icon-btn">←</button>
-                        <button id="icon-next-btn" class="icon-btn">→</button>
-                        <button id="icon-home-btn" class="icon-btn">⌂</button>
-                    </div>
-                </div>
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
                 <div class="search-area">
                     <span>🔍</span>
                     <input type="text" placeholder="search" aria-label="buscar" />
@@ -53,8 +39,19 @@
                 <button class="help-btn">?</button>
             </div>
 
+            <img src="logo.png" alt="Logo del gestor" class="brand-logo" />
+
             <div class="content-grid">
                 <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li data-submenu="none">Fichar</li>
+                            <li data-submenu="none" class="active-menu">Horario</li>
+                            <li data-submenu="none">Vacaciones y permisos</li>
+                            <li data-submenu="none">Perfil</li>
+                        </ul>
+                    </div>
+
                     <article class="notification-card">
                         <h2>Notificaciones</h2>
                         <p>Leer notificaciones<br />pendientes</p>
@@ -67,16 +64,11 @@
 
                 <aside class="schedule-panel">
                     <div class="schedule-head">
-                        <h2 id="scheduleTitle">Mi Horario Semanal</h2>
+                        <h2>Mi Horario Semanal</h2>
                         <span class="date-range">Semana del 02 al 08 de Mayo, 2024</span>
-                        
-                        <!--BOTÓN CAMBIO DE VISTA MENSUAL-->
-                        <button id="toggleViewBtn" class="btn-secondary">
-                            Ver horario mensual
-                        </button>
                     </div>
 
-                    <div class="schedule-body" id="weeklyView">
+                    <div class="schedule-body">
                         <table class="schedule-table">
                             <thead>
                                 <tr>
@@ -133,18 +125,6 @@
                         </table>
                     </div>
 
-                    <!--VISTA MENSUAL (OCULTA)-->
-                    <div id="monthlyView" style="display: none;">
-                        <div class="calendar-header">
-                            <button id="prevMonth">←</button>
-                            <h3 id="monthLabel"></h3>
-                            <button id="nextMonth">→</button>
-                        </div>
-
-                        <div id="weekdays" class="weekdays"></div>
-                        <div id="daysGrid" class="days-grid"></div>
-                    </div>
-
                     <div class="schedule-actions">
                         <button class="btn-secondary">Exportar PDF</button>
                         <button class="btn-primary">Solicitar Ausencia</button>
@@ -154,8 +134,6 @@
         </section>
     </main>
 
-    
-    <script src="common.js"></script>
     <script src="app.js"></script>
 </body>
 
