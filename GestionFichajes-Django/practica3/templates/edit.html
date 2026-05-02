@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block menu_item %}empleados{% endblock menu_item %}
+
+{% block page_title %}Empleados{% endblock page_title %}
+
+{% block content %}
+    <div class="flex flex-row">
+        <h1 class="w-1/1 title">Editar Empleado</h1>
+        <a href="/empleados" class="btn">Volver</a>
+    </div>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <div>
+            {{ formulario.as_p }}
+            <p>
+                <label for="pass">Contraseña</label>
+                <input type="text" id="pass" name="password" autocomplete="off">
+            </p>
+        </div>
+        <button type="submit" class="btn">Guardar</button>
+    </form>
+    {% if modificado %}
+        <script>acceptDialog("Empleado modificado", "/empleados/")</script>
+    {% endif %}
+{% endblock content %}

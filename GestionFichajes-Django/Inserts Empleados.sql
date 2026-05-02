@@ -1,0 +1,12 @@
+INSERT INTO empleados_empleado (id, password, last_login, username, dni, first_name, last_name, address, obs, is_active, is_admin)
+VALUES 
+(1, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'a.garcia@empresa.com', '12345678A', 'Alejandro', 'García', 'Calle Falsa 123, Madrid', 'Empleado de confianza', 1, 0),
+(2, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'm.rodriguez@empresa.com', '23456789B', 'María', 'Rodríguez', 'Av. de la Constitución 5, Sevilla', 'Especialista en ventas', 1, 0),
+(3, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'j.martinez@empresa.com', '34567890C', 'Juan', 'Martínez', 'Paseo de Gracia 10, Barcelona', 'Administrador de sistemas', 1, 1),
+(4, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'l.lopez@empresa.com', '45678901D', 'Laura', 'López', 'Plaza Mayor 1, Salamanca', 'Recursos Humanos', 1, 0),
+(5, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'c.sanchez@empresa.com', '56789012E', 'Carlos', 'Sánchez', 'Calle Mayor 50, Valencia', 'Junior developer', 1, 0),
+(6, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'a.perez@empresa.com', '67890123F', 'Ana', 'Pérez', 'Calle Alarcos 15, Ciudad Real', 'Contabilidad', 1, 0),
+(7, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'd.gomez@empresa.com', '78901234G', 'David', 'Gómez', 'Gran Vía 40, Bilbao', 'Soporte técnico', 1, 0),
+(8, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'p.fernandez@empresa.com', '89012345H', 'Paula', 'Fernández', 'Calle Uría 2, Oviedo', 'Marketing digital', 1, 0),
+(9, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'a.ruiz@empresa.com', '90123456J', 'Alberto', 'Ruiz', 'Calle Sierpes 8, Sevilla', 'Logística', 1, 0),
+(10, 'pbkdf2_sha256$260000$vYp6I68V8X8Z$m6Uv7y3vX6K7J8L9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C=', NULL, 'e.navarro@empresa.com', '01234567K', 'Elena', 'Navarro', 'Rambla Nova 12, Tarragona', 'Directora de área', 1, 1);

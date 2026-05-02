@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block menu_item %}fichajes{% endblock menu_item %}
+
+{% block page_title %}Fichajes{% endblock page_title %}
+
+{% block content %}
+    {% if fichajes.first is None or fichajes.first.out_datetime is not None %}
+        <div class="fichar_entrada">
+    {% else %}
+        <div class="fichar_salida"> 
+    {% endif %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            
+            {% if fichajes.first is None or fichajes.first.out_datetime is not None %}
+                <input type="submit" class="btn text-2xl" value="Fichar Entrada">
+            {% else %}
+                <input type="submit" class="btn" value="Fichar Salida">
+            {% endif %}
+            <input class="w-1/1" type="text" name="note" placeholder="Notas...">
+        </form>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th class="w-1/5">Entrada</th>
+                <th class="w-1/5">Salida</th>
+                <th class="w-1/5">Total</th>
+                <th>Notas</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for fichaje in fichajes %}
+                <tr>
+                    <td>
+                        {{ fichaje.in_datetime|date:"d-M-y H:i" }}
+                    </td>
+                    <td class="text-center">
+                        {{ fichaje.out_datetime|date:"d-M-y H:i" }}
+                    </td>
+                    <td class="text-center">
+                        {{ fichaje.total }}
+                    </td>
+                    <td>
+                        {{ fichaje.notes }}
+                    </td>
+                </tr>
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+{% endblock content %}

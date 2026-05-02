@@ -1,0 +1,61 @@
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="{% block menu_item %}{% endblock menu_item %}">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="{% static "js/layout.js" %}"></script>
+    {% tailwind_css %}
+    <title>{% block page_title %}{% endblock page_title %}</title>
+</head>
+<body>
+    <div class="flex flex-row w-1/1">
+        {% if request.user.is_admin %}
+            <h2 class="bg-gray-800 text-white p-4 text-l text-center block">Nivel Administrador</h2>
+        {% else %}
+            <h2 class="bg-gray-800 text-white p-4 text-l text-center block">Nivel Usuario</h2>
+        {% endif %}
+        <h1 class="bg-gray-800 text-white w-screen p-4 text-4xl text-center font-bold">{{ request.user }}</h1>
+        <a class="bg-gray-800 text-white text-2xl p-4" href="/logout">Logout</a>
+    </div>
+
+    <div class="flex flex-row">
+        <nav class="menu">
+            <ul id="menu">
+                <li class="px-5 py-1 my-2" id="panel">
+                    <a href="/dashboard">Panel Principal</a>
+                </li>
+                {% if request.user.is_admin %}
+                    <li class="px-5 py-1 my-2" id="empleados">
+                        <a href="/empleados">Empleados</a>
+                    </li>
+                {% endif %}
+                <li class="px-5 py-1 my-2" id="fichajes">
+                    <a href="/fichajes">Fichajes</a>
+                </li>
+                <li class="px-5 py-1 my-2" id="mi_cuenta">
+                    <a href="/cuenta">Mi Cuenta</a>
+                </li>
+            </ul>
+        </nav>
+        <section class="container">
+            <dialog id="acceptDialog" style="background: var(--color-gray-400); width: 20%; margin: auto; padding: 20px; text-align: center; border-radius: 7px; box-shadow: 5px 5px 20px black;">
+                <p id="messageAccept" style="margin: 20px;"></p>
+                <input id="closeDialog" type="submit" class="btn" value="Aceptar">
+            </dialog>
+            <dialog id="yesNoDialog" style="background: var(--color-gray-400); width: 20%; margin: auto; padding: 20px; text-align: center; border-radius: 7px; box-shadow: 5px 5px 20px black;">
+                <p id="messageYesNo" style="margin: 20px;"></p>
+                <input id="yes" type="submit" class="btn" value="Si">
+                <input id="no" type="submit" class="btn" value="No">
+            </dialog>
+            {% block content %}{% endblock content %}
+        </section>
+    </div>
+
+</body>
+</html>

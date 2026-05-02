@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block menu_item %}mi_cuenta{% endblock menu_item %}
+
+{% block page_title %}Mi Cuenta{% endblock page_title %}
+
+{% block content %}
+    <div class="flex flex-row">
+        <h1 class="w-1/1 title">Editar Empleado</h1>
+        <a href="/dashboard" class="btn">Volver</a>
+    </div>
+    <form action="" method="POST" name="form">
+        {% csrf_token %}
+        <div>
+            {{ formulario.as_p }}
+            <p>
+                <label for="pass">Contraseña</label>
+                <input type="password" id="pass" name="password" autocomplete="off">
+            </p>
+            <p>
+                <label for="passRepeat">Repetir Contraseña</label>
+                <input type="password" id="passRepeat" name="passwordRepeat" autocomplete="off">
+            </p>
+        </div>
+        <input id="guardar" type="submit" class="btn" value="Guardar" onclick="validationPass(event)">
+    </form>
+    {% if modificado %}
+        <script>acceptDialog("Cuenta modificada")</script>
+    {% endif %}
+{% endblock content %}

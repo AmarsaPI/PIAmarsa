@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+.login {
+  @apply w-1/3 mx-auto p-0 bg-gray-300 rounded shadow-2xl shadow-gray-500 border border-gray-400;
+}
+
+.login label {
+  @apply mx-3 mb-0;
+}
+
+.login input {
+  @apply mx-6 mt-2 mb-6 p-3 outline-1 outline-gray-200;
+  width: stretch;
+}
+
+.menu {
+  @apply bg-gray-400 w-1/7 py-10;
+  min-height: 100dvh;
+}
+
+.container {
+  @apply m-6;
+}
+
+.selected_item {
+  @apply block content-center bg-white px-5 py-2 my-2 font-bold;
+}
+
+.btn {
+  @apply bg-gray-800 text-white px-5 py-2 rounded-xs cursor-pointer border-0 shadow-md shadow-gray-600;
+}
+
+.btn:hover {
+  @apply shadow-none;
+}
+
+.btn_list {
+  @apply inline-block bg-gray-500 p-2 rounded-xs cursor-pointer border-0;
+}
+
+.btn_edit {
+  @apply inline-block bg-blue-500 p-2 rounded-xs cursor-pointer border-0;
+}
+
+.btn_delete {
+  @apply inline-block bg-red-700 p-2 rounded-xs cursor-pointer border-0;
+}
+
+.title {
+  @apply text-2xl text-center;
+}
+
+table, form {
+  @apply my-5 w-1/1 border border-gray-300 border-separate rounded-xs;
+}
+
+thead {
+  @apply text-gray-50;
+}
+
+th {
+  @apply bg-gray-400 px-10 py-2;
+}
+
+tr:nth-child(2n) {
+  @apply bg-gray-100;
+}
+
+td {
+  @apply px-3 py-1 text-xl;
+}
+
+td:nth-child(1), td:nth-child(6) {
+  @apply text-center;
+}
+
+form {
+  @apply p-5;
+}
+
+label {
+  display: inline-block;
+  @apply w-1/10 my-3;
+}
+
+input, textarea {
+  @apply border border-gray-200 focus:outline-gray-500 m-3 w-2/5 p-1.5;
+}
+
+textarea {
+  @apply w-29/30 mx-auto my-1;
+}
+
+.card {
+  @apply bg-gray-100 border-l-2 border-blue-500 shadow p-3;
+}
+
+.fichar_entrada form {
+  @apply bg-green-600 border border-green-900 shadow p-5 rounded;
+}
+
+.fichar_entrada form input[type=submit], .fichar_salida form input[type=submit] {
+  width: stretch;
+  @apply text-white p-5 text-3xl;
+}
+
+.fichar_entrada form input:not([type=submit]), .fichar_salida form input:not([type=submit]) {
+  width: stretch;
+  @apply text-white p-5 text-xl font-normal;
+}
+
+.fichar_salida form {
+  @apply text-center bg-red-600 border border-red-900 shadow p-5 rounded;
+}
+/**
+  * A catch-all path to Django template files, JavaScript, and Python files
+  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
+  *
+  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
+  * the scope of this path.
+  */
+@source "../../../**/*.{html,py,js}";
