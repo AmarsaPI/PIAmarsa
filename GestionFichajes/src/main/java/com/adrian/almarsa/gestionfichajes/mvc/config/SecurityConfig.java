@@ -13,44 +13,39 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     // Define la cadena de filtros de seguridad y permisos de rutas
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable()) // Desactiva CSRF para permitir peticiones POST/PUT desde clientes externos
-            .authorizeHttpRequests(auth -> auth
-            		// 1.RUTAS WEB
-            		.requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", "/gestion/**", "/fichar/**").permitAll()
-                    .requestMatchers("/*.css", "/*.js", "/*.png").permitAll()
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	    http
+	        .csrf(csrf -> csrf.disable()) 
+	        .authorizeHttpRequests(auth -> auth
+	            // 1. RUTAS WEB Y GESTIÓN
+	            // Añadimos /admin/** para que no bloquee tu nuevo panel
+	            .requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", 
+	                             "/gestion/**", "/fichar/**", "/admin/**").permitAll()
+	            
+	            // 2. RECURSOS ESTÁTICOS
+	            // Usamos /** para asegurar que pille carpetas como /css/style.css o /js/app.js
+	            .requestMatchers("/css/**", "/js/**", "/images/**", "/*.css", "/*.js", "/*.png", "/logo.png").permitAll()
 
-                    // 2. RUTAS API MÓVIL
-                    // "login manual" por path variable(Poco seguro)
-                    .requestMatchers("/api/login/**").permitAll() 
-                    // Permitimos el acceso a horarios si lo necesita la móvil
-                    .requestMatchers("/api/horarios/**").permitAll() 
-                    
-                    // 3. GESTIÓN 
-                    // permitirlo aquí y que CADA UNO lo valide en su Controller.
-                    .requestMatchers("/api/empleados/**").permitAll() 
+	            // 3. RUTAS API MÓVIL (Tu compañero)
+	            .requestMatchers("/api/login/**", "/api/horarios/**", "/api/empleados/**").permitAll() 
 
-                    .anyRequest().authenticated()
-            
-            /*.formLogin(form -> form
-                // No usa formulario por defecto, usa la ruta /login que yo he creado en mi Controller".
-                .loginPage("/login") 
-                
-                // Puerta abierta para todos
-                .permitAll()*/
-            )
-            .logout(logout -> logout
-                // Cuando alguien pulsa "Cerrar sesión", la sesión se destruye y lo mandamos de vuelta al login.
-                // Al añadir "?logout" a la URL, el Controller puede detectar que viene de salir y mostrar un mensaje verde.
-                .logoutSuccessUrl("/login?logout")
+	            // El resto requiere estar autenticado (aunque de momento permitas casi todo arriba)
+	            .anyRequest().authenticated()
+	        )
+	        // Como tú controlas el login en tu Controller, comentamos el formLogin de Spring
+	        /* .formLogin(form -> form.loginPage("/login").permitAll()) */
+	        
+	        .logout(logout -> logout
+	            .logoutUrl("/logout") // Ruta que dispara el cierre
+	            .logoutSuccessUrl("/login?logout")
+	            .invalidateHttpSession(true) // Importante: borra la "mochila"
+	            .deleteCookies("JSESSIONID")
+	            .permitAll()
+	        );
 
-                // Cualquiera puede cerrar sesión
-                .permitAll()
-            );
-		return http.build();
-    }
+	    return http.build();
+	}
 
     // Define el algoritmo de hashing para las contraseñas (BCrypt)
     @Bean
