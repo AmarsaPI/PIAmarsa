@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - Gestor de Fichajes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="browser-top">
+      <div class="browser-icons" aria-hidden="true">
+        <button class="icon-btn">←</button>
+        <button class="icon-btn">→</button>
+        <button class="icon-btn">×</button>
+        <button class="icon-btn">⌂</button>
+      </div>
+      <div class="url-bar">https://migestordehorariosyfichajes.com/admin</div>
+      <div class="search-pill" aria-label="buscar">
+        <span>🔎</span>
+      </div>
+    </header>
+
+    <section class="workspace">
+      <div class="top-tools">
+        <button id="menuToggle" class="menu-toggle">☰ Panel Admin ▾</button>
+        
+        <div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
+            🛠️ Modo Administrador: <span th:text="${usuario.nombre}">Admin</span>
+        </div>
+
+        <div class="search-area">
+          <span>🔍</span>
+          <input type="text" placeholder="Buscar empleado o tienda..." aria-label="buscar" />
+        </div>
+        <button class="help-btn">?</button>
+      </div>
+
+      <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+
+      <div class="content-grid">
+        <section class="left-zone">
+          <div class="menu-wrap">
+            <ul id="mainMenu" class="menu-dropdown" style="display: block;">
+              <li>
+                <a th:href="@{/admin/empleados}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                   👥 Gestión de Empleados
+                </a>
+              </li>
+
+              <li>
+                <a th:href="@{/admin/tiendas}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                   🏪 Gestión de Tiendas
+                </a>
+              </li>
+              
+              <li>
+                <a th:href="@{/admin/convenio}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                   📜 Convenio Laboral
+                </a>
+              </li>
+
+              <li>
+                <a th:href="@{/admin/informes}" style="text-decoration: none; color: inherit; display: block; padding: 12px;">
+                   📊 Informes y Horas
+                </a>
+              </li>
+
+              <li>
+                <a th:href="@{/logout}" style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
+                   🚪 Cerrar Sesión
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <article class="notification-card" style="background-color: #f8f9fa; border-left: 4px solid #007bff;">
+            <h2>Resumen de hoy</h2>
+            <p>Hay <strong>5 empleados</strong> trabajando ahora mismo.</p>
+            <div class="choice-row">
+              <button class="yes" style="width: 100%;">Ver Fichajes Activos</button>
+            </div>
+          </article>
+        </section>
+
+        <aside class="calendar-panel">
+          <div class="calendar-head" style="background: #2c3e50;">
+            <strong>PANEL DE CONTROL</strong>
+            <span>Acceso rápido</span>
+          </div>
+          <div class="calendar-body" style="padding: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <div class="admin-stat-card" style="padding: 15px; border-radius: 10px; background: #e9ecef; border: 1px solid #dee2e6;">
+                    <span style="display:block; font-size: 0.8rem; color: #6c757d;">Total Empleados</span>
+                    <strong style="font-size: 1.5rem;">24</strong>
+                </div>
+                <div class="admin-stat-card" style="padding: 15px; border-radius: 10px; background: #e9ecef; border: 1px solid #dee2e6;">
+                    <span style="display:block; font-size: 0.8rem; color: #6c757d;">Tiendas Activas</span>
+                    <strong style="font-size: 1.5rem;">3</strong>
+                </div>
+                <div class="admin-stat-card" style="padding: 15px; border-radius: 10px; background: #fff3cd; border: 1px solid #ffeeba;">
+                    <span style="display:block; font-size: 0.8rem; color: #856404;">Pendiente de validar</span>
+                    <strong style="font-size: 1.2rem;">2 Solicitudes</strong>
+                </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script th:src="@{/app.js}"></script>
+</body>
+</html>
