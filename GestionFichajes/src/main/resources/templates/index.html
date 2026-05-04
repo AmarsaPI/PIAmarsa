@@ -1,5 +1,6 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,30 +8,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  
+
   <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
+
 <body>
   <main class="app-shell">
     <header class="browser-top">
-      <div class="browser-icons" aria-hidden="true">
-        <button class="icon-btn">←</button>
-        <button class="icon-btn">→</button>
-        <button class="icon-btn">×</button>
-        <button class="icon-btn">⌂</button>
-      </div>
-      <div class="url-bar">https://migestordehorariosyfichajes.com</div>
-      <div class="search-pill" aria-label="buscar">
-        <span>🔎</span>
-      </div>
+      <div></div>
     </header>
 
     <section class="workspace">
       <div class="top-tools">
         <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
-        
+
         <div style="margin-left: 10px; font-weight: bold;">
-            Hola, <span th:text="${usuario.nombre}">Usuario</span>
+          Hola, <span th:text="${usuario.nombre}">Usuario</span>
         </div>
 
         <div class="search-area">
@@ -47,36 +40,40 @@
           <div class="menu-wrap">
             <ul id="mainMenu" class="menu-dropdown">
               <li>
-                <a th:href="@{/fichar(auth=${usuario.id})}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-                   ⏱️ Fichar
+                <a th:href="@{/fichar(auth=${usuario.id})}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 10px;">
+                  ⏱️ Fichar
                 </a>
               </li>
 
               <li>
-                <a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-                   📅 Horario
+                <a th:href="@{/horario_personal}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 10px;">
+                  📅 Horario
                 </a>
               </li>
-              
+
               <li>
-                <a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-                   🏖️ Vacaciones y permisos
+                <a th:href="@{/vacaciones}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 10px;">
+                  🏖️ Vacaciones y permisos
                 </a>
               </li>
 
               <li>
                 <a th:href="@{/perfil}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-                   👤 Perfil
+                  👤 Perfil
                 </a>
               </li>
-               <li>
-               	<a th:href="@{/gestion}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-               		🛠️ Gestión
-             	</a>
-               </li>
               <li>
-                <a th:href="@{/logout}" style="text-decoration: none; color: #dc3545; display: block; padding: 10px; border-top: 1px solid #eee;">
-                   🚪 Logout
+                <a th:href="@{/gestion}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
+                  🛠️ Gestión
+                </a>
+              </li>
+              <li>
+                <a th:href="@{/logout}"
+                  style="text-decoration: none; color: #dc3545; display: block; padding: 10px; border-top: 1px solid #eee;">
+                  🚪 Logout
                 </a>
               </li>
             </ul>
@@ -113,4 +110,5 @@
 
   <script th:src="@{/app.js}"></script>
 </body>
+
 </html>

@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --mint-50: #eef8ef;
   --mint-100: #ddeede;
   --mint-300: #9dc6a3;
@@ -28,9 +28,10 @@ body {
 }
 
 .app-shell {
-  width: min(1240px, 100%);
-  margin: 0 auto;
-  border: 3px solid var(--line);
+  width: 100%;
+  min-height: 100vh;
+  box-shadow: none;
+  border: none;
   background: var(--cream-100);
   box-shadow: 0 18px 35px rgba(50, 43, 33, 0.2);
 }
