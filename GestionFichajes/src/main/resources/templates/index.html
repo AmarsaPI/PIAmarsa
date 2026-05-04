@@ -1,118 +1,123 @@
 ﻿<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi Horario - Gestor de horarios y fichajes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" th:href="@{/styles.css}" />
-    <!-- Usamos horario.css para la tabla específica -->
-    <link rel="stylesheet" th:href="@{/horario.css}" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Horario - Gestor de horarios y fichajes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+  <!-- Usamos horario.css para la tabla específica -->
+  <link rel="stylesheet" th:href="@{/horario.css}" />
 </head>
+
 <body>
-    <main class="app-shell">
-        <header class="browser-top">
-            <!-- Espacio para la barra de navegación si la añades luego -->
-        </header>
+  <main class="app-shell">
+    <header class="browser-top">
 
-        <section class="workspace">
-            <div class="top-tools">
-                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
-                
-                <div style="margin-left: 15px; font-weight: 600;">
-                    Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
-                </div>
+    </header>
 
-                <div class="search-area">
-                    <span>🔍</span>
-                    <input type="text" placeholder="search" aria-label="buscar" />
-                </div>
-                <button class="help-btn">?</button>
-            </div>
+    <section class="workspace">
+      <div class="top-tools">
+        <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
 
-            <div id="logo-amarsa">
-                <a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" /></a>
-            </div>
+        <div style="margin-left: 15px; font-weight: 600;">
+          Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
+        </div>
 
-            <div class="content-grid">
-                <section class="left-zone">
-                    <div class="menu-wrap">
-                        <ul id="mainMenu" class="menu-dropdown">
-                            <li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration:none; color:inherit;">Fichar</a></li>
-                            <li data-submenu="schedule" class="active-menu">Horario</li>
-                            <li data-submenu="none"><a th:href="@{/vacaciones}" style="text-decoration:none; color:inherit;">Vacaciones y permisos</a></li>
-                            <li data-submenu="none">Perfil</li>
-                            <li data-submenu="none">Gestión</li>
-                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
-                        </ul>
-                        <ul id="subMenu" class="submenu-dropdown" hidden="hidden">
-                            <li><a th:href="@{/horario_personal}">Ver horario personal</a></li>
-                            <li>Ver horario equipo</li>
-                            <li>Solicitar cambio de horario</li>
-                        </ul>
-                    </div>
-                </section>
+        <div class="search-area">
+          <span>🔍</span>
+          <input type="text" placeholder="search" aria-label="buscar" />
+        </div>
+        <button class="help-btn">?</button>
+      </div>
 
-                <!-- Área Central para la Tabla de Horarios -->
-                <div id="mainContent" style="padding: 20px;">
-                    <div class="schedule-head">
-                        <h2>Mi Horario Semanal</h2>
-                        <p th:text="${rangoSemana}">Semana actual</p>
-                    </div>
-                    
-                    <table class="schedule-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <thead>
-                            <tr style="background: #f4f4f4;">
-                                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Día</th>
-                                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Entrada</th>
-                                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Salida</th>
-                                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="h : ${horarios}">
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;">
-                                    <strong th:text="${h.diaSemana}">Lunes</strong>
-                                </td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${h.horaInicio}">08:00</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${h.horaFin}">17:00</td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;">8h</td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(horarios)}">
-                                <td colspan="4" style="text-align: center; padding: 20px;">No hay horarios asignados.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+      <div id="logo-amarsa">
+        <a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" /></a>
+      </div>
 
-                <!-- Panel de Calendario (Mantenido de tu diseño) -->
-                <aside class="calendar-panel">
-                    <div class="calendar-head">
-                        <strong id="yearText">2026</strong>
-                        <span id="dateText">Thu, Mar 05</span>
-                    </div>
-                    <div class="calendar-body">
-                        <div class="month-bar">
-                            <button id="prevMonth" aria-label="mes anterior">‹</button>
-                            <span id="monthLabel">MARCH 2026</span>
-                            <button id="nextMonth" aria-label="mes siguiente">›</button>
-                        </div>
-                        <div class="weekdays" id="weekdays"></div>
-                        <div class="days-grid" id="daysGrid"></div>
-                    </div>
-                    <div class="calendar-actions">
-                        <button class="cancel">CANCEL</button>
-                        <button class="ok">OK</button>
-                    </div>
-                </aside>
-            </div>
+      <div class="content-grid">
+        <section class="left-zone">
+          <div class="menu-wrap">
+            <ul id="mainMenu" class="menu-dropdown">
+              <li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration:none; color:inherit;">Fichar</a>
+              </li>
+              <li data-submenu="schedule" class="active-menu">Horario</li>
+              <li data-submenu="none"><a th:href="@{/vacaciones}"
+                  style="text-decoration:none; color:inherit;">Vacaciones y permisos</a></li>
+              <li data-submenu="none">Perfil</li>
+              <li data-submenu="none">Gestión</li>
+              <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+            </ul>
+            <ul id="subMenu" class="submenu-dropdown" hidden="hidden">
+              <li><a th:href="@{/horario_personal}">Ver horario personal</a></li>
+              <li>Ver horario equipo</li>
+              <li>Solicitar cambio de horario</li>
+            </ul>
+          </div>
         </section>
-    </main>
 
-    <!-- Scripts -->
-    <script th:src="@{/app.js}"></script>
-    <script th:src="@{/common.js}"></script>
+        <!-- Área Central para la Tabla de Horarios -->
+        <div id="mainContent" style="padding: 20px;">
+          <div class="schedule-head">
+            <h2>Mi Horario Semanal</h2>
+            <p th:text="${rangoSemana}">Semana actual</p>
+          </div>
+
+          <table class="schedule-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+              <tr style="background: #f4f4f4;">
+                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Día</th>
+                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Entrada</th>
+                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Salida</th>
+                <th style="padding: 10px; border-bottom: 2px solid #ddd;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="h : ${horarios}">
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">
+                  <strong th:text="${h.diaSemana}">Lunes</strong>
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${h.horaInicio}">08:00</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;" th:text="${h.horaFin}">17:00</td>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">8h</td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(horarios)}">
+                <td colspan="4" style="text-align: center; padding: 20px;">No hay horarios asignados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Panel de Calendario (Mantenido de tu diseño) -->
+        <aside class="calendar-panel">
+          <div class="calendar-head">
+            <strong id="yearText">2026</strong>
+            <span id="dateText">Thu, Mar 05</span>
+          </div>
+          <div class="calendar-body">
+            <div class="month-bar">
+              <button id="prevMonth" aria-label="mes anterior">‹</button>
+              <span id="monthLabel">MARCH 2026</span>
+              <button id="nextMonth" aria-label="mes siguiente">›</button>
+            </div>
+            <div class="weekdays" id="weekdays"></div>
+            <div class="days-grid" id="daysGrid"></div>
+          </div>
+          <div class="calendar-actions">
+            <button class="cancel">CANCEL</button>
+            <button class="ok">OK</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script th:src="@{/app.js}"></script>
+  <script th:src="@{/common.js}"></script>
 </body>
+
 </html>
