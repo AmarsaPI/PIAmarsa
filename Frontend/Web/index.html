@@ -14,16 +14,8 @@
 <body>
   <main class="app-shell">
     <header class="browser-top">
-      <div class="browser-icons" aria-hidden="true">
-        <button class="icon-btn">←</button>
-        <button class="icon-btn">→</button>
-        <button class="icon-btn">×</button>
-        <button class="icon-btn">⌂</button>
-      </div>
-      <div class="url-bar">https://migestordehorariosyfichajes.com</div>
-      <div class="search-pill" aria-label="buscar">
-        <span>🔎</span>
-      </div>
+      <div></div>
+
     </header>
 
     <section class="workspace">
@@ -36,7 +28,10 @@
         <button class="help-btn">?</button>
       </div>
 
-      <img src="logo.png" alt="Logo del gestor" class="brand-logo" />
+      <div id="logo-amarsa">
+        <a href="index.html"><img src="logo.png" alt="Logo del gestor" class="brand-logo" /></a>
+      </div>
+
 
       <div class="content-grid">
         <section class="left-zone">
@@ -56,15 +51,11 @@
             </ul>
           </div>
 
-          <article class="notification-card">
-            <h2>Notificaciones</h2>
-            <p>Leer notificaciones<br />pendientes</p>
-            <div class="choice-row">
-              <button class="no">No</button>
-              <button class="yes">Sí</button>
-            </div>
-          </article>
+
         </section>
+
+
+        <div id="mainContent"></div>
 
         <aside class="calendar-panel">
           <div class="calendar-head">
@@ -93,4 +84,3 @@
 </body>
 
 </html>
-

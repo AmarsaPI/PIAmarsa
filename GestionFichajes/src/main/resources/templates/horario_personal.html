@@ -1,12 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mi Horario - Gestor de horarios y fichajes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
     
     <link rel="stylesheet" th:href="@{/styles.css}" />
     <link rel="stylesheet" th:href="@{/horario.css}" />
@@ -14,8 +14,9 @@
 
 <body>
     <main class="app-shell">
+        <!-- CABECERA ESTILO NAVEGADOR -->
         <header class="browser-top">
-            <div class="browser-icons" aria-hidden="true">
+            <div class="browser-icons">
                 <button class="icon-btn">←</button>
                 <button class="icon-btn">→</button>
                 <button class="icon-btn">×</button>
@@ -30,9 +31,11 @@
         <section class="workspace">
             <div class="top-tools">
                 <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                
                 <div style="margin-left: 15px; font-weight: 600;">
                     Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
                 </div>
+                
                 <div class="search-area">
                     <span>🔍</span>
                     <input type="text" placeholder="search" />
@@ -40,21 +43,28 @@
                 <button class="help-btn">?</button>
             </div>
 
+            <!-- LOGO -->
             <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
 
             <div class="content-grid">
                 <section class="left-zone">
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown">
-                            <li><a th:href="@{/index}">Inicio</a></li>
+                            <li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
                             <li class="active-menu">Horario</li>
                             <li>
-						        <a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit; display: block; padding: 10px;">
-						            🏖️ Vacaciones y permisos
-						        </a>
-						    </li>
+                                <a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit;">
+                                    🏖️ Vacaciones y permisos
+                                </a>
+                            </li>
                             <li>Perfil</li>
-                            <li><a th:href="@{/logout}" style="color: red;">Salir</a></li>
+                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+                        </ul>
+                        
+                        <!-- Submenú para que el CSS no falle -->
+                        <ul id="subMenu" class="submenu-dropdown" hidden="hidden">
+                            <li>Ver horario personal</li>
+                            <li>Ver equipo</li>
                         </ul>
                     </div>
 
@@ -91,7 +101,9 @@
                                     <td><strong th:text="${h.diaSemana}">Día</strong></td>
                                     <td th:text="${h.horaInicio}">00:00</td>
                                     <td th:text="${h.horaFin}">00:00</td>
-                                    
+                                    <td>1:00h</td>
+                                    <td>8:00h</td>
+                                    <td>Completado</td>
                                 </tr>
                                 
                                 <tr th:if="${#lists.isEmpty(horarios)}">

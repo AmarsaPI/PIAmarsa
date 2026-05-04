@@ -1,7 +1,7 @@
-﻿const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
+﻿const weekdays = ["L", "M", "X", "J", "V", "S", "D"];
 const monthNames = [
-  "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
-  "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+  "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
+  "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
 ];
 
 const menuToggle = document.getElementById("menuToggle");
@@ -15,7 +15,8 @@ const dateText = document.getElementById("dateText");
 const prevMonth = document.getElementById("prevMonth");
 const nextMonth = document.getElementById("nextMonth");
 
-let currentDate = new Date(2026, 2, 5);
+let currentDate = new Date();
+const realToday = new Date();
 
 function renderWeekdays() {
   weekdaysEl.innerHTML = "";
@@ -32,13 +33,15 @@ function renderCalendar(date) {
 
   monthLabel.textContent = `${monthNames[month]} ${year}`;
   yearText.textContent = String(year);
-  dateText.textContent = date.toLocaleDateString("en-US", {
+  dateText.textContent = realToday.toLocaleDateString("es-ES", {
     weekday: "short",
     month: "short",
     day: "2-digit"
-  });
+  }).replace('.', '');
 
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  let firstDayOfMonth = new Date(year, month, 1).getDay();
+  // Ajuste para que Lunes sea 0 y Domingo sea 6
+  firstDayOfMonth = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const prevMonthDays = new Date(year, month, 0).getDate();
 
@@ -54,7 +57,9 @@ function renderCalendar(date) {
   for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
     const day = document.createElement("div");
     day.textContent = String(dayNum);
-    if (dayNum === date.getDate()) {
+	if (dayNum === realToday.getDate() && 
+        month === realToday.getMonth() && 
+        year === realToday.getFullYear()) {
       day.classList.add("today");
     }
     daysGrid.appendChild(day);
@@ -70,26 +75,25 @@ function renderCalendar(date) {
   }
 }
 
-menuToggle.addEventListener("click", () => {
-  mainMenu.hidden = !mainMenu.hidden;
-  subMenu.hidden = true;
-});
+if (menuToggle && mainMenu) {
+    menuToggle.addEventListener("click", () => {
+        mainMenu.hidden = !mainMenu.hidden;
+    });
+}
 
-mainMenu.addEventListener("click", (event) => {
-  const item = event.target.closest("li");
-  if (!item) return;
-  subMenu.hidden = item.dataset.submenu !== "schedule";
-});
+if (prevMonth) {
+    prevMonth.addEventListener("click", () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+        renderCalendar(currentDate);
+    });
+}
 
-prevMonth.addEventListener("click", () => {
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-  renderCalendar(currentDate);
-});
-
-nextMonth.addEventListener("click", () => {
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-  renderCalendar(currentDate);
-});
+if (nextMonth) {
+    nextMonth.addEventListener("click", () => {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        renderCalendar(currentDate);
+    });
+}
 
 renderWeekdays();
 renderCalendar(currentDate);

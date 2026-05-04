@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Empleados - Gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="app-shell management-shell employee-shell">
+    <header class="browser-top">
+
+    </header>
+
+    <section class="workspace management-page">
+      <div class="top-tools">
+        <a class="menu-toggle" href="gestion.html">← Volver a gestión</a>
+        <h1 class="management-title">Gestión de empleados</h1>
+        <span></span>
+      </div>
+
+      <section class="employee-management">
+        <aside class="employee-list-panel" aria-label="Listado de empleados">
+          <div class="employee-list-head">
+            <h2>Empleados</h2>
+            <label class="employee-search">
+              <span>Buscar</span>
+              <input id="employeeSearch" type="search" placeholder="Nombre, puesto..." />
+            </label>
+          </div>
+
+          <div class="employee-list" id="employeeList">
+            <button class="employee-row is-selected" type="button" data-employee="ana">
+              <strong>Ana Martínez</strong>
+              <span>Recepción · Turno mañana</span>
+            </button>
+            <button class="employee-row" type="button" data-employee="carlos">
+              <strong>Carlos Ruiz</strong>
+              <span>Cocina · Turno partido</span>
+            </button>
+            <button class="employee-row" type="button" data-employee="laura">
+              <strong>Laura Gómez</strong>
+              <span>Sala · Turno tarde</span>
+            </button>
+            <button class="employee-row" type="button" data-employee="diego">
+              <strong>Diego Navarro</strong>
+              <span>Mantenimiento · Flexible</span>
+            </button>
+          </div>
+        </aside>
+
+        <section class="employee-detail-panel" aria-live="polite">
+          <div class="employee-summary">
+            <div>
+              <span class="section-kicker">Empleado seleccionado</span>
+              <h2 id="employeeName">Ana Martínez</h2>
+              <p id="employeeMeta">Recepción · Contrato indefinido · Alta 12/02/2024</p>
+            </div>
+            <span class="status-pill" id="employeeStatus">Activo</span>
+          </div>
+
+          <div class="action-tabs" role="tablist" aria-label="Acciones de gestión">
+            <button class="action-tab is-active" type="button" data-panel="vacationAssign">Asignar vacaciones</button>
+            <button class="action-tab" type="button" data-panel="scheduleAssign">Asignar horario</button>
+            <button class="action-tab" type="button" data-panel="vacationEdit">Modificar vacaciones</button>
+            <button class="action-tab" type="button" data-panel="scheduleEdit">Modificar horario</button>
+          </div>
+
+          <form class="employee-action-panel is-active" id="vacationAssign">
+            <h3>Asignar vacaciones</h3>
+            <div class="form-grid">
+              <label>
+                Fecha inicio
+                <input type="date" name="vacaciones_inicio" required />
+              </label>
+              <label>
+                Fecha fin
+                <input type="date" name="vacaciones_fin" required />
+              </label>
+              <label class="full-field">
+                Observaciones
+                <textarea name="vacaciones_observaciones" rows="3" placeholder="Motivo o nota interna"></textarea>
+              </label>
+            </div>
+            <button class="primary-action" type="submit">Guardar vacaciones</button>
+          </form>
+
+          <form class="employee-action-panel" id="scheduleAssign">
+            <h3>Asignar horario</h3>
+            <div class="form-grid">
+              <label>
+                Plantilla
+                <select name="plantilla_horaria" required>
+                  <option>Turno mañana</option>
+                  <option>Turno tarde</option>
+                  <option>Turno partido</option>
+                  <option>Horario flexible</option>
+                </select>
+              </label>
+              <label>
+                Desde
+                <input type="date" name="horario_desde" required />
+              </label>
+              <label>
+                Entrada
+                <input type="time" name="entrada" value="08:00" required />
+              </label>
+              <label>
+                Salida
+                <input type="time" name="salida" value="16:00" required />
+              </label>
+            </div>
+            <button class="primary-action" type="submit">Asignar horario</button>
+          </form>
+
+          <form class="employee-action-panel" id="vacationEdit">
+            <h3>Modificar vacaciones</h3>
+            <div class="current-record">
+              <strong>Periodo actual</strong>
+              <span id="currentVacation">15/07/2026 - 28/07/2026</span>
+            </div>
+            <div class="form-grid">
+              <label>
+                Nueva fecha inicio
+                <input type="date" name="vacaciones_inicio_mod" />
+              </label>
+              <label>
+                Nueva fecha fin
+                <input type="date" name="vacaciones_fin_mod" />
+              </label>
+              <label class="full-field">
+                Motivo del cambio
+                <textarea name="motivo_vacaciones" rows="3"></textarea>
+              </label>
+            </div>
+            <button class="primary-action" type="submit">Actualizar vacaciones</button>
+          </form>
+
+          <form class="employee-action-panel" id="scheduleEdit">
+            <h3>Modificar horario</h3>
+            <div class="current-record">
+              <strong>Horario actual</strong>
+              <span id="currentSchedule">L-V · 08:00 - 16:00</span>
+            </div>
+            <div class="form-grid">
+              <label>
+                Día o periodo
+                <input type="text" name="periodo_horario" placeholder="Ej. Lunes a viernes" />
+              </label>
+              <label>
+                Entrada
+                <input type="time" name="entrada_mod" />
+              </label>
+              <label>
+                Salida
+                <input type="time" name="salida_mod" />
+              </label>
+              <label>
+                Descanso
+                <input type="time" name="descanso_mod" />
+              </label>
+            </div>
+            <button class="primary-action" type="submit">Actualizar horario</button>
+          </form>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <script src="empleados_gestion.js"></script>
+</body>
+
+</html>

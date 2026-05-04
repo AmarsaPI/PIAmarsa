@@ -12,7 +12,7 @@ interface ApiService {
     @GET("empleados")
     suspend fun getEmpleados(): Response<List<Empleado>>
 
-    @GET("empleados/login/{email}/{password}")
+    @GET("login/{email}/{password}")
     suspend fun loginEmpleado(
         @retrofit2.http.Path("email") email: String,
         @retrofit2.http.Path("password") password: String): Response<Empleado>
