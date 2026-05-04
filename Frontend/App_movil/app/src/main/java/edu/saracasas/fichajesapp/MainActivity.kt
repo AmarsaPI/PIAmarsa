@@ -1,5 +1,6 @@
 package edu.saracasas.fichajesapp
 
+import android.icu.util.Calendar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,7 +30,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +54,14 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+<<<<<<< Updated upstream
 import edu.saracasas.fichajesapp.ui.theme.FichajesAppTheme
+=======
+import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.saracasas.fichajesapp.viewmodels.MainViewModel
+import java.sql.Date
+import java.time.format.DateTimeFormatter
+>>>>>>> Stashed changes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +74,97 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+<<<<<<< Updated upstream
 fun FichajesApp(){
+=======
+fun LoginScreen(vm: MainViewModel = viewModel()) {
+    vm.loginEmpleado("maria@piamarsa.com", "piamarsa")
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var intentoLogin by remember { mutableStateOf(false) }
+    val empleadoLogueado by vm.empleadoLogueado.collectAsState()
+
+
+    if (empleadoLogueado == null) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            "Login",
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxWidth()
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFF5C6BC0),
+                        titleContentColor = Color.White
+                    ),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email") },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f)
+                )
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f),
+                    visualTransformation = PasswordVisualTransformation()
+                )
+                Button(
+                    onClick = {
+                        if (email.isNotBlank() && password.isNotBlank()) {
+                            intentoLogin = true
+                            // Se llama a la función para loguearse del ViewModel
+                            vm.loginEmpleado(email, password)
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(0.8f)
+                ) {
+                    Text("Iniciar Sesión")
+                }
+                if (intentoLogin) {
+                    Text(
+                        text = "Credenciales incorrectas",
+                        color = Color.Red,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
+    } else {
+        FichajesApp(vm)
+    }
+}
+
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun FichajesApp(vm: MainViewModel = viewModel()){
+>>>>>>> Stashed changes
     var selectedScreen by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -91,7 +191,16 @@ fun MainScreen(){
     val azulPrincipal = Color(0xFF5C6BC0)
     val azulCard = Color(0xFF7986CB)
     val rojoDia = Color(0xFFD32F2F)
+    vm.getFichajesByEmpleadoId(2) // NO FUNCIONA
 
+<<<<<<< Updated upstream
+=======
+    val empleadoLogueado by vm.empleadoLogueado.collectAsState()
+    val empleados by vm.allEmpleados.collectAsState()
+    val fichajes by vm.allFichajes.collectAsState()
+
+
+>>>>>>> Stashed changes
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
             title = {Text("Inicio")},
@@ -140,7 +249,7 @@ fun MainScreen(){
 
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(
-                        text = "11-17 Septiembre 2026",
+                        text = Calendar.HOUR_OF_DAY.toString(),
                         color = Color.White
                     )
 
@@ -179,18 +288,34 @@ fun MainScreen(){
                             modifier = Modifier.weight(1f)
                         )
                     }
-                    Divider(color = Color.White.copy(alpha = 0.5f))
+                    HorizontalDivider(
+                        Modifier,
+                        DividerDefaults.Thickness,
+                        color = Color.White.copy(alpha = 0.5f)
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    HorarioRow("11", "08:01", "16:03", "8:02", rojoDia)
-                    HorarioRow("12", "07:58", "15:59", "8:01", rojoDia)
-                    HorarioRow("13", "07:55", "-", "-", rojoDia)
-                    HorarioRow("14", "-", "-", "-", rojoDia)
-                    HorarioRow("15", "-", "-", "-", rojoDia)
+                    if (fichajes.isEmpty()) {
+                        Text(
+                            text = "No hay fichajes registrados",
+                            color = Color.White,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        fichajes.forEach { fichaje ->
+                            HorarioRow(
+                                dia = fichaje.fechaEntrada.dayOfMonth.toString(),
+                                entrada = fichaje.fechaEntrada.hour.toString(),
+                                salida = fichaje.fechaSalida.hour.toString(),
+                                total = ((fichaje.fechaSalida.hour - fichaje.fechaEntrada.hour).toString() + "h"),
+                                rojo = rojoDia
+                            )
+                        }
+                    }
                 }
             }
-
 
 
 

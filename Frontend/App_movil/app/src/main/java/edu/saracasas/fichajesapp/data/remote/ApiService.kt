@@ -1,0 +1,20 @@
+package edu.saracasas.fichajesapp.data.remote
+
+import edu.saracasas.fichajesapp.data.models.Empleado
+import edu.saracasas.fichajesapp.data.models.Fichaje
+import retrofit2.Response
+import retrofit2.http.GET
+
+interface ApiService {
+    @GET("fichajes/{empleado_id}")
+    suspend fun getFichajesByEmpleadoId(
+        @retrofit2.http.Path("empleado_id") empleado_id: Long): Response<List<Fichaje>>
+
+    @GET("empleados")
+    suspend fun getEmpleados(): Response<List<Empleado>>
+
+    @GET("login/{email}/{password}")
+    suspend fun loginEmpleado(
+        @retrofit2.http.Path("email") email: String,
+        @retrofit2.http.Path("password") password: String): Response<Empleado>
+}
