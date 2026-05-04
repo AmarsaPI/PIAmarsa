@@ -9,11 +9,23 @@ if (menuToggle) {
     });
 }
 
+
+if (subMenu) {
+    subMenu.hidden = true;
+}
+
 if (mainMenu) {
     mainMenu.addEventListener("click", (event) => {
         const item = event.target.closest("li");
         if (!item || !subMenu) return;
-        subMenu.hidden = item.dataset.submenu !== "schedule";
+
+        if (item.dataset.submenu === "schedule") {
+
+            subMenu.hidden = !subMenu.hidden;
+        } else {
+
+            subMenu.hidden = true;
+        }
     });
 }
 

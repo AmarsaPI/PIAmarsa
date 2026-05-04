@@ -1,26 +1,23 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 import jakarta.servlet.http.HttpSession;
+
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.LoginService;
 
 @Controller
 public class LoginController {
-
-    @Autowired 
-    private PasswordEncoder passwordEncoder;
-    
-    @Autowired 
-    private IEmpleadoService empleadoService;
-
+	
+	@Autowired
+    private LoginService loginService;
     // Muestra el formulario de login
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
@@ -36,29 +33,33 @@ public class LoginController {
     @PostMapping("/auth-check")
     public String autenticar(@RequestParam String username, 
                              @RequestParam String password, 
-                             HttpSession session) { // <--- Spring inyecta la sesión aquí
+                             HttpSession session) {
         
-        // 1. Buscamos al empleado por su email
-        Empleado e = empleadoService.findByEmail(username);
+        // 1. Usamos el servicio que busca en ambas tablas (Admin y Empleado)
+    	Object usuario = loginService.loginManual(username, password);;
 
-        // 2. Verificamos si existe y si la contraseña (en texto plano) coincide con el hash de la DB
-        if (e != null && passwordEncoder.matches(password, e.getPassword())) {
-            
-            /* PASO CLAVE: Guardamos el ID del empleado en la sesión del servidor.
-               Esto crea una "mochila" virtual asociada a este navegador específico.
-               El usuario NO ve este ID en su barra de direcciones.
-            */
-            session.setAttribute("usuarioLogueadoId", e.getId());
-            
-            // Redirigimos a una ruta limpia, sin parámetros visibles
-            return "redirect:/index";
-            
-        } else {
-            // Si falla, volvemos al login con el aviso de error
+        // 2. Si es nulo, las credenciales fallaron
+        if (usuario == null) {
             return "redirect:/login?error=true";
         }
-    }
 
+        // 3. LÓGICA DE REDIRECCIÓN SEGÚN EL TIPO
+        if (usuario instanceof Admin) {
+            Admin a = (Admin) usuario;
+            session.setAttribute("adminLogueadoId", a.getId());
+            session.setAttribute("rol", "ADMIN");
+            return "redirect:/admin/index"; // <--- Ruta para el administrador
+        } 
+        
+        if (usuario instanceof Empleado) {
+            Empleado e = (Empleado) usuario;
+            session.setAttribute("usuarioLogueadoId", e.getId());
+            session.setAttribute("rol", "EMPLEADO");
+            return "redirect:/index"; // <--- Ruta para el empleado
+        }
+
+        return "redirect:/login?error=true";
+    }
     // Destruye la sesión y saca al usuario del sistema
     @GetMapping("/logout")
     public String logout(HttpSession session) {

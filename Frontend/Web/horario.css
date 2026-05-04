@@ -54,6 +54,7 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    color: black;
 }
 
 .schedule-table th,
