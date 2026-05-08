@@ -27,7 +27,7 @@
 
     <section class="workspace">
       <div class="top-tools">
-        <button id="menuToggle" class="menu-toggle">☰ Panel Admin ▾</button>
+        <button class="menu-toggle">☰ Panel Admin ▾</button>
         
         <div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
             🛠️ Modo Administrador: <span th:text="${usuario.nombre}">Admin</span>
@@ -47,19 +47,13 @@
           <div class="menu-wrap">
             <ul id="mainMenu" class="menu-dropdown" style="display: block;">
               <li>
-                <a th:href="@{/admin/empleados}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                <a th:href="@{/admin/gestion}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
                    👥 Gestión de Empleados
-                </a>
-              </li>
-
-              <li>
-                <a th:href="@{/admin/tiendas}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-                   🏪 Gestión de Tiendas
                 </a>
               </li>
               
               <li>
-                <a th:href="@{/admin/convenio}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                <a th:href="@{/convenio}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
                    📜 Convenio Laboral
                 </a>
               </li>
@@ -87,16 +81,16 @@
           </article>
         </section>
 
-        <aside class="calendar-panel">
-          <div class="calendar-head" style="background: #2c3e50;">
+        <aside class="management-panel">
+          <div class="management-head" style="background: #2c3e50;">
             <strong>PANEL DE CONTROL</strong>
             <span>Acceso rápido</span>
           </div>
-          <div class="calendar-body" style="padding: 20px;">
+          <div class="management-body" style="padding: 20px;">
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div class="admin-stat-card" style="padding: 15px; border-radius: 10px; background: #e9ecef; border: 1px solid #dee2e6;">
                     <span style="display:block; font-size: 0.8rem; color: #6c757d;">Total Empleados</span>
-                    <strong style="font-size: 1.5rem;">24</strong>
+                    <strong style="font-size: 1.5rem;" th:text="${listaEmpleados.size()}">0</strong>
                 </div>
                 <div class="admin-stat-card" style="padding: 15px; border-radius: 10px; background: #e9ecef; border: 1px solid #dee2e6;">
                     <span style="display:block; font-size: 0.8rem; color: #6c757d;">Tiendas Activas</span>
@@ -112,7 +106,7 @@
       </div>
     </section>
   </main>
-
+  <script th:src="@{/common.js}"></script>
   <script th:src="@{/app.js}"></script>
 </body>
 </html>
