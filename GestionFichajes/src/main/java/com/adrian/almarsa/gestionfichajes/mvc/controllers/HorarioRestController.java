@@ -53,23 +53,26 @@ public class HorarioRestController {
 
     // 3. Crear un nuevo horario real (Asignación manual en el calendario)
     @PostMapping("/horarios-reales")
-    public ResponseEntity<?> create(@Valid @RequestBody Horario horario, BindingResult result) {
-        Map<String, Object> response = new HashMap<>();
-        if (result.hasErrors()) {
-            List<String> errors = result.getFieldErrors().stream()
-                    .map(err -> "El campo '" + err.getField() + "' " + err.getDefaultMessage())
-                    .collect(Collectors.toList());
-            response.put("errors", errors);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> guardar(@RequestBody Horario horario) {
         try {
-            Horario horarioNew = horarioService.save(horario);
-            response.put("mensaje", "Horario real creado con éxito");
-            response.put("horario", horarioNew);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (DataAccessException e) {
-            response.put("mensaje", "Error al insertar el horario en la base de datos");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            // Guardamos el horario
+            horarioService.save(horario);
+            
+            // Creamos una respuesta limpia
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "Horario guardado con éxito");
+            respuesta.put("idGenerado", horario.getId());
+            
+            return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+            
+        } catch (Exception e) {
+            // Log del error para que tú lo veas en la consola
+            e.printStackTrace(); 
+            
+            Map<String, Object> error = new HashMap<>();
+            error.put("mensaje", "Error al guardar el horario");
+            error.put("detalles", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -126,42 +129,50 @@ public class HorarioRestController {
         }
     }
 
-    // 6. Endpoint para el Calendario (FullCalendar) del empleado logueado
     @GetMapping("/horarios-reales/mis-turnos")
     public ResponseEntity<?> misTurnos(
-            @RequestParam(value = "start", required = false) String start,
-            @RequestParam(value = "end", required = false) String end,
-            HttpSession session) {
+            HttpSession session,
+            @RequestParam Map<String, String> allParams) { // Atrapa start y end sin validaciones estrictas
         
-        Map<String, Object> response = new HashMap<>();
-        Empleado empleado = (Empleado) session.getAttribute("usuarioLogueado");
-
-        if (empleado == null) {
-            response.put("mensaje", "No hay sesión activa");
-            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
+        
+        if (empleadoId == null) {
+            return new ResponseEntity<>(Map.of("mensaje", "No hay sesión"), HttpStatus.UNAUTHORIZED);
         }
 
-        try {
-            List<Horario> horarios = horarioService.findByEmpleado(empleado.getId());
+        // Buscamos los horarios del empleado
+        List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId);
+        List<Map<String, Object>> eventos = new java.util.ArrayList<>(); 
+
+        for (Horario h : listaHorarios) {
+            // Bloque 1
+            Map<String, Object> turno1 = new HashMap<>();
+            turno1.put("start", h.getFecha().toString());
+            turno1.put("title", h.getHoraInicio() + " - " + h.getHoraFin());
+            turno1.put("backgroundColor", "#d1ecf1");
+            turno1.put("textColor", "#0c5460");
+            // Importante: Meterlo en un mapa llamado extendedProps para el JS
+            Map<String, Object> props1 = new HashMap<>();
+            props1.put("textoPersonalizado", h.getHoraInicio() + " a " + h.getHoraFin());
+            turno1.put("extendedProps", props1);
             
-            // Transformación al formato que FullCalendar requiere
-            List<Map<String, Object>> eventos = horarios.stream().map(h -> {
-                Map<String, Object> evento = new HashMap<>();
-                evento.put("id", h.getId());
-                evento.put("title", "Turno");
-                evento.put("start", h.getFecha().toString() + "T" + h.getHoraInicio());
-                evento.put("end", h.getFecha().toString() + "T" + h.getHoraFin());
-                
-                // Si la fecha es festiva (puedes añadir lógica aquí), cambiar color
-                evento.put("backgroundColor", "#4e73df");
-                
-                return evento;
-            }).collect(Collectors.toList());
+            eventos.add(turno1);
 
-            return new ResponseEntity<>(eventos, HttpStatus.OK);
-        } catch (DataAccessException e) {
-            response.put("mensaje", "Error al cargar los turnos del calendario");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            // Bloque 2 (Partido)
+            if (h.getHoraInicio2() != null) { 
+                Map<String, Object> turno2 = new HashMap<>();
+                turno2.put("start", h.getFecha().toString());
+                turno2.put("title", h.getHoraInicio2() + " - " + h.getHoraFin2());
+                turno2.put("backgroundColor", "#fff3cd");
+                turno2.put("textColor", "#856404");
+                
+                Map<String, Object> props2 = new HashMap<>();
+                props2.put("textoPersonalizado", h.getHoraInicio2() + " a " + h.getHoraFin2());
+                turno2.put("extendedProps", props2);
+                
+                eventos.add(turno2);
+            }
         }
+        return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
 }

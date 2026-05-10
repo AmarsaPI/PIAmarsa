@@ -13,6 +13,25 @@
 
 <link rel="stylesheet" th:href="@{/styles.css}" />
 <link rel="stylesheet" th:href="@{/horario.css}" />
+<style>
+/* Permite que el texto respire y se vea centrado en la cuadrícula */
+.evento-celda {
+    font-size: 0.85em;
+    padding: 2px 4px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Estilo para los bloques de eventos en la vista de cuadrícula */
+.fc-daygrid-event {
+    border: none !important;
+    margin: 2px 5px !important;
+    border-radius: 4px !important;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+</style>
 <script
 	src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 </head>
@@ -106,39 +125,45 @@
 	document.addEventListener('DOMContentLoaded', function() {
 	    var calendarEl = document.getElementById('calendar');
 
-	    // Validación de seguridad para evitar el error "reading getBoundingClientRect"
 	    if (!calendarEl) {
 	        console.error("Error: No se encontró el elemento #calendar");
 	        return;
 	    }
 
 	    var calendar = new FullCalendar.Calendar(calendarEl, {
-	        initialView: 'timeGridWeek',
+	        initialView: 'dayGridWeek',
 	        locale: 'es',
 	        firstDay: 1,
-	        // Tu compresión horaria
-	        slotMinTime: '07:00:00',
-	        slotMaxTime: '22:00:00',
-	        allDaySlot: false,
+	        height: 'auto',
 
-	        businessHours: [
-	            { daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], startTime: '07:00', endTime: '15:00' },
-	            { daysOfWeek: [ 1, 2, 3, 4, 5, 6 ], startTime: '15:00', endTime: '22:00' }
-	        ],
+	        buttonText: {
+	            today:    'Hoy',
+	            month:    'Mes',
+	            week:     'Semana',
+	            day:      'Día'
+	        },
+	        
+	        eventOrder: "start", 
+
+	        displayEventTime: false,
+
+	        eventContent: function(arg) {
+	            let texto = arg.event.extendedProps.textoPersonalizado || arg.event.title;
+	            
+	            return {
+	                html: `<div class="evento-celda">
+	                        <span>${texto}</span>
+	                       </div>`
+	            };
+	        },
+
+	        events: '/api/horarios-reales/mis-turnos',
 	        
 	        headerToolbar: {
 	            left: 'prev,next today',
 	            center: 'title',
-	            right: 'dayGridMonth,timeGridWeek,listWeek'
-	        },
-
-	        buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', list: 'Agenda' },
-	        height: 'auto',
-	        
-	        // URL corregida y sincronizada con el controlador
-	        events: '/api/horarios-reales/mis-turnos', 
-	        
-	        eventTimeFormat: { hour: '2-digit', minute: '2-digit', meridiem: false }
+	            right: 'dayGridMonth,dayGridWeek'
+	        }
 	    });
 
 	    calendar.render();

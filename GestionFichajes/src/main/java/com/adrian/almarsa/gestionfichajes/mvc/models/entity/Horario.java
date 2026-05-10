@@ -32,6 +32,12 @@ public class Horario implements Serializable {
 
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
+    
+    @Column(nullable = true)
+    private LocalTime horaInicio2;
+
+    @Column(nullable = true)
+    private LocalTime horaFin2;
 
     @Column(name = "tipo_dia")
     private String tipo; // "LABORABLE", "FESTIVO", "VACACIONES"
@@ -87,12 +93,35 @@ public class Horario implements Serializable {
 	public void setEmpleado(Empleado empleado) {
 		this.empleado = empleado;
 	}
+	
 
-	public Horario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, String tipo, Empleado empleado) {
+	public LocalTime getHoraInicio2() {
+		return horaInicio2;
+	}
+
+	public void setHoraInicio2(LocalTime horaInicio2) {
+		this.horaInicio2 = horaInicio2;
+	}
+
+	public LocalTime getHoraFin2() {
+		return horaFin2;
+	}
+
+	public void setHoraFin2(LocalTime horaFin2) {
+		this.horaFin2 = horaFin2;
+	}
+
+	public Horario() {
+    }
+	
+	public Horario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, LocalTime horaInicio2, LocalTime horaFin2,
+			String tipo, Empleado empleado) {
 		super();
 		this.fecha = fecha;
 		this.horaInicio = horaInicio;
 		this.horaFin = horaFin;
+		this.horaInicio2 = horaInicio2;
+		this.horaFin2 = horaFin2;
 		this.tipo = tipo;
 		this.empleado = empleado;
 	}
