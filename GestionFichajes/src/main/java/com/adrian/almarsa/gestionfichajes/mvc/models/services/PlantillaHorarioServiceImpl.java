@@ -5,27 +5,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IHorarioDAO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
+import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IPlantillaHorarioDAO;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 
 // Servicio que gestiona la lógica de los turnos de trabajo asignados
 @Service
-public class HorarioServiceImpl implements IHorarioService {
+public class PlantillaHorarioServiceImpl implements IPlantillaHorarioService {
 
 	@Autowired
-	private IHorarioDAO horarioDAO;
+	private IPlantillaHorarioDAO horarioDAO;
 	
 	// Obtiene todos los horarios del sistema (útil para administración)
 	@Override
 	@Transactional(readOnly = true)
-	public List<Horario> findAll() {
-		return (List<Horario>) horarioDAO.findAll();
+	public List<PlantillaHorario> findAll() {
+		return (List<PlantillaHorario>) horarioDAO.findAll();
 	}
 	
 	// Registra o edita un horario. Incluye una validación básica de integridad
 	@Override
 	@Transactional
-	public Horario save(Horario horario) {
+	public PlantillaHorario save(PlantillaHorario horario) {
 		if(horario.getHoraInicio() == null || horario.getHoraFin() == null) {
 		    throw new RuntimeException("Las horas del horario no pueden ser nulas");
 		}
@@ -35,7 +35,7 @@ public class HorarioServiceImpl implements IHorarioService {
 	// Recupera un horario individual por su ID
 	@Override
 	@Transactional(readOnly = true) 
-	public Horario findById(Long id) {
+	public PlantillaHorario findById(Long id) {
 		return horarioDAO.findById(id).orElse(null);
 	}
 	
@@ -46,9 +46,10 @@ public class HorarioServiceImpl implements IHorarioService {
 		horarioDAO.deleteById(id);
 	}
 	
+	// Busca los horarios semanales de un empleado usando la nomenclatura "_" corregida
 	@Override
 	@Transactional(readOnly = true)
-	public List<Horario> findByEmpleado(Long empleadoId) {
+	public List<PlantillaHorario> findByEmpleado(Long empleadoId) {
 	    // Llamamos al método del DAO que navega hasta el ID del objeto Empleado
 	    return horarioDAO.findByEmpleado_Id(empleadoId);
 	}

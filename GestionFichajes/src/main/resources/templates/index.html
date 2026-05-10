@@ -33,6 +33,24 @@
         </div>
         <button class="help-btn">?</button>
       </div>
+            <div class="content-grid">
+                <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration:none; color:inherit;">Fichar</a></li>
+                            <li data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration:none; color:inherit;">Horario</a></li>
+                            <li data-submenu="none"><a th:href="@{/vacaciones}" style="text-decoration:none; color:inherit;">Vacaciones y permisos</a></li>
+                            <li data-submenu="none">Perfil</li>
+                            <li data-submenu="none">Gestión</li>
+                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+                        </ul>
+                        <ul id="subMenu" class="submenu-dropdown" hidden="hidden">
+                            <li><a th:href="@{/horario_personal}">Ver horario personal</a></li>
+                            <li>Ver horario equipo</li>
+                            <li>Solicitar cambio de horario</li>
+                        </ul>
+                    </div>
+                </section>
 
       <div id="logo-amarsa">
         <a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" /></a>
