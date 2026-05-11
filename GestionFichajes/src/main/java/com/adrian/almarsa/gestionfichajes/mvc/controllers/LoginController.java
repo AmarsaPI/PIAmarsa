@@ -1,6 +1,7 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,7 +58,6 @@ public class LoginController {
             session.setAttribute("rol", "EMPLEADO");
             return "redirect:/index"; // <--- Ruta para el empleado
         }
-
         return "redirect:/login?error=true";
     }
     // Destruye la sesión y saca al usuario del sistema

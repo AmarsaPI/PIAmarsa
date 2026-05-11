@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,6 +28,9 @@ public class HorarioRestController {
 
     @Autowired
     private IHorarioService horarioService;
+    
+    @Autowired
+    private IFestivoService festivoService;
 
     // 1. Listado global de todos los horarios reales
     @GetMapping("/horarios-reales")
@@ -172,6 +177,25 @@ public class HorarioRestController {
                 
                 eventos.add(turno2);
             }
+        }
+        return new ResponseEntity<>(eventos, HttpStatus.OK);
+    }
+    
+    @GetMapping("/horarios-reales/mis-festivos")
+    public ResponseEntity<?> misFestivos(HttpSession session) {
+        Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
+        
+        List<Festivo> festivos = festivoService.findByEmpleado(empleadoId);
+        
+        List<Map<String, Object>> eventos = new ArrayList<>();
+        for (Festivo f : festivos) {
+            Map<String, Object> festivo = new HashMap<>();
+            festivo.put("start", f.getFecha().toString());
+            festivo.put("title", f.getDescripcion());
+            festivo.put("display", "background");
+            festivo.put("backgroundColor", "#ffcccc"); 
+            festivo.put("editable", false); 
+            eventos.add(festivo);
         }
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }

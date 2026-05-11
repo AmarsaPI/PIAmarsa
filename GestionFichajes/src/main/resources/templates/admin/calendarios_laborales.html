@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Calendarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-calendar3"></i> Calendarios Laborales</h2>
+        <a th:href="@{/admin/agregar_calendario}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Crear Nuevo Calendario
+        </a>
+    </div>
+
+    <div th:if="${#lists.isEmpty(calendarios)}" class="alert alert-info shadow-sm">
+        No hay calendarios registrados. Haz clic en el botón superior para crear el primero.
+    </div>
+
+    <div class="card shadow" th:if="${not #lists.isEmpty(calendarios)}">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre del Calendario</th>
+                        <th>Año</th>
+                        <th>Nº Festivos</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cal : ${calendarios}">
+                        <td class="ps-4" th:text="${cal.id}">1</td>
+                        <td>
+                            <strong th:text="${cal.nombre}">Calendario 2026</strong>
+                        </td>
+                        <td th:text="${cal.anyo}">2026</td>
+                        <td>
+                            <span class="badge bg-info text-dark" 
+                                  th:text="${#lists.size(cal.festivos)} + ' días'">0 días</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a th:href="@{/calendarios/editar/{id}(id=${cal.id})}" 
+                                   class="btn btn-outline-warning" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a th:href="@{/admin/eliminar_calendario/{id}(id=${cal.id})}" 
+                                   class="btn btn-outline-danger" 
+                                   onclick="return confirm('¿Estás seguro de eliminar este calendario?')"
+                                   title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="mt-3 text-end text-muted" th:if="${not #lists.isEmpty(calendarios)}">
+        <small>Total de calendarios: <span th:text="${#lists.size(calendarios)}">0</span></small>
+    </div>
+
+</div>
+
+</body>
+</html>

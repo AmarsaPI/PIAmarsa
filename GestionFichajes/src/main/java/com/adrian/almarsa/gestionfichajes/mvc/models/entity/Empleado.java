@@ -53,6 +53,10 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     // Relación uno a muchos: un empleado tiene asignados varios días de horario
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<PlantillaHorario> horarios;
+    
+    @ManyToOne
+    @JoinColumn(name = "calendario_id")
+    private CalendarioLaboral calendario;
 
     // Se ejecuta automáticamente antes de insertar el registro en la DB
     @PrePersist

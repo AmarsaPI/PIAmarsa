@@ -12,18 +12,6 @@
 </head>
 <body>
   <main class="app-shell">
-    <header class="browser-top">
-      <div class="browser-icons" aria-hidden="true">
-        <button class="icon-btn">←</button>
-        <button class="icon-btn">→</button>
-        <button class="icon-btn">×</button>
-        <button class="icon-btn">⌂</button>
-      </div>
-      <div class="url-bar">https://migestordehorariosyfichajes.com/admin</div>
-      <div class="search-pill" aria-label="buscar">
-        <span>🔎</span>
-      </div>
-    </header>
 
     <section class="workspace">
       <div class="top-tools">
@@ -49,6 +37,12 @@
               <li>
                 <a th:href="@{/admin/gestion}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
                    👥 Gestión de Empleados
+                </a>
+              </li>
+              
+              <li>
+                <a th:href="@{/admin/calendarios_laborales}" style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                   🗓️ Calendarios Laborales
                 </a>
               </li>
               
