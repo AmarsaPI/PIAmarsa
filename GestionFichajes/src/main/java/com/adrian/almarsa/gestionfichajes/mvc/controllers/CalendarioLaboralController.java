@@ -13,7 +13,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.CalendarioLaboral;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAdminService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.ICalendarioLaboralService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CalendarioLaboralController {
@@ -21,9 +24,23 @@ public class CalendarioLaboralController {
 	@Autowired 
     private ICalendarioLaboralService calendarioService;
 	
+	@Autowired
+	private IAdminService adminService;
+	
+	private boolean esAdminPuro(HttpSession session) {
+        String rol = (String) session.getAttribute("rol");
+        Long adminId = (Long) session.getAttribute("adminLogueadoId");
+        // Solo es válido si tiene el rol "ADMIN" y existe un ID en adminLogueadoId
+        return "ADMIN".equals(rol) && adminId != null;
+    }
 	
 	@GetMapping("/admin/calendarios_laborales")
-	public String listarCalendarios(Model model) {
+	public String listarCalendarios(Model model, HttpSession session) {
+		if (!esAdminPuro(session)) {
+            return "redirect:/login"; 
+        }
+        Long adminId = (Long) session.getAttribute("adminLogueadoId");
+        model.addAttribute("usuario", adminService.findById(adminId));
 	    model.addAttribute("calendarios", calendarioService.findAll());
 	    return "admin/calendarios_laborales";
 	}
