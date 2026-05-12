@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAdminService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.ICalendarioLaboralService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 
 import jakarta.servlet.http.HttpSession;
@@ -24,6 +25,9 @@ public class AdminController {
     
     @Autowired
     private IAdminService adminService;
+    
+    @Autowired
+    private ICalendarioLaboralService calendarioService;
 
     // --- FILTRO DE SEGURIDAD INTERNO ---
     private boolean esAdminPuro(HttpSession session) {
@@ -64,7 +68,7 @@ public class AdminController {
 
         Long adminId = (Long) session.getAttribute("adminLogueadoId");
         model.addAttribute("usuario", adminService.findById(adminId));
-        
+        model.addAttribute("listaCalendarios", calendarioService.findAll());
         model.addAttribute("nuevoEmpleado", new Empleado()); 
         
         return "admin/agregar_usuario"; 

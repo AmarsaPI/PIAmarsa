@@ -30,13 +30,10 @@ if (mainMenu) {
 
 const homeBtn = document.getElementById('icon-home-btn');
 const brandLogos = document.querySelectorAll('.brand-logo');
-homeBtn.addEventListener('click', () => {
-    window.location.href = 'index.html';
-});
-homeBtn.style.cursor = 'pointer';
-brandLogos.forEach(logo => {
-    logo.addEventListener('click', () => {
-        window.location.href = 'index.html';
+if (homeBtn) {
+    homeBtn.addEventListener('click', () => {
+        // Ojo: En Spring Boot mejor usar la ruta raíz "/" o "/admin/index"
+        window.location.href = '/admin/index'; 
     });
-    logo.style.cursor = 'pointer';
-});
+    homeBtn.style.cursor = 'pointer';
+}
