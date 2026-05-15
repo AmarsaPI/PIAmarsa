@@ -52,7 +52,11 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
 
     // Relación uno a muchos: un empleado tiene asignados varios días de horario
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
-    private List<Horario> horarios;
+    private List<PlantillaHorario> horarios;
+    
+    @ManyToOne
+    @JoinColumn(name = "calendario_id")
+    private CalendarioLaboral calendario;
 
     // Se ejecuta automáticamente antes de insertar el registro en la DB
     @PrePersist
@@ -94,6 +98,7 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     }
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getEmail() { return email; }
@@ -102,4 +107,6 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     public void setPassword(String password) { this.password = password; }
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
+    public CalendarioLaboral getCalendario() { return calendario; }
+    public void setCalendario(CalendarioLaboral calendario) { this.calendario = calendario; }
 }

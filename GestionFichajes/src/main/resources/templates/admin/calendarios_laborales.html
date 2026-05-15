@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendarios Laborales - Panel Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+	rel="stylesheet" />
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<link rel="stylesheet" th:href="@{/styles.css}" />
+</head>
+<body>
+	<main class="app-shell">
+		<section class="workspace">
+
+			<div class="top-tools">
+				<button class="menu-toggle" id="menuToggle">☰ Panel Admin ▾</button>
+				<div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
+					🛠️ Modo Administrador: <span th:text="${usuario.nombre}">Admin</span>
+				</div>
+				<div class="search-area">
+					<span>🔍</span> <input type="text"
+						placeholder="Buscar calendario..." aria-label="buscar" />
+				</div>
+				<button class="help-btn">?</button>
+			</div>
+
+			<div class="content-grid">
+
+				<section class="left-zone">
+					<div id="logo-amarsa"
+						style="text-align: center; margin-bottom: 20px;">
+						<a th:href="@{/admin/index}"> <img th:src="@{/logo.png}"
+							alt="Logo" class="brand-logo" />
+						</a>
+					</div>
+					<div class="menu-wrap">
+						<ul id="mainMenu" class="menu-dropdown"
+							style="display: block; list-style: none; padding: 0;">
+							<li><a th:href="@{/admin/gestion}"
+								style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+									👥 Gestión de Empleados </a></li>
+							<li
+								style="background-color: #f0f4f8; border-left: 4px solid #007bff;">
+								<a th:href="@{/admin/calendarios_laborales}"
+								style="text-decoration: none; color: #007bff; display: block; padding: 12px; font-weight: 700;">
+									🗓️ Calendarios Laborales </a>
+							</li>
+							<li><a th:href="@{/convenio}"
+								style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+									📜 Convenio Laboral </a></li>
+							<li><a th:href="@{/admin/informes}"
+								style="text-decoration: none; color: inherit; display: block; padding: 12px;">
+									📊 Informes y Horas </a></li>
+							<li><a th:href="@{/logout}"
+								style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
+									🚪 Cerrar Sesión </a></li>
+						</ul>
+					</div>
+				</section>
+
+				<section class="main-content">
+					<div class="card shadow-sm border-0">
+						<div
+							class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+							<h4 class="mb-0 text-primary">
+								<i class="bi bi-calendar3"></i> Calendarios Laborales
+							</h4>
+							<a th:href="@{/admin/agregar_calendario}"
+								class="btn btn-primary btn-sm shadow-sm"> <i
+								class="bi bi-plus-lg"></i> Nuevo Calendario
+							</a>
+						</div>
+
+						<div class="card-body">
+							<div th:if="${#lists.isEmpty(calendarios)}"
+								class="alert alert-info">No hay calendarios registrados.</div>
+
+							<div class="table-responsive"
+								th:if="${not #lists.isEmpty(calendarios)}">
+								<table class="table table-hover align-middle">
+									<thead class="table-light">
+										<tr>
+											<th>ID</th>
+											<th>Nombre</th>
+											<th>Año</th>
+											<th>Festivos</th>
+											<th class="text-center">Acciones</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr th:each="cal : ${calendarios}">
+											<td th:text="${cal.id}" class="fw-bold text-muted">1</td>
+											<td th:text="${cal.nombre}" class="fw-bold">Calendario
+												General</td>
+											<td th:text="${cal.anyo}">2026</td>
+											<td><span class="badge bg-info text-dark"
+												th:text="${#lists.size(cal.festivos)} + ' días'">0
+													días</span></td>
+											<td class="text-center">
+												<div class="btn-group">
+													<a th:href="@{/admin/editar_calendario/{id}(id=${cal.id})}"
+														class="btn btn-sm btn-outline-warning"> <i
+														class="bi bi-pencil"></i>
+													</a> <a
+														th:href="@{/admin/eliminar_calendario/{id}(id=${cal.id})}"
+														class="btn btn-sm btn-outline-danger"
+														onclick="return confirm('¿Eliminar este calendario?')">
+														<i class="bi bi-trash"></i>
+													</a>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+
+							<div class="mt-3 text-end text-muted"
+								th:if="${not #lists.isEmpty(calendarios)}">
+								<small>Total registrados: <span
+									th:text="${#lists.size(calendarios)}">0</span></small>
+							</div>
+						</div>
+					</div>
+				</section>
+
+			</div>
+		</section>
+	</main>
+
+	<script th:src="@{/common.js}"></script>
+</body>
+</html>

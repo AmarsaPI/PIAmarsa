@@ -1,129 +1,173 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mi Horario - Gestor de horarios y fichajes</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
-    
-    <link rel="stylesheet" th:href="@{/styles.css}" />
-    <link rel="stylesheet" th:href="@{/horario.css}" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi Horario - Gestor de horarios y fichajes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com"
+	crossorigin="anonymous" />
+<link
+	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap"
+	rel="stylesheet" />
+
+<link rel="stylesheet" th:href="@{/styles.css}" />
+<link rel="stylesheet" th:href="@{/horario.css}" />
+<style>
+/* Permite que el texto respire y se vea centrado en la cuadrícula */
+.evento-celda {
+    font-size: 0.85em;
+    padding: 2px 4px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Estilo para los bloques de eventos en la vista de cuadrícula */
+.fc-daygrid-event {
+    border: none !important;
+    margin: 2px 5px !important;
+    border-radius: 4px !important;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+</style>
+<script
+	src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 </head>
 
 <body>
-    <main class="app-shell">
-        <!-- CABECERA ESTILO NAVEGADOR -->
-        <header class="browser-top">
-            <div class="browser-icons">
-                <button class="icon-btn">←</button>
-                <button class="icon-btn">→</button>
-                <button class="icon-btn">×</button>
-                <button class="icon-btn">⌂</button>
-            </div>
-            <div class="url-bar">https://migestordehorariosyfichajes.com/horario</div>
-            <div class="search-pill">
-                <span>🔎</span>
-            </div>
-        </header>
+	<main class="app-shell">
+		<!-- CABECERA ESTILO NAVEGADOR -->
+		<header class="browser-top">
+			<div class="browser-icons">
+				<button class="icon-btn">←</button>
+				<button class="icon-btn">→</button>
+				<button class="icon-btn">×</button>
+				<button class="icon-btn">⌂</button>
+			</div>
+			<div class="url-bar">https://migestordehorariosyfichajes.com/horario</div>
+			<div class="search-pill">
+				<span>🔎</span>
+			</div>
+		</header>
 
-        <section class="workspace">
-            <div class="top-tools">
-                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
-                
-                <div style="margin-left: 15px; font-weight: 600;">
-                    Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
-                </div>
-                
-                <div class="search-area">
-                    <span>🔍</span>
-                    <input type="text" placeholder="search" />
-                </div>
-                <button class="help-btn">?</button>
-            </div>
+		<section class="workspace">
+			<div class="top-tools">
+				<button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
 
-            <!-- LOGO -->
-            <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+				<div style="margin-left: 15px; font-weight: 600;">
+					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
+				</div>
 
-            <div class="content-grid">
-                <section class="left-zone">
-                    <div class="menu-wrap">
-                        <ul id="mainMenu" class="menu-dropdown">
-                            <li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
-                            <li class="active-menu">Horario</li>
-                            <li>
-                                <a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit;">
-                                    🏖️ Vacaciones y permisos
-                                </a>
-                            </li>
-                            <li>Perfil</li>
-                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
-                        </ul>
-                        
-                        <!-- Submenú para que el CSS no falle -->
-                        <ul id="subMenu" class="submenu-dropdown" hidden="hidden">
-                            <li>Ver horario personal</li>
-                            <li>Ver equipo</li>
-                        </ul>
-                    </div>
+				<div class="search-area">
+					<span>🔍</span> <input type="text" placeholder="search" />
+				</div>
+				<button class="help-btn">?</button>
+			</div>
 
-                    <article class="notification-card">
-                        <h2>Notificaciones</h2>
-                        <p>No tienes avisos<br />pendientes hoy.</p>
-                        <div class="choice-row">
-                            <button class="no">Cerrar</button>
-                            <button class="yes">Ver más</button>
-                        </div>
-                    </article>
-                </section>
+			<!-- LOGO -->
+			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
 
-                <aside class="schedule-panel">
-                    <div class="schedule-head">
-                        <h2>Mi Horario Semanal</h2>
-                        <span class="date-range" th:text="${rangoSemana}">Semana actual</span>
-                    </div>
+			<div class="content-grid">
+				<section class="left-zone">
+					<div class="menu-wrap">
+						<ul id="mainMenu" class="menu-dropdown">
+							<li><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li class="active-menu">Horario</li>
+							<li><a th:href="@{/vacaciones}"
+								style="text-decoration: none; color: inherit;"> 🏖️
+									Vacaciones y permisos </a></li>
+							<li>Perfil</li>
+							<li><a th:href="@{/logout}"
+								style="color: red; text-decoration: none;">Salir</a></li>
+						</ul>
 
-                    <div class="schedule-body">
-                        <table class="schedule-table">
-                            <thead>
-                                <tr>
-                                    <th>Día</th>
-                                    <th>Entrada</th>
-                                    <th>Salida</th>
-                                    <th>Descanso</th>
-                                    <th>Total Hrs</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="h : ${horarios}">
-                                    <td><strong th:text="${h.diaSemana}">Día</strong></td>
-                                    <td th:text="${h.horaInicio}">00:00</td>
-                                    <td th:text="${h.horaFin}">00:00</td>
-                                    <td>1:00h</td>
-                                    <td>8:00h</td>
-                                    <td>Completado</td>
-                                </tr>
-                                
-                                <tr th:if="${#lists.isEmpty(horarios)}">
-                                    <td colspan="6" style="text-align: center; padding: 20px;">
-                                        No hay horarios asignados para esta semana.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+						<!-- Submenú para que el CSS no falle -->
+						<ul id="subMenu" class="submenu-dropdown" hidden="hidden">
+							<li>Ver horario personal</li>
+							<li>Ver equipo</li>
+						</ul>
+					</div>
 
-                    <div class="schedule-actions">
-                        <button class="btn-secondary">Exportar PDF</button>
-                        <button class="btn-primary">Solicitar Cambio</button>
-                    </div>
-                </aside>
-            </div>
-        </section>
-    </main>
+					<article class="notification-card">
+						<h2>Notificaciones</h2>
+						<p>
+							No tienes avisos<br />pendientes hoy.
+						</p>
+						<div class="choice-row">
+							<button class="no">Cerrar</button>
+							<button class="yes">Ver más</button>
+						</div>
+					</article>
+				</section>
 
-    <script th:src="@{/common.js}"></script>
+				<aside class="schedule-panel">
+					<div class="schedule-head">
+						<h2>Mi Horario</h2>
+					</div>
+
+					<div class="schedule-body">
+						<div id="calendar"
+							style="background: white; padding: 10px; border-radius: 8px;"></div>
+					</div>
+
+					<div class="schedule-actions">
+						<button class="btn-secondary">Exportar PDF</button>
+						<button class="btn-primary">Solicitar Cambio</button>
+					</div>
+				</aside>
+			</div>
+		</section>
+	</main>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+	    var calendarEl = document.getElementById('calendar');
+
+	    if (!calendarEl) {
+	        console.error("Error: No se encontró el elemento #calendar");
+	        return;
+	    }
+
+	    var calendar = new FullCalendar.Calendar(calendarEl, {
+	        initialView: 'dayGridWeek',
+	        locale: 'es',
+	        firstDay: 1,
+	        height: 'auto',
+
+	        buttonText: {
+	            today:    'Hoy',
+	            month:    'Mes',
+	            week:     'Semana',
+	            day:      'Día'
+	        },
+	        
+	        eventOrder: "start", 
+
+	        displayEventTime: false,
+
+	        eventContent: function(arg) {
+	            let texto = arg.event.extendedProps.textoPersonalizado || arg.event.title;
+	            
+	            return {
+	                html: `<div class="evento-celda">
+	                        <span>${texto}</span>
+	                       </div>`
+	            };
+	        },
+
+	        events: '/api/horarios-reales/mis-turnos',
+	        
+	        headerToolbar: {
+	            left: 'prev,next today',
+	            center: 'title',
+	            right: 'dayGridMonth,dayGridWeek'
+	        }
+	    });
+
+	    calendar.render();
+	});
+</script>
 </body>
 </html>

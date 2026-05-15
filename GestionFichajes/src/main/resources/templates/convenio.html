@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Convenio Laboral - HoraFlow</title>
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+  <style>
+  .content-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr 20px; 
+    gap: 20px;
+    align-items: start;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .viewer-container {
+    grid-column: 2; 
+    background: var(--surface);
+    border: 3px solid var(--line);
+    border-radius: 20px;
+    padding: 25px;
+    height: 88vh; /* Aumentado el alto */
+    min-height: 800px; 
+    display: flex;
+    flex-direction: column;
+    box-shadow: 8px 8px 0 var(--line); 
+    overflow: hidden;
+    position: relative;
+  }
+
+  .pdf-iframe {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: #525659; 
+  }
+
+  .left-zone {
+    position: sticky;
+    top: 20px;
+  }
+
+  .admin-upload-zone {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px dashed var(--line);
+  }
+
+  @media (max-width: 1200px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+    .viewer-container {
+      grid-column: 1;
+      height: 700px;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="app-shell">
+
+    <section class="workspace" style="max-width: 100%; overflow-x: hidden;">
+      <div class="top-tools">
+        <button class="menu-toggle">📜 Documentación Laboral</button>
+        <div style="font-weight: 800;">
+            Usuario: <span th:text="${session.rol}">ROL</span>
+        </div>
+        <button class="help-btn">?</button>
+      </div>
+
+      <div class="content-grid">
+        <!-- Menú Lateral -->
+        <aside class="left-zone">
+          <div class="menu-wrap">
+            <ul class="menu-dropdown">
+			    <li><a th:href="${session.rol == 'ADMIN' ? '/admin/index' : '/index'}">Inicio</a></li>
+			    <li class="active-menu"><a th:href="@{/convenio}">Convenio</a></li>
+			    <li th:if="${session.rol == 'ADMIN'}"><a th:href="@{/admin/empleados}">Gestión</a></li>
+			</ul>
+          </div>
+
+          <!-- Notificaciones -->
+          <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}" style="margin-top: 20px;">
+            <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
+            <p th:text="${mensajeExito ?: mensajeError}"></p>
+            <div class="choice-row">
+                <button class="yes" style="width:100%" onclick="this.closest('article').remove()">Entendido</button>
+            </div>
+          </article>
+        </aside>
+
+        <!-- Visor Central -->
+        <article class="viewer-container">
+          <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h2 style="margin:0; color:var(--primary)">Convenio Colectivo Vigente</h2>
+                <a th:href="@{/convenio/descargar}" download class="primary-action" style="text-decoration:none">Descargar PDF</a>
+            </div>
+            
+            <!-- Visor PDF principal -->
+            <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
+
+            <!-- Zona exclusiva de ADMIN -->
+            <div th:if="${session.rol == 'ADMIN'}" class="admin-upload-zone">
+              <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+                <label style="font-weight: bold;">Actualizar documento:</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                    <input type="file" name="archivo" accept="application/pdf" required>
+                    <button type="submit" class="primary-action" style="padding: 5px 15px;">Publicar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Si no hay archivo -->
+          <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
+            <span style="font-size: 4rem;">📂</span>
+            <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
+            <div th:if="${session.rol == 'ADMIN'}" class="admin-upload-zone">
+                <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+                  <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
+                  <button type="submit" class="primary-action">Subir primer Convenio</button>
+                </form>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

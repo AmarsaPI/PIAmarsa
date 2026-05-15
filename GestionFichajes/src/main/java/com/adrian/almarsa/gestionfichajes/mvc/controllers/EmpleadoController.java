@@ -8,9 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -21,7 +21,7 @@ public class EmpleadoController {
     private IEmpleadoService empleadoService;
     
     @Autowired 
-    private IHorarioService horarioService;
+    private IPlantillaHorarioService horarioService;
 
     // Página de inicio tras el login
     //HttpSession crea en memoria una sesión que le da al servidor una cookie llamada JSESSIONID(parecido a un token)
@@ -62,7 +62,7 @@ public class EmpleadoController {
 
         // Buscamos los datos reales vinculados a ese ID
         Empleado usuario = empleadoService.findById(id);
-        List<Horario> horariosReales = horarioService.findByEmpleado(id);
+        List<PlantillaHorario> horariosReales = horarioService.findByEmpleado(id);
 
         // Preparamos los datos para la tabla del HTML
         model.addAttribute("usuario", usuario);

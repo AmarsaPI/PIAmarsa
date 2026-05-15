@@ -28,10 +28,26 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 	@Override
 	@Transactional
 	public Empleado save(Empleado empleado) {
-		// Cifra la contraseña en texto plano a BCrypt antes de persistir en la DB
-		// Esto es obligatorio para que coincida con lo que espera Spring Security
-		empleado.setPassword(passwordEncoder.encode(empleado.getPassword()));
-		return empleadoDAO.save(empleado);
+		if (empleado.getId() != null) {
+	        // Buscamos el empleado que ya existe en la base de datos
+	        Empleado empleadoExistente = empleadoDAO.findById(empleado.getId()).orElse(null);
+
+	        if (empleadoExistente != null) {
+	            // Si la contraseña que viene del formulario está vacía o es nula significa que no la queremos cambiar
+	            if (empleado.getPassword() == null || empleado.getPassword().isEmpty()) {
+	                // ...mantenemos la contraseña cifrada que ya teníamos
+	                empleado.setPassword(empleadoExistente.getPassword());
+	            } else {
+	                // si se ha escrito una nueva, ciframos la nueva contraseña
+	                empleado.setPassword(passwordEncoder.encode(empleado.getPassword()));
+	            }
+	        }
+	    } else {
+	        // alta nueva, ciframos la contraseña obligatoriamente
+	        empleado.setPassword(passwordEncoder.encode(empleado.getPassword()));
+	    }
+
+	    return empleadoDAO.save(empleado);
 	}
 	
 	@Override

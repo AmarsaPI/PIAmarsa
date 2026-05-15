@@ -21,7 +21,7 @@ public class SecurityConfig {
 	            // 1. RUTAS WEB Y GESTIÓN
 	            // Añadimos /admin/** para que no bloquee tu nuevo panel
 	            .requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", 
-	                             "/gestion/**", "/fichar/**", "/admin/**").permitAll()
+	                             "/gestion/**", "/fichar/**", "/admin/**", "/api/horarios-reales/**").permitAll()
 	            
 	            // 2. RECURSOS ESTÁTICOS
 	            // Usamos /** para asegurar que pille carpetas como /css/style.css o /js/app.js

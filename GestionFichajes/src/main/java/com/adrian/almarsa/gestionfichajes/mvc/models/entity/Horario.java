@@ -1,64 +1,129 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 
 import java.io.Serializable;
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
-// Entidad que define los turnos de trabajo teóricos asignados a cada empleado
 @Entity
-@Table(name = "horarios")
+@Table(name = "horarios_reales")
 public class Horario implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    @Id
+	private static final long serialVersionUID = 1L;
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Día de la semana (MONDAY, TUESDAY, etc.) almacenado como String en la DB
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dia_semana", nullable = false)
-    private DayOfWeek diaSemana;
+    @Column(name = "fecha", nullable = false)
+    private java.time.LocalDate fecha; 
 
-    // Hora de entrada prevista (ej. 09:00)
     @Column(name = "hora_inicio", nullable = false)
     private LocalTime horaInicio;
 
-    // Hora de salida prevista (ej. 14:00)
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
+    
+    @Column(nullable = true)
+    private LocalTime horaInicio2;
 
-    // Relación muchos a uno: Varios días de horario pertenecen a un solo empleado
+    @Column(nullable = true)
+    private LocalTime horaFin2;
+
+    @Column(name = "tipo_dia")
+    private String tipo; // "LABORABLE", "FESTIVO", "VACACIONES"
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empleado_id", nullable = false)
     private Empleado empleado;
 
-    // Constructor por defecto necesario para JPA
-    public Horario() {}
+	public Long getId() {
+		return id;
+	}
 
-    // Constructor completo para facilitar la creación de instancias
-    public Horario(DayOfWeek diaSemana, LocalTime horaInicio, LocalTime horaFin, Empleado empleado) {
-        this.diaSemana = diaSemana;
-        this.horaInicio = horaInicio;
-        this.horaFin = horaFin;
-        this.empleado = empleado;
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public java.time.LocalDate getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(java.time.LocalDate fecha) {
+		this.fecha = fecha;
+	}
+
+	public LocalTime getHoraInicio() {
+		return horaInicio;
+	}
+
+	public void setHoraInicio(LocalTime horaInicio) {
+		this.horaInicio = horaInicio;
+	}
+
+	public LocalTime getHoraFin() {
+		return horaFin;
+	}
+
+	public void setHoraFin(LocalTime horaFin) {
+		this.horaFin = horaFin;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+
+	public Empleado getEmpleado() {
+		return empleado;
+	}
+
+	public void setEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
+	
+
+	public LocalTime getHoraInicio2() {
+		return horaInicio2;
+	}
+
+	public void setHoraInicio2(LocalTime horaInicio2) {
+		this.horaInicio2 = horaInicio2;
+	}
+
+	public LocalTime getHoraFin2() {
+		return horaFin2;
+	}
+
+	public void setHoraFin2(LocalTime horaFin2) {
+		this.horaFin2 = horaFin2;
+	}
+
+	public Horario() {
     }
+	
+	public Horario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, LocalTime horaInicio2, LocalTime horaFin2,
+			String tipo, Empleado empleado) {
+		super();
+		this.fecha = fecha;
+		this.horaInicio = horaInicio;
+		this.horaFin = horaFin;
+		this.horaInicio2 = horaInicio2;
+		this.horaFin2 = horaFin2;
+		this.tipo = tipo;
+		this.empleado = empleado;
+	}
 
-    // --- Getters y Setters ---
-
-    public Long getId() { return id; }
-    
-    public DayOfWeek getDiaSemana() { return diaSemana; }
-    public void setDiaSemana(DayOfWeek diaSemana) { this.diaSemana = diaSemana; }
-
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
-
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
-
-    public Empleado getEmpleado() { return empleado; }
-    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
 }
