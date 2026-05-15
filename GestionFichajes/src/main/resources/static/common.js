@@ -3,7 +3,9 @@ const mainMenu = document.getElementById("mainMenu");
 const subMenu = document.getElementById("subMenu");
 if (menuToggle) {
     menuToggle.addEventListener("click", () => {
-        if (mainMenu) mainMenu.hidden = !mainMenu.hidden;
+        if (mainMenu) {
+            mainMenu.classList.toggle("menu-open");
+        }
         if (subMenu) subMenu.hidden = true;
     });
 }

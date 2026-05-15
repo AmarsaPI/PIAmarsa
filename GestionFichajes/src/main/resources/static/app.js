@@ -4,9 +4,8 @@ const monthNames = [
   "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
 ];
 
-const menuToggle = document.getElementById("menuToggle");
-const mainMenu = document.getElementById("mainMenu");
-const subMenu = document.getElementById("subMenu");
+
+
 const weekdaysEl = document.getElementById("weekdays");
 const daysGrid = document.getElementById("daysGrid");
 const monthLabel = document.getElementById("monthLabel");
@@ -75,12 +74,7 @@ function renderCalendar(date) {
   }
 }
 
-if (menuToggle && mainMenu) {
-    menuToggle.addEventListener("click", () => {
-        const isHidden = mainMenu.style.display === "none";
-        mainMenu.style.display = isHidden ? "block" : "none";
-    });
-}
+
 
 if (prevMonth) {
     prevMonth.addEventListener("click", () => {
