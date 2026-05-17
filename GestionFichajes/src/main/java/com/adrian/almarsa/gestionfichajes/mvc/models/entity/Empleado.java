@@ -49,10 +49,6 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     // Relación uno a muchos: un empleado puede tener muchos registros de fichajes
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<Fichaje> fichajes;
-
-    // Relación uno a muchos: un empleado tiene asignados varios días de horario
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
-    private List<PlantillaHorario> horarios;
     
     @ManyToOne
     @JoinColumn(name = "calendario_id")

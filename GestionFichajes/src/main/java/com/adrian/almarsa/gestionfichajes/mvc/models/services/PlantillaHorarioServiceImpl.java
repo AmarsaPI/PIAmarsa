@@ -46,11 +46,9 @@ public class PlantillaHorarioServiceImpl implements IPlantillaHorarioService {
 		horarioDAO.deleteById(id);
 	}
 	
-	// Busca los horarios semanales de un empleado usando la nomenclatura "_" corregida
 	@Override
 	@Transactional(readOnly = true)
-	public List<PlantillaHorario> findByEmpleado(Long empleadoId) {
-	    // Llamamos al método del DAO que navega hasta el ID del objeto Empleado
-	    return horarioDAO.findByEmpleado_Id(empleadoId);
+	public List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla) {
+	    return horarioDAO.findByNombrePlantilla(nombrePlantilla);
 	}
 }

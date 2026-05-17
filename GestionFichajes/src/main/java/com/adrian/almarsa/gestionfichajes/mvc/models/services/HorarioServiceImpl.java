@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,11 @@ public class HorarioServiceImpl implements IHorarioService {
 	public List<Horario> findByEmpleado(Long empleadoId) {
 	    // Llamamos al método del DAO que navega hasta el ID del objeto Empleado
 	    return horarioDAO.findByEmpleado_Id(empleadoId);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Horario> findByFechaBetween(LocalDate inicio, LocalDate fin) {
+	    return horarioDAO.findByFechaBetween(inicio, fin); 
 	}
 }

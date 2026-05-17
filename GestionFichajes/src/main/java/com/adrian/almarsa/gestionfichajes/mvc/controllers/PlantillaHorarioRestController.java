@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,12 @@ import jakarta.validation.Valid;
 public class PlantillaHorarioRestController {
 
     @Autowired
-    private IPlantillaHorarioService plantillaHorarioService;
+    private IPlantillaHorarioService plantillaService;
 
     // Listado global de todos los horarios configurados
     @GetMapping("/horarios")
     public List<PlantillaHorario> index() {
-        return plantillaHorarioService.findAll();
+        return plantillaService.findAll();
     }
 
     // Busca un turno específico por su ID
@@ -45,7 +46,7 @@ public class PlantillaHorarioRestController {
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            PlantillaHorario horario = plantillaHorarioService.findById(id);
+            PlantillaHorario horario = plantillaService.findById(id);
             if (horario == null) {
                 response.put("mensaje", "El horario ID: " + id + " no existe");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -70,7 +71,7 @@ public class PlantillaHorarioRestController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         try {
-            PlantillaHorario horarioNew = plantillaHorarioService.save(horario);
+            PlantillaHorario horarioNew = plantillaService.save(horario);
             response.put("mensaje", "Horario creado con éxito");
             response.put("horario", horarioNew);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -92,7 +93,7 @@ public class PlantillaHorarioRestController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         try {
-            PlantillaHorario horarioActual = plantillaHorarioService.findById(id);
+            PlantillaHorario horarioActual = plantillaService.findById(id);
             if (horarioActual == null) {
                 response.put("mensaje", "El horario ID: " + id + " no existe");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -100,9 +101,8 @@ public class PlantillaHorarioRestController {
             horarioActual.setDiaSemana(horario.getDiaSemana());
             horarioActual.setHoraInicio(horario.getHoraInicio());
             horarioActual.setHoraFin(horario.getHoraFin());
-            horarioActual.setEmpleado(horario.getEmpleado());
 
-            PlantillaHorario horarioUpdated = plantillaHorarioService.save(horarioActual);
+            PlantillaHorario horarioUpdated = plantillaService.save(horarioActual);
             response.put("mensaje", "Horario actualizado con éxito");
             response.put("horario", horarioUpdated);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -117,11 +117,11 @@ public class PlantillaHorarioRestController {
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (plantillaHorarioService.findById(id) == null) {
+            if (plantillaService.findById(id) == null) {
                 response.put("mensaje", "El horario ID: " + id + " no existe");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            plantillaHorarioService.delete(id);
+            plantillaService.delete(id);
             response.put("mensaje", "Horario eliminado con éxito");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (DataAccessException e) {
@@ -130,19 +130,57 @@ public class PlantillaHorarioRestController {
         }
     }
     
-    // Endpoint estratégico: devuelve el calendario semanal de un empleado concreto
-    @GetMapping("/horarios/empleado/{empleadoId}")
-    public ResponseEntity<?> horariosPorEmpleado(@PathVariable Long empleadoId) {
+    @GetMapping("/plantillas/{id}/preview")
+    public ResponseEntity<?> obtenerDetallePlantilla(@PathVariable Long id) {
+        PlantillaHorario registroBase = plantillaService.findById(id); 
+        
+        if (registroBase == null || registroBase.getNombrePlantilla() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        String nombreABuscar = registroBase.getNombrePlantilla();
+        
+        List<PlantillaHorario> diasDeLaPlantilla = plantillaService.findByNombrePlantilla(nombreABuscar);
+        
+        List<Map<String, Object>> turnosLimpios = new ArrayList<>();
+        for (PlantillaHorario ph : diasDeLaPlantilla) {
+            Map<String, Object> turno = new HashMap<>();
+            turno.put("diaSemana", ph.getDiaSemana().getValue()); 
+            turno.put("horaInicio", ph.getHoraInicio().toString()); 
+            turno.put("horaFin", ph.getHoraFin().toString()); 
+            
+            turnosLimpios.add(turno);
+        }
+        
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("nombrePlantilla", nombreABuscar);
+        respuesta.put("turnos", turnosLimpios); 
+        
+        return new ResponseEntity<>(respuesta, HttpStatus.OK);
+    }
+    
+    @DeleteMapping("/plantillas/nombre/{nombre}")
+    public ResponseEntity<?> eliminarPlantillaPorNombre(@PathVariable String nombre) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<PlantillaHorario> horarios = plantillaHorarioService.findByEmpleado(empleadoId);
-            if (horarios.isEmpty()) {
-                response.put("mensaje", "No hay horarios para el empleado ID: " + empleadoId);
+            // Buscamos todas las filas que se llamen igual (ej: los 5 días de la plantilla "Tarde")
+            List<PlantillaHorario> diasAEliminar = plantillaService.findByNombrePlantilla(nombre);
+            
+            if (diasAEliminar.isEmpty()) {
+                response.put("mensaje", "La plantilla '" + nombre + "' no existe.");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            return new ResponseEntity<>(horarios, HttpStatus.OK);
+
+            // Eliminamos fila por fila usando el servicio que ya tienes
+            for (PlantillaHorario ph : diasAEliminar) {
+                plantillaService.delete(ph.getId());
+            }
+
+            response.put("mensaje", "Plantilla '" + nombre + "' eliminada por completo con éxito");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (DataAccessException e) {
-            response.put("mensaje", "Error al consultar horarios");
+            response.put("mensaje", "Error al eliminar la plantilla de la base de datos");
+            response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
