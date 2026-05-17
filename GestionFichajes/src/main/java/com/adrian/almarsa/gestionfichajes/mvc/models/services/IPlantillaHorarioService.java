@@ -17,7 +17,6 @@ public interface IPlantillaHorarioService {
 	
     // Elimina la asignación de un horario
     public void delete(Long id);
-	
-    // Recupera la planificación semanal (lista de horarios) de un empleado concreto
-    List<PlantillaHorario> findByEmpleado(Long empleadoId);
+    
+    List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla);
 }

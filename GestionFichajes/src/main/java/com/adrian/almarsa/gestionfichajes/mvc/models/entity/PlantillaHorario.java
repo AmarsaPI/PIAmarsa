@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 
 // Entidad que define las plantillas de horario de un día concreto
 @Entity
-@Table(name = "horarios")
+@Table(name = "plantillas_horarios")
 public class PlantillaHorario implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,21 +33,15 @@ public class PlantillaHorario implements Serializable {
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
 
-    // Relación muchos a uno: Varios días de horario pertenecen a un solo empleado
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empleado_id", nullable = false)
-    private Empleado empleado;
-
     // Constructor por defecto necesario para JPA
     public PlantillaHorario() {}
 
     // Constructor completo para facilitar la creación de instancias
-    public PlantillaHorario(String nombrePlantilla, DayOfWeek diaSemana, LocalTime horaInicio, LocalTime horaFin, Empleado empleado) {
+    public PlantillaHorario(String nombrePlantilla, DayOfWeek diaSemana, LocalTime horaInicio, LocalTime horaFin) {
     	this.nombrePlantilla = nombrePlantilla;
         this.diaSemana = diaSemana;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
-        this.empleado = empleado;
     }
 
     // --- Getters y Setters ---
@@ -62,10 +56,7 @@ public class PlantillaHorario implements Serializable {
 
     public LocalTime getHoraFin() { return horaFin; }
     public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
-
-    public Empleado getEmpleado() { return empleado; }
-    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
     
     public String getNombrePlantilla() { return nombrePlantilla; }
-    public void setHoraFin(String nombrePlantilla) { this.nombrePlantilla = nombrePlantilla; }
+    public void setNombrePlantilla(String nombrePlantilla) { this.nombrePlantilla = nombrePlantilla; }
 }

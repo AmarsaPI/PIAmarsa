@@ -102,6 +102,12 @@ body {
 	cursor: pointer;
 }
 
+.menu-dropdown li.active-menu {
+    background: var(--primary);
+    color: var(--on-primary);
+    border-left: 5px solid var(--tertiary); 
+}
+
 .help-btn {
 	width: 40px;
 	height: 40px;
@@ -146,30 +152,57 @@ body {
 	min-height: 240px;
 }
 
-.menu-dropdown, .submenu-dropdown {
+.menu-dropdown{
 	list-style: none;
 	margin: 0;
 	padding: 10px 0;
 	background: #fffdf6;
 	border: 3px solid var(--line);
-	width: 300px;
-	box-shadow: 4px 4px 0 rgba(63, 58, 52, 0.18);
+	width: 250px;
 }
 
-.submenu-dropdown {
-	position: absolute;
-	top: 38px;
-	left: 310px;
-	width: 320px;
+.submenu-dropdown{
+    position: absolute;
+    top: 100%;
+    left: 15px; 
+
+    background: #f8f8f8;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    width: 200px; 
+
+    padding: 10px 0;
+
+    list-style: none;
+
+    box-shadow: 4px 4px 0 rgba(63, 58, 52, 0.18);
+
+    z-index: 1000;
 }
 
-.menu-dropdown li, .submenu-dropdown li {
+.submenu-dropdown li{
+    padding: 6px 10px; 
+    cursor: pointer;
+}
+
+.submenu-dropdown li a{
+    text-decoration: none;
+    font-size: 20px;
+    color: inherit;
+	display: block;
+	width: 100%;
+}
+
+.menu-dropdown li {
 	padding: 8px 24px;
-	font-size: 1.95rem;
-	font-size: clamp(1rem, 2vw, 2rem);
+	font-size: clamp(1rem, 2vw, 1.2rem);
 	font-weight: 700;
 	cursor: pointer;
+	position: relative;
 }
+
 
 .menu-dropdown li:hover, .submenu-dropdown li:hover {
 	background: var(--mint-100);
@@ -450,13 +483,6 @@ body {
 	text-decoration: none;
 }
 
-.menu-dropdown a, .submenu-dropdown a {
-	color: inherit;
-	text-decoration: none;
-	display: block;
-	width: 100%;
-}
-
 .main-content {
 	width: 100%;
 	margin-left: 200px;
@@ -588,6 +614,7 @@ body {
 	.submenu-dropdown, .management-card, .worker-form, .login-card {
 	background: var(--surface);
 	border-color: var(--outline);
+	border-radius: 10px;
 	box-shadow: 0 14px 28px var(--shadow);
 }
 

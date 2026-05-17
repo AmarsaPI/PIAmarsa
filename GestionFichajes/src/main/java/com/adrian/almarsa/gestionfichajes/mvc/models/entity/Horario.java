@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "horarios_reales")
+@Table(name = "horarios")
 public class Horario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -33,10 +33,10 @@ public class Horario implements Serializable {
     @Column(name = "hora_fin", nullable = false)
     private LocalTime horaFin;
     
-    @Column(nullable = true)
+    @Column(name = "hora_inicio2", nullable = true)
     private LocalTime horaInicio2;
 
-    @Column(nullable = true)
+    @Column(name = "hora_fin2",nullable = true)
     private LocalTime horaFin2;
 
     @Column(name = "tipo_dia")

@@ -11,6 +11,8 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin; // Nueva enti
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Rol;
 
+import jakarta.transaction.Transactional;
+
 @Configuration
 public class DataSeedConfig implements CommandLineRunner {
 
@@ -24,19 +26,25 @@ public class DataSeedConfig implements CommandLineRunner {
     private PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         
         // --- 1. LÓGICA ORIGINAL (Empleado con Rol Administrador) ---
         // NO se toca, se mantiene tal cual la tenías
         String empAdminEmail = "admin@piamarsa.com";
-        if (empleadoDAO.findByEmail(empAdminEmail) == null) {
+        if (empleadoDAO.findByEmail(empAdminEmail).isEmpty()) {
             Empleado adminEmp = new Empleado();
             adminEmp.setNombre("Administrador");
             adminEmp.setEmail(empAdminEmail);
             adminEmp.setPassword(passwordEncoder.encode("piamarsa"));
             adminEmp.setRol(Rol.ADMINISTRADOR);
-            empleadoDAO.save(adminEmp);
-            System.out.println("--> Empleado con Rol Administrador creado.");
+            try {
+                empleadoDAO.save(adminEmp);
+                System.out.println("--> Empleado con Rol Administrador creado.");
+            } catch (Exception e) {
+                System.err.println("!!! ERROR AL CREAR EMPLEADO ADMIN: " + e.getMessage());
+                e.printStackTrace(); // Esto te dirá exactamente qué restricción falla
+            }
         }
 
         // --- 2. NUEVA LÓGICA (Entidad Admin Pura) ---

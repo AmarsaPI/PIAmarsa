@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
@@ -21,4 +22,6 @@ public interface IHorarioService {
 	
     // Recupera la planificación semanal (lista de horarios) de un empleado concreto
     List<Horario> findByEmpleado(Long empleadoId);
+    
+    List<Horario> findByFechaBetween(LocalDate inicio, LocalDate fin);
 }
