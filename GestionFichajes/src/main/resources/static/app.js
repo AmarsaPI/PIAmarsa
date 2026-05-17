@@ -1,4 +1,4 @@
-﻿const weekdays = ["L", "M", "X", "J", "V", "S", "D"];
+const weekdays = ["L", "M", "X", "J", "V", "S", "D"];
 const monthNames = [
   "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO",
   "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"
@@ -70,6 +70,13 @@ function renderCalendar(date) {
     day.textContent = String(i);
     daysGrid.appendChild(day);
   }
+}
+
+if (menuToggle && mainMenu) {
+    menuToggle.addEventListener("click", () => {
+        const isHidden = mainMenu.style.display === "none";
+        mainMenu.style.display = isHidden ? "block" : "none";
+    });
 }
 
 if (prevMonth) {
