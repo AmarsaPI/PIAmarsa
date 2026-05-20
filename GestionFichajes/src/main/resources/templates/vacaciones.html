@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vacaciones y Permisos - Gestor de horarios y fichajes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<link rel="stylesheet" th:href="@{/styles.css}" />
+<link rel="stylesheet" th:href="@{/horario.css}" />
+
+<style>
+/* 🌟 Fuerza a que todas las tarjetas midan exactamente lo mismo e iguala el padding interno */
+.stat-box {
+	background: white;
+	border-radius: 12px;
+	padding: 15px 10px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+	text-align: center;
+	border-top: 4px solid #0d6efd;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 100%; 
+}
+
+/* 🌟 Alinea el contenido central arriba del todo eliminando paddings innecesarios */
+#mainContent {
+	padding: 0px 20px 20px 20px !important;
+	overflow-y: auto;
+}
+</style>
+</head>
+
+<body>
+	<main class="app-shell">
+		<header class="browser-top"> </header>
+
+		<section class="workspace">
+			<div class="top-tools">
+				<button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+
+				<div style="margin-left: 15px; font-weight: 600;">
+					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
+				</div>
+
+				<div class="search-area">
+					<span>🔍</span> <input type="text" placeholder="search" aria-label="buscar" />
+				</div>
+				<button class="help-btn">?</button>
+			</div>
+
+			<div id="logo-amarsa">
+				<a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" /></a>
+			</div>
+
+			<div class="content-grid">
+
+				<section class="left-zone">
+					<div class="menu-wrap">
+						<ul id="mainMenu" class="menu-dropdown">
+							<li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration: none; color: inherit;">Fichar</a></li>
+							<li data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario</a></li>
+							<li data-submenu="none" class="active-menu" style="font-weight: bold; color: #0d6efd;">🏖️ Vacaciones y permisos</li>
+							<li data-submenu="none">Perfil</li>
+							<li data-submenu="subMenu_gestion">Gestión
+								<ul id="subMenu_gestion" class="submenu-dropdown" hidden="hidden">
+									<li><a th:href="@{/gestion_plantillas}">Plantillas Horario</a></li>
+									<li><a th:href="@{/asignar_horario}">Asignar Horarios</a></li>
+								</ul>
+							</li>
+							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+						</ul>
+					</div>
+				</section>
+
+				<div id="mainContent">
+					<div class="schedule-head m-0 pt-1 pb-2">
+						<h2 class="m-0">🏖️ Gestión de Vacaciones Personales</h2>
+					</div>
+
+					<div class="row g-2 mb-4 d-flex align-items-stretch">
+					    <div class="col-md-3">
+					        <div class="stat-box" style="border-top-color: #0d6efd;">
+					            <span class="text-muted small d-block">Días Anuales</span>
+					            <strong class="fs-4 text-dark" th:text="${diasTotales ?: 30}">30</strong>
+					        </div>
+					    </div>
+					    <div class="col-md-3">
+					        <div class="stat-box" style="border-top-color: #6c757d;">
+					            <span class="text-muted small d-block">Ya Disfrutados</span>
+					            <strong class="fs-4 text-secondary" th:text="${diasDisfrutados ?: 0}">0</strong>
+					        </div>
+					    </div>
+					    <div class="col-md-3">
+					        <div class="stat-box" style="border-top-color: #ffc107;">
+					            <span class="text-muted small d-block">Reservados (Futuros)</span>
+					            <strong class="fs-4 text-warning" th:text="${diasReservados ?: 0}">0</strong>
+					        </div>
+					    </div>
+					    <div class="col-md-3">
+					        <div class="stat-box" style="border-top-color: #198754;">
+					            <span class="text-muted small d-block">Disponibles Libres</span>
+					            <strong class="fs-4 text-success" th:text="${diasDisponibles ?: 30}">30</strong>
+					        </div>
+					    </div>
+					</div>
+
+					<div th:if="${mensajeExito}" class="alert alert-success py-2 small" th:text="${mensajeExito}"></div>
+					<div th:if="${mensajeError}" class="alert alert-danger py-2 small" th:text="${mensajeError}"></div>
+
+					<div class="row g-3">
+						<div class="col-xl-5">
+							<div class="card shadow-sm border-0 p-3" style="background: #fdfdfd;">
+								<h6 class="fw-bold mb-3 text-primary">
+									<i class="bi bi-send-plus-fill"></i> Solicitar Periodo
+								</h6>
+								<form th:action="@{/vacaciones/solicitar}" method="post">
+									<div class="mb-2">
+										<label class="form-label small fw-bold mb-1">Fecha Inicio</label> 
+										<input type="date" name="fechaInicio" class="form-control form-control-sm" required>
+									</div>
+									<div class="mb-2">
+										<label class="form-label small fw-bold mb-1">Fecha Fin</label>
+										<input type="date" name="fechaFin" class="form-control form-control-sm" required>
+									</div>
+									<div class="mb-3">
+										<label class="form-label small fw-bold mb-1">Observaciones</label>
+										<textarea name="motivo" class="form-control form-control-sm" rows="2" placeholder="Opcional..."></textarea>
+									</div>
+									<button type="submit" class="btn btn-primary btn-sm w-100 fw-bold">Enviar Solicitud</button>
+								</form>
+							</div>
+						</div>
+
+						<div class="col-xl-7">
+							<div class="card shadow-sm border-0 p-3">
+								<div class="d-flex justify-content-between align-items-center mb-3">
+									<h6 class="fw-bold mb-0 text-primary">
+										<i class="bi bi-clock-history"></i> Mis Solicitudes
+									</h6>
+									<form th:if="${not #lists.isEmpty(solicitudes)}" th:action="@{/vacaciones/limpiar-rechazadas}" method="post" class="m-0">
+										<button type="submit" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size: 0.8em;">
+											<i class="bi bi-trash3-fill"></i> Limpiar rechazadas
+										</button>
+									</form>
+								</div>
+								<div class="table-responsive">
+									<table class="table table-sm align-middle mb-0" style="font-size: 0.9em;">
+										<thead class="table-light">
+											<tr>
+												<th>Fechas</th>
+												<th class="text-center">Estado</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:if="${#lists.isEmpty(solicitudes)}">
+												<td colspan="2" class="text-center text-muted small py-3">No hay solicitudes registradas.</td>
+											</tr>
+											<tr th:each="sol : ${solicitudes}">
+												<td><i class="bi bi-calendar-check text-muted me-1"></i>
+													<span th:text="${#temporals.format(sol.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</span> - 
+													<span th:text="${#temporals.format(sol.fechaFin, 'dd/MM/yyyy')}">10/01/2026</span>
+												</td>
+												<td class="text-center">
+													<span th:if="${sol.estado.name() == 'PENDIENTE'}" class="badge bg-warning text-dark style-badge">Pendiente</span>
+													<span th:if="${sol.estado.name() == 'APROBADA'}" class="badge bg-success text-white style-badge">Aprobada</span>
+													<span th:if="${sol.estado.name() == 'RECHAZADA'}" class="badge bg-danger text-white style-badge">Rechazada</span>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<aside class="calendar-panel">
+					<div class="calendar-head">
+						<strong id="yearText">2026</strong> <span id="dateText">Thu, Mar 05</span>
+					</div>
+					<div class="calendar-body">
+						<div class="month-bar">
+							<button id="prevMonth" aria-label="mes anterior">‹</button>
+							<span id="monthLabel">MARCH 2026</span>
+							<button id="nextMonth" aria-label="mes siguiente">›</button>
+						</div>
+						<div class="weekdays" id="weekdays"></div>
+						<div class="days-grid" id="daysGrid"></div>
+					</div>
+					<div class="calendar-actions">
+						<button class="cancel">CANCEL</button>
+						<button class="ok">OK</button>
+					</div>
+				</aside>
+			</div>
+		</section>
+	</main>
+
+	<script th:src="@{/app.js}"></script>
+	<script th:src="@{/common.js}"></script>
+</body>
+</html>

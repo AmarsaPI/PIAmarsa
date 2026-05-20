@@ -1,11 +1,15 @@
 // Variables globales de control
 var calendar;
 var empleadoSeleccionadoId = null; 
-var modalBootstrap = null; // 1. Cambiado a null para inicialización limpia
+var modalBootstrap = null; 
 var fechaSeleccionadaSueltar = "";
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 2. INICIALIZACIÓN SEGURA DEL MODAL Y REINICIO AL CERRAR
+    // 1. LEER EL ROL DEL USUARIO E INICIALIZACIÓN DE SEGURIDAD
+    var calendarEl = document.getElementById('calendar');
+    var usuarioRol = calendarEl ? calendarEl.dataset.rol : 'EMPLEADO'; 
+    var esAdmin = (usuarioRol === 'ADMINISTRADOR'); // 🌟 Verdadero si es Admin
+
     var modalElement = document.getElementById('modalDiaSuelto');
     if (modalElement) {
         modalBootstrap = new bootstrap.Modal(modalElement);
@@ -17,18 +21,17 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("No se encontró el elemento HTML con id 'modalDiaSuelto'");
     }
     
-    var calendarEl = document.getElementById('calendar');
+    // 2. CONFIGURACIÓN DEL CALENDARIO BLINDADA POR ROL
     calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'es',
         firstDay: 1, 
-        selectable: true, 
-        selectMirror: true,
+        selectable: esAdmin,       // 🌟 Si es Empleado, NO puede seleccionar ni arrastrar
+        editable: esAdmin,         // 🌟 Si es Empleado, NO puede mover ni alterar turnos
+        selectMirror: esAdmin,
         unselectAuto: true,
         displayEventTime: false,
-        dayMaxEvents: false,
-		editable: true,
-		dayMaxEvents: 4,
+        dayMaxEvents: 4,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -40,8 +43,14 @@ document.addEventListener('DOMContentLoaded', function() {
             dayGridWeek: { buttonText: 'Semana' }
         },
 
-        // 1. CONTROL DE SELECCIÓN Y ARRASTRE
+        // CONTROL DE SELECCIÓN Y ARRASTRE
         select: function(arg) {
+            // 🌟 Por seguridad, si de alguna forma llega aquí un empleado, cancelamos
+            if (!esAdmin) {
+                calendar.unselect();
+                return;
+            }
+
             if (!empleadoSeleccionadoId || empleadoSeleccionadoId === "") {
                 alert("Por favor, selecciona primero un empleado en el desplegable de la cabecera para poder asignarle turnos.");
                 calendar.unselect();
@@ -51,35 +60,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const diferenciaTiempo = new Date(arg.endStr) - new Date(arg.startStr);
             const unDiaEnMilisegundos = 24 * 60 * 60 * 1000;
 
-			if (diferenciaTiempo <= unDiaEnMilisegundos) {
-			    // Modo día suelto (Abre tu modal)
-			    fechaSeleccionadaSueltar = arg.startStr; 
-			    
-			    const selectCombo = document.getElementById('selectEmpleadoHeader');
-			    const nombreEmp = selectCombo.options[selectCombo.selectedIndex].text;
-			    
-			    document.getElementById('modalNombreEmpleado').value = nombreEmp;
-			    document.getElementById('modalFechaMostrar').value = arg.startStr.split("-").reverse().join("/");
-			    
-			    const selectPlantillaModal = document.getElementById('modalSelectPlantilla');
-			    if (selectPlantillaModal) {
-			        selectPlantillaModal.value = ""; 
-			    }
+            if (diferenciaTiempo <= unDiaEnMilisegundos) {
+                // Modo día suelto (Abre tu modal)
+                fechaSeleccionadaSueltar = arg.startStr; 
+                
+                const selectCombo = document.getElementById('selectEmpleadoHeader');
+                const nombreEmp = selectCombo.options[selectCombo.selectedIndex].text;
+                
+                document.getElementById('modalNombreEmpleado').value = nombreEmp;
+                document.getElementById('modalFechaMostrar').value = arg.startStr.split("-").reverse().join("/");
+                
+                const selectPlantillaModal = document.getElementById('modalSelectPlantilla');
+                if (selectPlantillaModal) {
+                    selectPlantillaModal.value = ""; 
+                }
 
-			    // ==========================================
-			    // 🔥 ¡AQUÍ FILTRAMOS LAS PLANTILLAS DE 1 SOLO DÍA!
-			    // ==========================================
-			    filtrarPlantillasDiariasEnModal();
-			    // ==========================================
+                filtrarPlantillasDiariasEnModal();
 
-			    if (modalBootstrap) {
-			        modalBootstrap.show();
-			    }
-			    calendar.unselect();
-			    
-			    const btnBorrar = document.getElementById('btnBorrarSemana');
-			    if (btnBorrar) btnBorrar.style.display = 'none';
-			}
+                if (modalBootstrap) {
+                    modalBootstrap.show();
+                }
+                calendar.unselect();
+                
+                const btnBorrar = document.getElementById('btnBorrarSemana');
+                if (btnBorrar) btnBorrar.style.display = 'none';
+            }
             else {
                 // Modo rango de fechas (Para asignación masiva)
                 document.getElementById('formFechaInicio').value = arg.startStr;
@@ -93,9 +98,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 		
-        // 2. ELIMINAR UN SOLO DÍA AL PULSAR EL EVENTO
+        // ELIMINAR UN SOLO DÍA AL PULSAR EL EVENTO
         eventClick: function(info) {
             if (info.event.display === 'background') return;
+
+            // 🌟 Si es un EMPLEADO, cancelamos el clic en el turno asignado
+            if (!esAdmin) {
+                info.jsEvent.preventDefault();
+                return;
+            }
 
             const horarioId = info.event.id;
             const fechaFormateada = info.event.startStr; 
@@ -120,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 
-        // 3. CONSULTA DINÁMICA (Carga todo al inicio, filtra si hay empleado)
+        // CONSULTA DINÁMICA
         events: function(fetchInfo, successCallback, failureCallback) {
             let url = `/api/horarios-reales/global?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`;
             
@@ -145,10 +156,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     calendar.render();
 	
-    // Movimiento e inyección del select de tu HTML al lado del título
+    // 3. INYECCIÓN DEL DESPLEGABLE EN EL HEADER (SOLO SI EL ELEMENTO EXISTE)
     const selectEmpleado = document.getElementById('selectEmpleadoHeader');
     const toolbarCenter = document.querySelector('.fc-toolbar-title');
     
+    // 🌟 Como al Empleado se lo quitamos con Thymeleaf, esta inyección solo ocurrirá para el ADMIN
     if (selectEmpleado && toolbarCenter) {
         const wrapper = document.createElement('div');
         wrapper.style.display = 'flex';
@@ -215,10 +227,7 @@ function cargarVistaPreviaPlantilla(plantillaId) {
     const previewDiv = document.getElementById('previewPlantilla');
     const listaDias = document.getElementById('listaDiasPreview');
     
-    if (!plantillaId) {
-        previewDiv.classList.add('d-none');
-        return;
-    }
+    if (!plantillaId || !previewDiv) return; // Salvaguarda si el elemento fue destruido por Thymeleaf
 
     fetch(`/api/plantillas/${plantillaId}/preview`)
         .then(response => {
@@ -242,8 +251,8 @@ function cargarVistaPreviaPlantilla(plantillaId) {
                     const fin = t.horaFin.substring(0, 5);
                     const nombreDiaStr = nombresDias[t.diaSemana] || "Día Especial";
                     
-					li.innerHTML = `<span>📅 <strong>${nombreDiaStr}:</strong></span> 
-					                    <span class="badge bg-primary shadow-sm">${inicio} - ${fin}</span>`;
+                    li.innerHTML = `<span>📅 <strong>${nombreDiaStr}:</strong></span> 
+                                        <span class="badge bg-primary shadow-sm">${inicio} - ${fin}</span>`;
                     listaDias.appendChild(li);
                 });
             }
@@ -342,14 +351,14 @@ function procesarAsignacionMasiva(event) {
             Promise.all(promesasGuardado)
                 .then(() => {
                     alert("🎉 ¡Cuadrante masivo generado con éxito!");
-					document.getElementById('formFechaInicio').value = "";
-			        document.getElementById('formFechaFin').value = "";
-			        
-			        document.getElementById('buscadorPlantillasLateral').value = "";
-			        document.getElementById('selectPlantillas').value = "";
-			        cargarVistaPreviaPlantilla(""); 
-			        
-			        calendar.refetchEvents();
+                    document.getElementById('formFechaInicio').value = "";
+                    document.getElementById('formFechaFin').value = "";
+                    
+                    document.getElementById('buscadorPlantillasLateral').value = "";
+                    document.getElementById('selectPlantillas').value = "";
+                    cargarVistaPreviaPlantilla(""); 
+                    
+                    calendar.refetchEvents();
                 })
                 .catch(err => {
                     console.error(err);
@@ -393,7 +402,6 @@ function guardarTurnoSuelto() {
         return response.json();
     })
     .then(data => {
-        // 4. Cierre seguro verificando la instancia
         if (modalBootstrap) {
             modalBootstrap.hide();
         }
@@ -411,20 +419,17 @@ function cargarHorasDesdePlantillaModal(plantillaId) {
         return;
     }
 
-    // 1. Obtenemos la fecha que se está mostrando en el modal (está en formato DD/MM/YYYY)
     const fechaTexto = document.getElementById('modalFechaMostrar').value;
     if (!fechaTexto) return;
     
     const [dia, mes, anio] = fechaTexto.split('/');
     const fechaObjeto = new Date(`${anio}-${mes}-${dia}`);
     
-    // 2. Averiguamos el número del día de la semana (1 = Lunes, 2 = Martes... 7 = Domingo)
     let diaSemanaJS = fechaObjeto.getDay();
     let diaSemanaJava = (diaSemanaJS === 0) ? 7 : diaSemanaJS;
 
     console.log("Buscando turno en plantilla para el día número (Java):", diaSemanaJava);
 
-    // 3. Usamos la API de /preview que ya sabemos que funciona y devuelve los turnos estructurados
     fetch(`/api/plantillas/${plantillaId}/preview`)
         .then(response => {
             if (!response.ok) throw new Error("No se pudo obtener el diseño de la plantilla.");
@@ -437,18 +442,14 @@ function cargarHorasDesdePlantillaModal(plantillaId) {
                 return;
             }
 
-            // Filtramos los turnos de la plantilla que correspondan al día de la semana de la fecha pulsada
             let turnosDelDia = turnosTemplate.filter(t => parseInt(t.diaSemana) === diaSemanaJava);
 
             if (turnosDelDia.length > 0) {
-                // Ordenamos por hora de inicio por si hay turno partido
                 turnosDelDia.sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
 
-                // Insertamos el primer turno (obligatorio) recortando a 5 caracteres (HH:MM)
                 document.getElementById('modalHoraInicio').value = turnosDelDia[0].horaInicio.substring(0, 5);
                 document.getElementById('modalHoraFin').value = turnosDelDia[0].horaFin.substring(0, 5);
                 
-                // Si la plantilla tiene un segundo turno para ese día (turno partido), lo rellenamos. Si no, lo vaciamos.
                 if (turnosDelDia.length > 1) {
                     document.getElementById('modalHoraInicio2').value = turnosDelDia[1].horaInicio.substring(0, 5);
                     document.getElementById('modalHoraFin2').value = turnosDelDia[1].horaFin.substring(0, 5);
@@ -468,15 +469,16 @@ function cargarHorasDesdePlantillaModal(plantillaId) {
 }
 
 function limpiarCamposHorasModal() {
-    document.getElementById('modalHoraInicio').value = "";
-    document.getElementById('modalHoraFin').value = "";
-    document.getElementById('modalHoraInicio2').value = "";
-    document.getElementById('modalHoraFin2').value = "";
-    document.getElementById('modalSelectPlantilla').value = "";
+    if(document.getElementById('modalHoraInicio')) document.getElementById('modalHoraInicio').value = "";
+    if(document.getElementById('modalHoraFin')) document.getElementById('modalHoraFin').value = "";
+    if(document.getElementById('modalHoraInicio2')) document.getElementById('modalHoraInicio2').value = "";
+    if(document.getElementById('modalHoraFin2')) document.getElementById('modalHoraFin2').value = "";
+    if(document.getElementById('modalSelectPlantilla')) document.getElementById('modalSelectPlantilla').value = "";
 }
 
 function filtrarPlantillasDiariasEnModal() {
     const opciones = document.querySelectorAll('.opcion-plantilla');
+    if (!opciones.length) return;
     
     opciones.forEach(opcion => {
         const plantillaId = opcion.value;
@@ -485,11 +487,8 @@ function filtrarPlantillasDiariasEnModal() {
             .then(response => response.json())
             .then(plantilla => {
                 const turnos = plantilla.turnos || [];
-                
-                // Creamos un "Set" para guardar los días únicos (los Set no permiten repetidos)
                 const diasUnicos = new Set(turnos.map(t => t.diaSemana));
                 
-                // Si la plantilla no tiene turnos, o tiene turnos repartidos en más de 1 día...
                 if (diasUnicos.size > 1 || diasUnicos.size === 0) {
                     opcion.style.display = 'none'; 
                 } else {
@@ -503,30 +502,28 @@ function filtrarPlantillasDiariasEnModal() {
 function detectarPlantillaSeleccionada(valorEscrito) {
     const opciones = document.querySelectorAll('#listaPlantillasLateral option');
     const inputOcultoId = document.getElementById('selectPlantillas');
-	const buscadorVisible = document.getElementById('buscadorPlantillasLateral');
+    const buscadorVisible = document.getElementById('buscadorPlantillasLateral');
     
     let encontrado = false;
 
     opciones.forEach(opcion => {
-        // Si lo que escribió/seleccionó el usuario coincide con una plantilla real
         if (opcion.value === valorEscrito) {
             const idReal = opcion.getAttribute('data-id');
-            inputOcultoId.value = idReal; // Seteamos el ID en el input invisible
+            if(inputOcultoId) inputOcultoId.value = idReal;
             encontrado = true;
             
             console.log("Plantilla seleccionada con éxito. ID:", idReal);
             
-            // Disparamos la vista previa automáticamente como lo hacía tu select viejo
             cargarVistaPreviaPlantilla(idReal);
-			buscadorVisible.value = "";
-			            
-			buscadorVisible.blur();
+            if(buscadorVisible) {
+                buscadorVisible.value = "";
+                buscadorVisible.blur();
+            }
         }
     });
 
-    // Si borra el texto manualmente o escribe algo que no existe, limpiamos todo
-    if (!encontrado) {
+    if (!encontrado && inputOcultoId) {
         inputOcultoId.value = "";
-        cargarVistaPreviaPlantilla(""); // Oculta la vista previa
+        cargarVistaPreviaPlantilla(""); 
     }
 }

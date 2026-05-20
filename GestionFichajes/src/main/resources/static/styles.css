@@ -262,6 +262,7 @@ body {
 	min-height: 500px;
 	display: grid;
 	grid-template-rows: auto 1fr auto;
+	margin-left: auto;
 }
 
 .calendar-head {
