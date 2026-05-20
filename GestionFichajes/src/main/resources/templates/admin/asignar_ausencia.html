@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Admin - Asignar Ausencias Oficiales</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            
+            <!-- Mensajes de Feedback -->
+            <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${mensajeExito}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${mensajeError}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-content-center py-3">
+                    <h5 class="mb-0">💼 Panel de Gestión: Asignar Bajas y Permisos</h5>
+                    <a th:href="@{/vacaciones/calendario-global}" class="btn btn-sm btn-outline-light">Volver al Cuadrante</a>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/admin/ausencias/guardar}" method="post">
+                        
+                        <!-- Selector de Empleado -->
+                        <div class="mb-3">
+                            <label for="empleadoId" class="form-label fw-bold">Seleccionar Empleado</label>
+                            <select id="empleadoId" name="empleadoId" class="form-select" required>
+                                <option value="" disabled selected>-- Selecciona un trabajador de la plantilla --</option>
+                                <option th:each="emp : ${empleados}" 
+                                        th:value="${emp.id}" 
+                                        th:text="${emp.nombre}"></option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <!-- Fecha de Inicio -->
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaInicio" class="form-label fw-bold">Fecha de Inicio</label>
+                                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required>
+                            </div>
+                            <!-- Fecha de Fin -->
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaFin" class="form-label fw-bold">Fecha de Fin</label>
+                                <input type="date" id="fechaFin" name="fechaFin" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Ausencia -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tipo de Ausencia Administrativa</label>
+                            <div class="d-flex gap-4 mt-1">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo" id="tipoBaja" value="BAJA_MEDICA" checked>
+                                    <label class="form-check-label text-danger fw-semibold" for="tipoBaja">
+                                        🔴 Baja Médica
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo" id="tipoPermiso" value="PERMISO_RETRIBUIDO">
+                                    <label class="form-check-label text-primary fw-semibold" for="tipoPermiso">
+                                        🔵 Permiso Retribuido / Justificado
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones / Motivo -->
+                        <div class="mb-4">
+                            <label for="observaciones" class="form-label fw-bold">Observaciones / Justificación Interna</label>
+                            <textarea id="observaciones" name="observaciones" rows="3" class="form-control" placeholder="Ej: Baja por contingencias comunes, justificantes médicos aportados, etc."></textarea>
+                        </div>
+
+                        <!-- Botón de Envío -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-dark btn-lg fs-6 fw-bold">Registrar y Grabar en Calendario</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

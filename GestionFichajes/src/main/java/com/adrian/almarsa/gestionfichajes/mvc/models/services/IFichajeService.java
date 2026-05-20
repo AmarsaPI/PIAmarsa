@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
 
@@ -29,4 +30,6 @@ public interface IFichajeService {
     
     //Encuentra el último fichaje sin fichaje de salida
     public Fichaje findUltimoSinCerrar(Long empleadoId);
+    
+    double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha);
 }
