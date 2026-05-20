@@ -45,7 +45,7 @@ public class ConvenioController {
             return "redirect:/convenio";
         }
 
-        if (archivo.isEmpty() || !archivo.getContentType().equals("application/pdf")) {
+        if (archivo.isEmpty() || !"application/pdf".equals(archivo.getContentType())) {
             flash.addFlashAttribute("mensajeError", "Error: El archivo debe ser un PDF válido.");
             return "redirect:/convenio";
         }
@@ -78,6 +78,7 @@ public class ConvenioController {
                 return ResponseEntity.ok()
                         .contentType(MediaType.APPLICATION_PDF)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + FILE_NAME + "\"")
+                        .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate")
                         .body(recurso);
             }
         } catch (Exception e) {

@@ -68,7 +68,7 @@
       <div class="top-tools">
         <button class="menu-toggle">📜 Documentación Laboral</button>
         <div style="font-weight: 800;">
-            Usuario: <span th:text="${session.rol}">ROL</span>
+            Usuario: <span th:text="${rol}">ROL</span>
         </div>
         <button class="help-btn">?</button>
       </div>
@@ -78,9 +78,9 @@
         <aside class="left-zone">
           <div class="menu-wrap">
             <ul class="menu-dropdown">
-			    <li><a th:href="${session.rol == 'ADMIN' ? '/admin/index' : '/index'}">Inicio</a></li>
+			    <li><a th:href="${rol == 'ADMIN' ? '/admin/index' : '/index'}">Inicio</a></li>
 			    <li class="active-menu"><a th:href="@{/convenio}">Convenio</a></li>
-			    <li th:if="${session.rol == 'ADMIN'}"><a th:href="@{/admin/empleados}">Gestión</a></li>
+			    <li th:if="${rol == 'ADMIN'}"><a th:href="@{/admin/empleados}">Gestión</a></li>
 			</ul>
           </div>
 
@@ -106,7 +106,7 @@
             <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
 
             <!-- Zona exclusiva de ADMIN -->
-            <div th:if="${session.rol == 'ADMIN'}" class="admin-upload-zone">
+            <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
               <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
                 <label style="font-weight: bold;">Actualizar documento:</label>
                 <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
@@ -121,7 +121,7 @@
           <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
             <span style="font-size: 4rem;">📂</span>
             <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
-            <div th:if="${session.rol == 'ADMIN'}" class="admin-upload-zone">
+            <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
                 <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
                   <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
                   <button type="submit" class="primary-action">Subir primer Convenio</button>
