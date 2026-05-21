@@ -20,9 +20,9 @@ body {
 	font-family: "Nunito", sans-serif;
 	color: var(--ink);
 	background: radial-gradient(circle at 15% 20%, rgba(157, 198, 163, 0.22),
-		transparent 40%),
+			transparent 40%),
 		radial-gradient(circle at 80% 80%, rgba(255, 216, 184, 0.25),
-		transparent 45%),
+			transparent 45%),
 		linear-gradient(165deg, #fffef9, #f6f1e4 65%, #f5ecde);
 	min-height: 100vh;
 	padding: 18px;
@@ -93,7 +93,8 @@ body {
 	background: #fefaf1;
 }
 
-.menu-toggle, .help-btn {
+.menu-toggle,
+.help-btn {
 	border: 2px solid var(--line);
 	background: var(--orange-100);
 	border-radius: 10px;
@@ -103,9 +104,9 @@ body {
 }
 
 .menu-dropdown li.active-menu {
-    background: var(--primary);
-    color: var(--on-primary);
-    border-left: 5px solid var(--tertiary); 
+	background: var(--primary);
+	color: var(--on-primary);
+	border-left: 5px solid var(--tertiary);
 }
 
 .help-btn {
@@ -152,7 +153,7 @@ body {
 	min-height: 240px;
 }
 
-.menu-dropdown{
+.menu-dropdown {
 	list-style: none;
 	margin: 0;
 	padding: 10px 0;
@@ -161,36 +162,36 @@ body {
 	width: 250px;
 }
 
-.submenu-dropdown{
-    position: absolute;
-    top: 100%;
-    left: 15px; 
+.submenu-dropdown {
+	position: absolute;
+	top: 100%;
+	left: 15px;
 
-    background: #f8f8f8;
+	background: #f8f8f8;
 
-    border: 1px solid #ccc;
-    border-radius: 6px;
+	border: 1px solid #ccc;
+	border-radius: 6px;
 
-    width: 200px; 
+	width: 200px;
 
-    padding: 10px 0;
+	padding: 10px 0;
 
-    list-style: none;
+	list-style: none;
 
-    box-shadow: 4px 4px 0 rgba(63, 58, 52, 0.18);
+	box-shadow: 4px 4px 0 rgba(63, 58, 52, 0.18);
 
-    z-index: 1000;
+	z-index: 1000;
 }
 
-.submenu-dropdown li{
-    padding: 6px 10px; 
-    cursor: pointer;
+.submenu-dropdown li {
+	padding: 6px 10px;
+	cursor: pointer;
 }
 
-.submenu-dropdown li a{
-    text-decoration: none;
-    font-size: 20px;
-    color: inherit;
+.submenu-dropdown li a {
+	text-decoration: none;
+	font-size: 20px;
+	color: inherit;
 	display: block;
 	width: 100%;
 }
@@ -204,7 +205,8 @@ body {
 }
 
 
-.menu-dropdown li:hover, .submenu-dropdown li:hover {
+.menu-dropdown li:hover,
+.submenu-dropdown li:hover {
 	background: var(--mint-100);
 }
 
@@ -271,7 +273,8 @@ body {
 	font-size: 1.6rem;
 }
 
-.calendar-head strong, .calendar-head span {
+.calendar-head strong,
+.calendar-head span {
 	display: block;
 }
 
@@ -300,7 +303,8 @@ body {
 	padding: 12px;
 }
 
-.weekdays, .days-grid {
+.weekdays,
+.days-grid {
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	gap: 8px;
@@ -340,7 +344,8 @@ body {
 	padding: 14px;
 }
 
-.cancel, .ok {
+.cancel,
+.ok {
 	border: none;
 	background: transparent;
 	color: #1f5587;
@@ -371,52 +376,68 @@ body {
 	font-weight: bold;
 }
 
-@media ( max-width : 960px) {
+@media (max-width : 960px) {
 	.content-grid {
 		grid-template-columns: 1fr;
 	}
+
 	.employee-management {
 		grid-template-columns: 1fr;
 	}
+
 	.action-tabs {
 		grid-template-columns: repeat(2, 1fr);
 	}
+
 	.submenu-dropdown {
 		left: 0;
 		top: calc(100% + 8px);
 		width: 300px;
 		z-index: 2;
 	}
+
 	.calendar-panel {
 		max-width: 360px;
 	}
 }
 
-@media ( max-width : 640px) {
+@media (max-width : 640px) {
 	body {
 		padding: 8px;
 	}
+
 	.browser-top {
 		grid-template-columns: 1fr;
 	}
+
 	.browser-icons {
 		order: 2;
 	}
+
 	.search-pill {
 		justify-self: end;
 	}
-	.menu-dropdown, .submenu-dropdown, .notification-card {
+
+	.menu-dropdown,
+	.submenu-dropdown,
+	.notification-card {
 		width: 100%;
 	}
+
 	.top-tools {
 		grid-template-columns: 1fr;
 	}
-	.employee-summary, .current-record {
+
+	.employee-summary,
+	.current-record {
 		display: grid;
 	}
-	.action-tabs, .form-grid {
+
+	.action-tabs,
+	.form-grid {
 		grid-template-columns: 1fr;
 	}
+
 	.primary-action {
 		width: 100%;
 	}
@@ -585,7 +606,7 @@ body {
 	--shadow: rgba(37, 32, 48, 0.24);
 }
 
-@media ( prefers-color-scheme : dark) {
+@media (prefers-color-scheme : dark) {
 	:root {
 		--primary: #b8d3ff;
 		--secondary: #c4d2ea;
@@ -605,64 +626,85 @@ body {
 body {
 	color: var(--on-surface);
 	background: radial-gradient(circle at 14% 12%, rgba(129, 157, 189, 0.32),
-		transparent 44%),
+			transparent 44%),
 		radial-gradient(circle at 86% 84%, rgba(108, 131, 160, 0.28),
-		transparent 50%),
+			transparent 50%),
 		linear-gradient(165deg, #e7edf4, #d9e2ec 58%, #c8d4e1);
 }
 
-.app-shell, .calendar-panel, .notification-card, .menu-dropdown,
-	.submenu-dropdown, .management-card, .worker-form, .login-card {
+.app-shell,
+.calendar-panel,
+.notification-card,
+.menu-dropdown,
+.submenu-dropdown,
+.management-card,
+.worker-form,
+.login-card {
 	background: var(--surface);
 	border-color: var(--outline);
 	border-radius: 10px;
 	box-shadow: 0 14px 28px var(--shadow);
 }
 
-.browser-top, .top-tools {
-	background: linear-gradient(180deg, color-mix(in srgb, var(--primary-soft)
-		65%, var(--surface)), color-mix(in srgb, var(--secondary-soft) 55%,
-		var(--surface)));
+.browser-top,
+.top-tools {
+	background: linear-gradient(180deg, color-mix(in srgb, var(--primary-soft) 65%, var(--surface)), color-mix(in srgb, var(--secondary-soft) 55%,
+				var(--surface)));
 	border-color: var(--outline);
 }
 
-.url-bar, .search-area, .search-pill, .icon-btn {
-	border-color: var(--outline);
-	background: var(--surface);
-	color: var(--on-surface);
-}
-
-.worker-form input, .login-form input, .login-form input,
-	.employee-search input, .employee-action-panel input,
-	.employee-action-panel select, .employee-action-panel textarea {
+.url-bar,
+.search-area,
+.search-pill,
+.icon-btn {
 	border-color: var(--outline);
 	background: var(--surface);
 	color: var(--on-surface);
 }
 
-.employee-list-panel, .employee-detail-panel, .employee-action-panel,
-	.employee-row, .action-tab {
+.worker-form input,
+.login-form input,
+.login-form input,
+.employee-search input,
+.employee-action-panel input,
+.employee-action-panel select,
+.employee-action-panel textarea {
+	border-color: var(--outline);
+	background: var(--surface);
+	color: var(--on-surface);
+}
+
+.employee-list-panel,
+.employee-detail-panel,
+.employee-action-panel,
+.employee-row,
+.action-tab {
 	border-color: var(--outline);
 	background: var(--surface);
 }
 
-.employee-row span, .employee-summary p, .current-record span,
-	.section-kicker {
+.employee-row span,
+.employee-summary p,
+.current-record span,
+.section-kicker {
 	color: var(--secondary);
 }
 
-.employee-row.is-selected, .employee-row:hover {
+.employee-row.is-selected,
+.employee-row:hover {
 	background: color-mix(in srgb, var(--primary-soft) 38%, var(--surface));
 	border-color: var(--primary);
 }
 
-.action-tab.is-active, .action-tab:hover {
+.action-tab.is-active,
+.action-tab:hover {
 	background: var(--primary);
 	border-color: var(--primary);
 	color: var(--on-primary);
 }
 
-.status-pill, .current-record {
+.status-pill,
+.current-record {
 	border-color: var(--outline);
 	background: var(--surface-2);
 	color: var(--primary);
@@ -670,30 +712,42 @@ body {
 
 .primary-action {
 	background: linear-gradient(180deg, var(--primary),
-		color-mix(in srgb, var(--primary) 80%, black));
+			color-mix(in srgb, var(--primary) 80%, black));
 	color: var(--on-primary);
 	border-color: color-mix(in srgb, var(--primary) 65%, black);
 }
 
-.menu-toggle, .help-btn, .worker-form button, .login-form button {
+.menu-toggle,
+.help-btn,
+.worker-form button,
+.login-form button {
 	background: linear-gradient(180deg, var(--primary),
-		color-mix(in srgb, var(--primary) 80%, black));
+			color-mix(in srgb, var(--primary) 80%, black));
 	color: var(--on-primary);
 	border-color: color-mix(in srgb, var(--primary) 65%, black);
 }
 
-.menu-dropdown li:hover, .submenu-dropdown li:hover, .management-card:hover
-	{
+.menu-dropdown li:hover,
+.submenu-dropdown li:hover,
+.management-card:hover {
 	background: color-mix(in srgb, var(--primary-soft) 42%, var(--surface));
 }
 
-.notification-card h2, .management-card h2, .management-title,
-	.login-card h1 {
+.notification-card h2,
+.management-card h2,
+.management-title,
+.login-card h1 {
 	color: var(--primary);
 }
 
-.notification-card p, .management-card p, .login-card p, .weekdays div,
-	#monthLabel, .calendar-head, .cancel, .ok {
+.notification-card p,
+.management-card p,
+.login-card p,
+.weekdays div,
+#monthLabel,
+.calendar-head,
+.cancel,
+.ok {
 	color: var(--secondary);
 }
 
@@ -714,24 +768,29 @@ body {
 	color: var(--primary);
 }
 
-.worker-form input, .login-form input {
+.worker-form input,
+.login-form input {
 	border-color: var(--outline);
 	background: var(--surface);
 	color: var(--on-surface);
 }
 
-@media ( max-width : 640px) {
+@media (max-width : 640px) {
 	body {
 		background: radial-gradient(circle at 18% 10%, rgba(129, 157, 189, 0.34),
-			transparent 48%), linear-gradient(160deg, #e6edf5, #cedae6);
+				transparent 48%), linear-gradient(160deg, #e6edf5, #cedae6);
 	}
+
 	.app-shell {
 		border-radius: 14px;
 		overflow: hidden;
 	}
-	.menu-toggle, .help-btn {
+
+	.menu-toggle,
+	.help-btn {
 		min-height: 44px;
 	}
+
 	.worker-form {
 		padding: 14px;
 	}
@@ -762,7 +821,8 @@ body {
 	align-items: start;
 }
 
-.employee-list-panel, .employee-detail-panel {
+.employee-list-panel,
+.employee-detail-panel {
 	border: 2px solid var(--line);
 	border-radius: 16px;
 	background: #fffdf7;
@@ -776,8 +836,9 @@ body {
 	margin-bottom: 12px;
 }
 
-.employee-list-head h2, .employee-summary h2, .employee-action-panel h3
-	{
+.employee-list-head h2,
+.employee-summary h2,
+.employee-action-panel h3 {
 	margin: 0;
 }
 
@@ -787,8 +848,10 @@ body {
 	font-weight: 800;
 }
 
-.employee-search input, .employee-action-panel input,
-	.employee-action-panel select, .employee-action-panel textarea {
+.employee-search input,
+.employee-action-panel input,
+.employee-action-panel select,
+.employee-action-panel textarea {
 	width: 100%;
 	border: 2px solid var(--line);
 	border-radius: 10px;
@@ -824,13 +887,16 @@ body {
 	font-size: 1rem;
 }
 
-.employee-row span, .employee-summary p, .current-record span,
-	.section-kicker {
+.employee-row span,
+.employee-summary p,
+.current-record span,
+.section-kicker {
 	color: #5a5249;
 	font-weight: 700;
 }
 
-.employee-row.is-selected, .employee-row:hover {
+.employee-row.is-selected,
+.employee-row:hover {
 	background: var(--mint-100);
 	border-color: var(--mint-500);
 }
@@ -884,7 +950,8 @@ body {
 	cursor: pointer;
 }
 
-.action-tab.is-active, .action-tab:hover {
+.action-tab.is-active,
+.action-tab:hover {
 	background: var(--mint-500);
 	border-color: var(--mint-500);
 	color: #fff;
@@ -995,7 +1062,8 @@ body {
 	color: black;
 }
 
-.schedule-table th, .schedule-table td {
+.schedule-table th,
+.schedule-table td {
 	padding: 16px;
 	border-bottom: 1px solid #eee;
 	font-size: 1.05rem;

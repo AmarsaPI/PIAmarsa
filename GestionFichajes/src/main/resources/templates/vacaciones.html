@@ -37,7 +37,7 @@
 </style>
 </head>
 
-<body>
+<body th:data-home="@{/index}">
 	<main class="app-shell">
 		<header class="browser-top"> </header>
 
@@ -56,7 +56,7 @@
 			</div>
 
 			<div id="logo-amarsa">
-				<a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" /></a>
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
 			</div>
 
 			<div class="content-grid">

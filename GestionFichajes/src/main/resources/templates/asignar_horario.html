@@ -1,111 +1,108 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Asignación Mensual de Horarios - Panel Admin</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Asignación Mensual de Horarios - Panel Admin</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link
-	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
-	rel="stylesheet" />
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-<link
-	href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
-	rel="stylesheet" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
 
-<link rel="stylesheet" th:href="@{/styles.css}" />
+	<link rel="stylesheet" th:href="@{/styles.css}" />
 
-<style>
-#calendar {
-	background: white;
-	padding: 15px;
-	border-radius: 8px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
+	<style>
+		#calendar {
+			background: white;
+			padding: 15px;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		}
 
-.employee-badge {
-	cursor: pointer;
-	transition: all 0.2s;
-	border-left: 4px solid transparent;
-}
+		.employee-badge {
+			cursor: pointer;
+			transition: all 0.2s;
+			border-left: 4px solid transparent;
+		}
 
-.employee-badge:hover {
-	background-color: #f0f4f8;
-}
+		.employee-badge:hover {
+			background-color: #f0f4f8;
+		}
 
-.employee-badge.active-emp {
-	background-color: #e2eefc;
-	border-left-color: #0d6efd;
-	font-weight: bold;
-}
+		.employee-badge.active-emp {
+			background-color: #e2eefc;
+			border-left-color: #0d6efd;
+			font-weight: bold;
+		}
 
-.sidebar-scroll {
-	max-height: 500px;
-	overflow-y: auto;
-}
+		.sidebar-scroll {
+			max-height: 500px;
+			overflow-y: auto;
+		}
 
-.fc .fc-highlight {
-	background: rgba(255, 193, 7, 0.35) !important;
-	border: 2px dashed #ffc107 !important;
-}
+		.fc .fc-highlight {
+			background: rgba(255, 193, 7, 0.35) !important;
+			border: 2px dashed #ffc107 !important;
+		}
 
-#previewPlantilla {
-	background-color: #f8f9fa;
-	border-left: 4px solid #198754;
-	border-radius: 4px;
-}
+		#previewPlantilla {
+			background-color: #f8f9fa;
+			border-left: 4px solid #198754;
+			border-radius: 4px;
+		}
 
-.fc-daygrid-event {
-	font-size: 10px !important;
-	display: block !important;
-	padding: 3px 6px !important;
-	margin-top: 2px !important;
-	margin-bottom: 2px !important;
-	border-radius: 4px !important;
-}
+		.fc-daygrid-event {
+			font-size: 10px !important;
+			display: block !important;
+			padding: 3px 6px !important;
+			margin-top: 2px !important;
+			margin-bottom: 2px !important;
+			border-radius: 4px !important;
+		}
 
-.fc-event-title, .fc-event-main {
-	white-space: normal !important;
-	overflow: visible !important;
-	text-overflow: clip !important;
-	word-wrap: break-word !important;
-}
+		.fc-event-title,
+		.fc-event-main {
+			white-space: normal !important;
+			overflow: visible !important;
+			text-overflow: clip !important;
+			word-wrap: break-word !important;
+		}
 
-.fc-daygrid-event-dot {
-	display: none !important;
-}
+		.fc-daygrid-event-dot {
+			display: none !important;
+		}
 
-.fc-daygrid-day-frame {
-	min-height: 100px !important;
-}
+		.fc-daygrid-day-frame {
+			min-height: 100px !important;
+		}
 
-.fc-daygrid-day-events {
-	min-height: 3em !important;
-}
+		.fc-daygrid-day-events {
+			min-height: 3em !important;
+		}
 
-.content-grid-admin {
-	display: grid;
-	grid-template-columns: 260px 1fr;
-	gap: 20px;
-	padding: 20px;
-}
+		.content-grid-admin {
+			display: grid;
+			grid-template-columns: 260px 1fr;
+			gap: 20px;
+			padding: 20px;
+		}
 
-.fc-v-event, .fc-daygrid-block-event {
-    background-color: #0d6efd !important;
-    border-color: #0a58ca !important; 
-}
+		.fc-v-event,
+		.fc-daygrid-block-event {
+			background-color: #0d6efd !important;
+			border-color: #0a58ca !important;
+		}
 
-.fc-bg-event {
-    background: rgba(13, 110, 253, 0.3) !important;
-}
-</style>
+		.fc-bg-event {
+			background: rgba(13, 110, 253, 0.3) !important;
+		}
+	</style>
 </head>
-<body>
+
+<body th:data-home="@{/index}">
 	<main class="app-shell">
 		<section class="workspace">
 
@@ -118,11 +115,8 @@
 				<button class="help-btn">?</button>
 			</div>
 
-			<div id="logo-amarsa"
-				style="text-align: left; margin: 0 0 20px 20px;">
-				<a th:href="@{/index}"> <img th:src="@{/logo.png}" alt="Logo"
-					class="brand-logo" style="max-height: 55px;" />
-				</a>
+			<div id="logo-amarsa" style="text-align: left; margin: 0 0 20px 20px;">
+				<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
 			</div>
 
 			<div class="content-grid-admin">
@@ -131,11 +125,11 @@
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
 							<li data-submenu="none"><a th:href="@{/fichar}"
-								style="text-decoration: none; color: inherit;">Fichar</a></li>
+									style="text-decoration: none; color: inherit;">Fichar</a></li>
 							<li data-submenu="none"><a th:href="@{/horario_personal}"
-								style="text-decoration: none; color: inherit;">Horario</a></li>
+									style="text-decoration: none; color: inherit;">Horario</a></li>
 							<li data-submenu="none"><a th:href="@{/vacaciones}"
-								style="text-decoration: none; color: inherit;">Vacaciones y
+									style="text-decoration: none; color: inherit;">Vacaciones y
 									permisos</a></li>
 							<li data-submenu="none">Perfil</li>
 							<li data-submenu="subMenu_gestion">Gestión
@@ -145,8 +139,7 @@
 									<li class="active-menu">Asignar Horarios</li>
 								</ul>
 							</li>
-							<li><a th:href="@{/logout}"
-								style="color: red; text-decoration: none;">Salir</a></li>
+							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>
 				</section>
@@ -156,9 +149,9 @@
 
 						<div class="col-md-9">
 							<div class="card shadow-sm border-0">
-								<div id="contenedorEmpleadosOculto" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}" style="display: none;">
-									<select id="selectEmpleadoHeader"
-										class="form-select form-select-sm d-inline-block"
+								<div id="contenedorEmpleadosOculto" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"
+									style="display: none;">
+									<select id="selectEmpleadoHeader" class="form-select form-select-sm d-inline-block"
 										style="width: 250px; margin-left: 10px; cursor: pointer;"
 										onchange="seleccionarEmpleadoDesdeHeader(this)">
 										<option value="">👤 Ver Todos los Empleados</option>
@@ -182,35 +175,30 @@
 								</div>
 								<div class="card-body p-2">
 									<div class="mb-3">
-						                <a th:href="@{/crear_plantilla}" class="btn btn-outline-primary btn-sm w-100 fw-bold shadow-sm">
-						                    <i class="bi bi-plus-circle"></i> Crear Nueva Plantilla
-						                </a>
-						            </div>
-									<form id="formAsignacion"
-										onsubmit="procesarAsignacionMasiva(event)">
-										<input type="hidden" name="empleadoId" id="formEmpleadoId"
-											required> <input type="hidden"
-											name="fechaRangoInicio" id="formFechaInicio" required>
-										<input type="hidden" name="fechaRangoFin" id="formFechaFin"
-											required>
+										<a th:href="@{/crear_plantilla}"
+											class="btn btn-outline-primary btn-sm w-100 fw-bold shadow-sm">
+											<i class="bi bi-plus-circle"></i> Crear Nueva Plantilla
+										</a>
+									</div>
+									<form id="formAsignacion" onsubmit="procesarAsignacionMasiva(event)">
+										<input type="hidden" name="empleadoId" id="formEmpleadoId" required> <input
+											type="hidden" name="fechaRangoInicio" id="formFechaInicio" required>
+										<input type="hidden" name="fechaRangoFin" id="formFechaFin" required>
 
 										<div class="mb-3">
-										    <label class="form-label fw-bold small">Modelo Semanal</label>
-										    
-										    <input type="text" 
-										           id="buscadorPlantillasLateral" 
-										           class="form-select form-select-sm" 
-										           list="listaPlantillasLateral" 
-										           placeholder="🔍 Busca o selecciona plantilla..."
-										           onchange="detectarPlantillaSeleccionada(this.value)">
-										
-										    <datalist id="listaPlantillasLateral">
-										        <option th:each="plan : ${plantillas}" 
-										                th:data-id="${plan.id}" 
-										                th:value="${plan.nombrePlantilla}"></option>
-										    </datalist>
-										
-										    <input type="hidden" name="plantillaId" id="selectPlantillas" required>
+											<label class="form-label fw-bold small">Modelo Semanal</label>
+
+											<input type="text" id="buscadorPlantillasLateral"
+												class="form-select form-select-sm" list="listaPlantillasLateral"
+												placeholder="🔍 Busca o selecciona plantilla..."
+												onchange="detectarPlantillaSeleccionada(this.value)">
+
+											<datalist id="listaPlantillasLateral">
+												<option th:each="plan : ${plantillas}" th:data-id="${plan.id}"
+													th:value="${plan.nombrePlantilla}"></option>
+											</datalist>
+
+											<input type="hidden" name="plantillaId" id="selectPlantillas" required>
 										</div>
 										<div id="previewPlantilla"
 											class="p-2 mb-3 d-none bg-light border-start border-success border-3">
@@ -220,13 +208,12 @@
 											<ul class="list-unstyled x-small mb-0" id="listaDiasPreview"></ul>
 										</div>
 
-										<button type="submit"
-											class="btn btn-primary w-100 py-2 fw-bold btn-sm">
+										<button type="submit" class="btn btn-primary w-100 py-2 fw-bold btn-sm">
 											<i class="bi bi-check-all"></i> Aplicar al Rango
 										</button>
 										<button type="button" id="btnBorrarSemana"
-											class="btn btn-danger w-100 mt-2 btn-sm"
-											style="display: none;">🗑️ Borrar Rango Seleccionado
+											class="btn btn-danger w-100 mt-2 btn-sm" style="display: none;">🗑️ Borrar
+											Rango Seleccionado
 										</button>
 									</form>
 								</div>
@@ -239,40 +226,36 @@
 		</section>
 	</main>
 
-	<div class="modal fade" id="modalDiaSuelto" tabindex="-1"
-		aria-labelledby="modalDiaSueltoLabel" aria-hidden="true">
+	<div class="modal fade" id="modalDiaSuelto" tabindex="-1" aria-labelledby="modalDiaSueltoLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-sm">
 			<div class="modal-content">
 				<div class="modal-header bg-primary text-white py-2">
 					<h6 class="modal-title" id="modalDiaSueltoLabel">➕ Añadir
 						Turno Individual</h6>
-					<button type="button" class="btn-close btn-close-white"
-						data-bs-dismiss="modal" aria-label="Close"></button>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+						aria-label="Close"></button>
 				</div>
 
 				<div class="modal-body p-3">
 					<div class="mb-2">
-						<label class="form-label fw-bold small mb-1">Empleado</label> <input
-							type="text" id="modalNombreEmpleado"
-							class="form-control form-control-sm" readonly
+						<label class="form-label fw-bold small mb-1">Empleado</label> <input type="text"
+							id="modalNombreEmpleado" class="form-control form-control-sm" readonly
 							style="background-color: #e9ecef;">
 					</div>
 					<div class="mb-2">
 						<label class="form-label fw-bold small mb-1">Fecha
 							Seleccionada</label> <input type="text" id="modalFechaMostrar"
-							class="form-control form-control-sm" readonly
-							style="background-color: #e9ecef;">
+							class="form-control form-control-sm" readonly style="background-color: #e9ecef;">
 					</div>
 
 					<div class="mb-2 pt-2 border-top">
 						<label class="form-label fw-bold small text-primary mb-1">📋
 							¿Cargar desde un modelo?</label> <select id="modalSelectPlantilla"
-							class="form-select form-select-sm"
-							onchange="cargarHorasDesdePlantillaModal(this.value)">
+							class="form-select form-select-sm" onchange="cargarHorasDesdePlantillaModal(this.value)">
 							<option value="">-- Autorellenar con plantilla de un día
 								--</option>
-							<option class="opcion-plantilla" th:each="plan : ${plantillas}"
-								th:value="${plan.id}" th:text="${plan.nombrePlantilla}">
+							<option class="opcion-plantilla" th:each="plan : ${plantillas}" th:value="${plan.id}"
+								th:text="${plan.nombrePlantilla}">
 							</option>
 						</select>
 					</div>
@@ -282,44 +265,38 @@
 					<div class="row g-2">
 						<div class="col-6">
 							<label class="form-label fw-bold small mb-1">Hora Inicio</label>
-							<input type="time" id="modalHoraInicio"
-								class="form-control form-control-sm" value="08:00" required>
+							<input type="time" id="modalHoraInicio" class="form-control form-control-sm" value="08:00"
+								required>
 						</div>
 						<div class="col-6">
-							<label class="form-label fw-bold small mb-1">Hora Fin</label> <input
-								type="time" id="modalHoraFin"
-								class="form-control form-control-sm" value="16:00" required>
+							<label class="form-label fw-bold small mb-1">Hora Fin</label> <input type="time"
+								id="modalHoraFin" class="form-control form-control-sm" value="16:00" required>
 						</div>
 						<div class="col-6">
 							<label class="form-label fw-bold small mb-1">Hora Inicio
-								2</label> <input type="time" id="modalHoraInicio2"
-								class="form-control form-control-sm">
+								2</label> <input type="time" id="modalHoraInicio2" class="form-control form-control-sm">
 						</div>
 						<div class="col-6">
-							<label class="form-label fw-bold small mb-1">Hora Fin 2</label> <input
-								type="time" id="modalHoraFin2"
-								class="form-control form-control-sm">
+							<label class="form-label fw-bold small mb-1">Hora Fin 2</label> <input type="time"
+								id="modalHoraFin2" class="form-control form-control-sm">
 						</div>
 					</div>
 				</div>
 
 				<div class="modal-footer p-2 d-flex justify-content-between">
-					<button type="button" class="btn btn-light btn-sm"
-						data-bs-dismiss="modal">Cancelar</button>
-					<button type="button" class="btn btn-primary btn-sm fw-bold"
-						onclick="guardarTurnoSuelto()">
+					<button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary btn-sm fw-bold" onclick="guardarTurnoSuelto()">
 						<i class="bi bi-save"></i> Guardar Turno
 					</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	<script
-		src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 	<script th:src="@{/common.js}"></script>
 	<script th:src="@{/horarios.js}"></script>
 </body>
+
 </html>

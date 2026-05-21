@@ -31,7 +31,7 @@
 </style>
 </head>
 
-<body>
+<body th:data-home="@{/admin/index}">
 	<main class="app-shell">
 
 		<section class="workspace">
@@ -43,8 +43,7 @@
 				<button class="help-btn">?</button>
 			</div>
 			<div id="logo-amarsa">
-				<a th:href="@{/admin/index}"><img th:src="@{/logo.png}"
-					alt="Logo del gestor" class="brand-logo" /></a>
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
 			</div>
 			<div class="content-grid">
 				<section class="left-zone">

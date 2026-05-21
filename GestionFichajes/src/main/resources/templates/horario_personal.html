@@ -36,7 +36,7 @@
 	src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 </head>
 
-<body>
+<body th:data-home="@{/index}">
 	<main class="app-shell">
 
 		<section class="workspace">
@@ -156,5 +156,6 @@
 	    calendar.render();
 	});
 </script>
+<script th:src="@{/common.js}" defer></script>
 </body>
 </html>

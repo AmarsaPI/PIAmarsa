@@ -2,18 +2,44 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Agregar usuario nuevo - Gestor</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
-	rel="stylesheet" />
-<link rel="stylesheet" th:href="@{/styles.css}" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Agregar usuario nuevo - Gestor</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" th:href="@{/styles.css}" />
+	<style>
+		.back-button-container {
+			margin: 10px 0 20px 20px;
+			text-align: left;
+			color: black;
+		}
+
+		.btn-back {
+			background-color: #1976d2;
+			color: rgb(0, 0, 0);
+			padding: 10px 20px;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 700;
+			display: inline-flex;
+			align-items: center;
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+			transition: background-color 0.3s;
+		}
+
+		.btn-back:hover {
+			background-color: #1565c0;
+		}
+
+		.btn-back span {
+			margin-right: 8px;
+		}
+	</style>
 </head>
 
-<body>
+<body th:data-home="@{/admin/index}">
 	<main class="app-shell">
 
 		<section class="workspace">
@@ -24,30 +50,33 @@
 					Usuario: <span th:text="${usuario.nombre}">Nombre Admin</span>
 				</div>
 			</div>
+			<div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+			</div>
+
+			<div class="back-button-container">
+				<a th:href="@{/admin/listado_usuarios}" class="btn-back">
+					<span>⬅</span> Listado de usuarios
+				</a>
+			</div>
 
 			<section class="form-wrapper">
-				<form class="worker-form" th:action="@{/admin/empleados/guardar}"
-					th:object="${nuevoEmpleado}" method="post"
-					onsubmit="return confirm('¿Estás seguro de que deseas guardar el registro');">
+				<form class="worker-form" th:action="@{/admin/empleados/guardar}" th:object="${nuevoEmpleado}"
+					method="post" onsubmit="return confirm('¿Estás seguro de que deseas guardar el registro');">
 
-					<input type="text" th:field="*{id}" readonly
-						style="background-color: #eee; cursor: not-allowed;"
+					<input type="text" th:field="*{id}" readonly style="background-color: #eee; cursor: not-allowed;"
 						th:if="${nuevoEmpleado.id != null}" /> <label for="nombre">Nombre</label>
-					<input type="text" id="nombre" th:field="*{nombre}" required /> <label
-						for="email">Correo electrónico</label> <input type="email"
-						id="email" th:field="*{email}" required
-						placeholder="ejemplo@gmail.com" autocomplete="off" /> <label
-						for="password">Contraseña</label> <input type="password"
-						id="password" th:field="*{password}"
+					<input type="text" id="nombre" th:field="*{nombre}" required /> <label for="email">Correo
+						electrónico</label> <input type="email" id="email" th:field="*{email}" required
+						placeholder="ejemplo@gmail.com" autocomplete="off" /> <label for="password">Contraseña</label>
+					<input type="password" id="password" th:field="*{password}"
 						th:required="${nuevoEmpleado.id == null}"
 						th:placeholder="${nuevoEmpleado.id == null ? 'Escriba la contraseña para el nuevo usuario' : 'Dejar en blanco para mantener la actual'}"
 						autocomplete="new-password">
 
-					<div
-						style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
 						<div>
-							<label for="rol">Rol del empleado</label> <select id="rol"
-								th:field="*{rol}" required>
+							<label for="rol">Rol del empleado</label> <select id="rol" th:field="*{rol}" required>
 								<option value="">Seleccione un rol...</option>
 								<option value="ADMINISTRADOR">Administrador</option>
 								<option value="EMPLEADO">Empleado</option>
@@ -55,8 +84,8 @@
 						</div>
 
 						<div>
-							<label for="calendario">Calendario Laboral</label> <select
-								id="calendario" th:field="*{calendario}" required>
+							<label for="calendario">Calendario Laboral</label> <select id="calendario"
+								th:field="*{calendario}" required>
 								<option value="">Seleccione un calendario...</option>
 								<option th:each="cal : ${listaCalendarios}" th:value="${cal.id}"
 									th:text="${cal.nombre + ' (' + cal.anyo + ')'}">
@@ -75,6 +104,7 @@
 			</section>
 		</section>
 	</main>
+	<script th:src="@{/common.js}" defer></script>
 </body>
 
 </html>

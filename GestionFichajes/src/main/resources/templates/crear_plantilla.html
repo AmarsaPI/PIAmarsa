@@ -42,7 +42,7 @@
         }
     </style>
 </head>
-<body>
+<body th:data-home="@{/index}">
     <main class="app-shell">
         <section class="workspace p-4">
             
@@ -54,9 +54,7 @@
             </div>
 
             <div id="logo-amarsa" style="text-align: left; margin: 0 0 20px 20px;">
-                <a th:href="@{/index}">
-                    <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
-                </a>
+                <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
             </div>
 
             <div class="content-grid">

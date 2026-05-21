@@ -89,6 +89,7 @@ public class AdminController {
         model.addAttribute("nuevoEmpleado", empleadoExistente);
         Long adminId = (Long) session.getAttribute("adminLogueadoId");
         model.addAttribute("usuario", adminService.findById(adminId));
+        model.addAttribute("listaCalendarios", calendarioService.findAll());
         return "admin/agregar_usuario";
     }
     
@@ -101,7 +102,8 @@ public class AdminController {
         if (result.hasErrors() && !ignorarPassword) {
             Long adminId = (Long) session.getAttribute("adminLogueadoId");
             model.addAttribute("usuario", adminService.findById(adminId));
-            return "admin/agregar_usuario"; 
+            model.addAttribute("listaCalendarios", calendarioService.findAll());
+            return "admin/agregar_usuario";
         }
 
         try {

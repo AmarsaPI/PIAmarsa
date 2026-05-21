@@ -2,123 +2,134 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Listado de Empleados - Gestor</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
-	rel="stylesheet" />
-<link rel="stylesheet" th:href="@{/styles.css}" />
-<style>
-/* Estilos específicos para centrar y dar formato a la tabla */
-.table-container {
-	display: flex;
-	justify-content: center;
-	padding: 20px;
-	margin-top: 20px;
-}
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Listado de Empleados - Gestor</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" th:href="@{/styles.css}" />
+	<style>
+		/* Estilos específicos para centrar y dar formato a la tabla */
+		.table-container {
+			display: flex;
+			justify-content: center;
+			padding: 20px;
+			margin-top: 20px;
+		}
 
-.styled-table {
-	width: 90%;
-	max-width: 1000px;
-	border-collapse: collapse;
-	background-color: white;
-	border-radius: 12px;
-	overflow: hidden;
-	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
+		.styled-table {
+			width: 90%;
+			max-width: 1000px;
+			border-collapse: collapse;
+			background-color: white;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+		}
 
-.styled-table thead tr {
-	background-color: #333;
-	color: white;
-	text-align: left;
-}
+		.styled-table thead tr {
+			background-color: #333;
+			color: white;
+			text-align: left;
+		}
 
-.styled-table th, .styled-table td {
-	padding: 15px 20px;
-}
+		.styled-table th,
+		.styled-table td {
+			padding: 15px 20px;
+		}
 
-.styled-table tbody tr {
-	border-bottom: 1px solid #eee;
-}
+		.styled-table tbody tr {
+			border-bottom: 1px solid #eee;
+		}
 
-.styled-table tbody tr:nth-of-type(even) {
-	background-color: #f9f9f9;
-}
+		.styled-table tbody tr:nth-of-type(even) {
+			background-color: #f9f9f9;
+		}
 
-.btn-action {
-	padding: 6px 12px;
-	border-radius: 6px;
-	text-decoration: none;
-	font-size: 0.9rem;
-	font-weight: 600;
-	margin-right: 5px;
-}
+		.btn-action {
+			padding: 6px 12px;
+			border-radius: 6px;
+			text-decoration: none;
+			font-size: 0.9rem;
+			font-weight: 600;
+			margin-right: 5px;
+		}
 
-.btn-edit {
-	background-color: #e3f2fd;
-	color: #1976d2;
-}
+		.btn-edit {
+			background-color: #e3f2fd;
+			color: #1976d2;
+		}
 
-.btn-delete {
-	background-color: #ffebee;
-	color: #c62828;
-}
+		.btn-delete {
+			background-color: #ffebee;
+			color: #c62828;
+		}
 
-.alerts-container {
-	width: 90%;
-	max-width: 1000px;
-	margin: 20px auto 0 auto; /* Centrado horizontal */
-}
+		.alerts-container {
+			width: 90%;
+			max-width: 1000px;
+			margin: 20px auto 0 auto;
+			/* Centrado horizontal */
+		}
 
-.alert {
-	padding: 15px 20px;
-	border-radius: 8px;
-	margin-bottom: 15px;
-	display: flex;
-	align-items: center;
-	font-weight: 600;
-	animation: slideIn 0.5s ease-out;
-}
+		.alert {
+			padding: 15px 20px;
+			border-radius: 8px;
+			margin-bottom: 15px;
+			display: flex;
+			align-items: center;
+			font-weight: 600;
+			animation: slideIn 0.5s ease-out;
+		}
 
-.alert-icon {
-	margin-right: 12px;
-	font-size: 1.2rem;
-}
+		.alert-icon {
+			margin-right: 12px;
+			font-size: 1.2rem;
+		}
 
-.alert-success {
-	background-color: #e8f5e9;
-	color: #2e7d32;
-	border: 1px solid #c8e6c9;
-}
+		.alert-success {
+			background-color: #e8f5e9;
+			color: #2e7d32;
+			border: 1px solid #c8e6c9;
+		}
 
-.alert-error {
-	background-color: #ffebee;
-	color: #c62828;
-	border: 1px solid #ffcdd2;
-}
+		.alert-error {
+			background-color: #ffebee;
+			color: #c62828;
+			border: 1px solid #ffcdd2;
+		}
 
-.btn-nuevo {
-    transition: background-color 0.3s;
-}
-.btn-nuevo:hover {
-    background-color: #1b5e20 !important;
-}
-</style>
+		td {
+			color: #000000;
+		}
+
+		.btn-nuevo {
+			transition: background-color 0.3s;
+		}
+
+		.btn-nuevo:hover {
+			background-color: #1b5e20 !important;
+		}
+	</style>
 </head>
 
-<body>
+<body th:data-home="@{/admin/index}">
 	<main class="app-shell">
 		<section class="workspace">
 			<!-- Barra superior consistente -->
-			<div class="top-tools">
-				<button class="menu-toggle">☰ Menú ▾</button>
-				<h1 class="management-title">Listado de Plantilla</h1>
-				<div style="margin-left: 15px; font-weight: 600;">
-					Usuario: <span th:text="${usuario.nombre}">Nombre Admin</span>
+			<div class="top-tools"
+				style="display: flex; align-items: center; justify-content: center; position: relative;">
+				<h1 class="management-title" style="color: rgb(255, 255, 255); margin: 0;">
+					Listado de Plantilla
+				</h1>
+				<div style="position: absolute; right: 20px; font-weight: 600; color: rgb(255, 255, 255);">
+					Usuario: <span th:text="${usuario.nombre}">Gestor Principal</span>
 				</div>
+			</div>
+
+			<div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
 			</div>
 
 			<!-- Bloque de Mensajes-->
@@ -132,12 +143,12 @@
 				</div>
 			</div>
 			<div style="width: 90%; max-width: 1000px; margin: 20px auto 0 auto; text-align: right;">
-			    <a th:href="@{/admin/agregar_usuario}" 
-			       style="background-color: #1976d2; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.3s;"
-			       onmouseover="this.style.backgroundColor='#1565c0'" 
-			       onmouseout="this.style.backgroundColor='#1976d2'">
-			       <span style="margin-right: 8px;">➕</span> Añadir nuevo empleado
-			    </a>
+				<a th:href="@{/admin/agregar_usuario}"
+					style="background-color: #1976d2; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.3s;"
+					onmouseover="this.style.backgroundColor='#1565c0'"
+					onmouseout="this.style.backgroundColor='#1976d2'">
+					<span style="margin-right: 8px;">➕</span> Añadir nuevo empleado
+				</a>
 			</div>
 			<!-- Contenedor central de la tabla -->
 			<section class="table-container">
@@ -155,20 +166,22 @@
 							<td th:text="${e.nombre}">Juan Pérez</td>
 							<td th:text="${e.email}">juan@amarsa.com</td>
 							<td th:text="${e.rol}">EMPLEADO</td>
-							<td><a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}"
-								class="btn-edit">Editar</a>
-								<form th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}"
-									method="post" style="display: inline;"
+							<td><a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}" class="btn-edit">Editar</a>
+								<form th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}" method="post"
+									style="display: inline;"
 									onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este empleado?');">
 									<button type="submit" class="btn-delete"
 										style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;">
 										Eliminar</button>
-								</form></td>
+								</form>
+							</td>
 						</tr>
 					</tbody>
 				</table>
 			</section>
 		</section>
 	</main>
+	<script th:src="@{/common.js}" defer></script>
 </body>
+
 </html>

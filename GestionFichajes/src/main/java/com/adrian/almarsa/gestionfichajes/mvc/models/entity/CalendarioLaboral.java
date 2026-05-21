@@ -33,7 +33,7 @@ public class CalendarioLaboral implements Serializable { // Implementa UserDetai
     @Column(nullable = false) 
     private Integer anyo;
     
-    @OneToMany(mappedBy = "calendario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "calendario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Festivo> festivos;
 
     @Column(updatable = false)
