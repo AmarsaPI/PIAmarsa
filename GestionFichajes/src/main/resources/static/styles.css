@@ -151,6 +151,16 @@ body {
 .menu-wrap {
 	position: relative;
 	min-height: 240px;
+	font-family: "Nunito", sans-serif;
+}
+
+.menu-wrap .menu-dropdown,
+.menu-wrap .menu-dropdown li,
+.menu-wrap .menu-dropdown a,
+.menu-wrap .submenu-dropdown,
+.menu-wrap .submenu-dropdown li,
+.menu-wrap .submenu-dropdown a {
+	font-family: inherit;
 }
 
 .menu-dropdown {
@@ -630,6 +640,13 @@ body {
 		radial-gradient(circle at 86% 84%, rgba(108, 131, 160, 0.28),
 			transparent 50%),
 		linear-gradient(165deg, #e7edf4, #d9e2ec 58%, #c8d4e1);
+	font-family: "Nunito", sans-serif;
+}
+
+input,
+select,
+textarea {
+	font-family: "Nunito", sans-serif;
 }
 
 .app-shell,
@@ -1115,4 +1132,61 @@ body {
 .btn-secondary:hover {
 	background-color: #f8f9fa;
 	border-color: #cbd5e1;
+}
+
+/* ---------------------------------------------------------------------------
+   Sidebar flotante para pantallas de admin que NO tienen layout content-grid.
+   Mantiene el contenido principal en su sitio (no lo mueve) y muestra el
+   menú admin (logo + opciones) como un panel fijo a la izquierda.
+--------------------------------------------------------------------------- */
+.admin-floating-sidebar {
+	position: fixed;
+	top: 70px;
+	/* deja sitio para la barra superior */
+	left: 0;
+	width: 220px;
+	max-height: calc(100vh - 80px);
+	overflow-y: auto;
+	padding: 16px;
+	background: rgba(255, 255, 255, 0.95);
+	border-right: 1px solid #e5e7eb;
+	box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
+	z-index: 1000;
+}
+
+.admin-floating-sidebar #logo-amarsa {
+	margin-bottom: 16px;
+}
+
+.admin-floating-sidebar .brand-logo {
+	max-height: 50px;
+}
+
+.admin-floating-sidebar #mainMenu {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.admin-floating-sidebar #mainMenu>li {
+	padding: 10px 8px;
+	cursor: pointer;
+	border-bottom: 1px solid #f1f5f9;
+	color: #1f2937;
+	font-weight: 600;
+}
+
+.admin-floating-sidebar #mainMenu>li:hover {
+	background: #f8fafc;
+}
+
+.admin-floating-sidebar .submenu-dropdown {
+	list-style: none;
+	padding-left: 14px;
+	margin-top: 6px;
+}
+
+.admin-floating-sidebar .submenu-dropdown li {
+	padding: 6px 0;
+	font-weight: 500;
 }

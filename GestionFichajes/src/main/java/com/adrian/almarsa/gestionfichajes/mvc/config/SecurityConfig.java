@@ -22,7 +22,7 @@ public class SecurityConfig {
 	            // Añadimos /admin/** para que no bloquee tu nuevo panel
 	            .requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", 
 	                             "/gestion_empleados/**", "/fichar/**", "/admin/**", "/api/**", "/crear_plantilla", "/asignar_horario", "/plantillas/guardar", "/gestion_plantillas"
-	                             , "/vacaciones/**", "/calendario-global", "/convenio").permitAll()
+	                             , "/vacaciones/**", "/calendario-global", "/convenio/**").permitAll()
 	            
 	            // 2. RECURSOS ESTÁTICOS
 	            // Usamos /** para asegurar que pille carpetas como /css/style.css o /js/app.js

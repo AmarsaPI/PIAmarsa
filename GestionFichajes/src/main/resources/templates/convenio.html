@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Convenio Laboral - HoraFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/styles.css}" />
   <style>
     .content-grid {
@@ -65,7 +68,7 @@
   </style>
 </head>
 
-<body>
+<body th:data-home="@{/admin/index}">
   <main class="app-shell">
 
     <section class="workspace" style="max-width: 100%; overflow-x: hidden;">
@@ -80,23 +83,45 @@
       <div class="content-grid">
         <!-- Menú Lateral -->
         <aside class="left-zone">
-          <div class="menu-wrap">
-            <ul class="menu-dropdown">
-              <li><a th:href="${rol == 'ADMIN' ? '/admin/index' : '/index'}">Inicio</a></li>
-              <li class="active-menu"><a th:href="@{/convenio}">Convenio</a></li>
-
-            </ul>
-          </div>
-
-          <!-- Notificaciones -->
-          <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}"
-            style="margin-top: 20px;">
-            <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
-            <p th:text="${mensajeExito ?: mensajeError}"></p>
-            <div class="choice-row">
-              <button class="yes" style="width:100%" onclick="this.closest('article').remove()">Entendido</button>
+          <div id="logo-amarsa" style=" margin-bottom: 20px;">
+            <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+            <div class="menu-wrap">
+              <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
+                <li><a th:href="@{/admin/gestion}"
+                    style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                    👥 Gestión de Empleados </a></li>
+                <li>
+                  <a th:href="@{/admin/calendarios_laborales}"
+                    style="text-decoration: none; color: #f8f8f8; display: block; padding: 12px; font-weight: 700;">
+                    🗓️ Calendarios Laborales </a>
+                </li>
+                <li style="border-left: 4px solid #007bff;"><a th:href="@{/convenio}"
+                    style="text-decoration: none; color: #007bff; display: block; padding: 12px; font-weight: 600;">
+                    📜 Convenio Laboral </a></li>
+                <li>
+                  <a th:href="@{/admin/asignar_ausencia}"
+                    style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                    Bajas y Permisos
+                  </a>
+                </li>
+                <li><a th:href="@{/admin/informes}"
+                    style="text-decoration: none; color: inherit; display: block; padding: 12px;">
+                    📊 Informes y Horas </a></li>
+                <li><a th:href="@{/logout}"
+                    style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
+                    🚪 Cerrar Sesión </a></li>
+              </ul>
             </div>
-          </article>
+
+            <!-- Notificaciones -->
+            <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}"
+              style="margin-top: 20px;">
+              <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
+              <p th:text="${mensajeExito ?: mensajeError}"></p>
+              <div class="choice-row">
+                <button class="yes" style="width:100%" onclick="this.closest('article').remove()">Entendido</button>
+              </div>
+            </article>
         </aside>
 
         <!-- Visor Central -->
@@ -138,6 +163,7 @@
       </div>
     </section>
   </main>
+  <script th:src="@{/common.js}"></script>
 </body>
 
 </html>

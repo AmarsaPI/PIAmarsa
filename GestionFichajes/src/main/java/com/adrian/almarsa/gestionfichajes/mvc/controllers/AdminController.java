@@ -54,12 +54,11 @@ public class AdminController {
         return "admin/index"; 
     }
     
-    @GetMapping("/admin/gestion")
-    public String mostrarGestionAdmin(HttpSession session, Model model) {
+    @GetMapping("redirect:/admin/listado_usuarios")
+    public String mostrarGestionAdmin(HttpSession session) {
         if (!esAdminPuro(session)) return "redirect:/login";
-        Long adminId = (Long) session.getAttribute("adminLogueadoId");
-        model.addAttribute("usuario", adminService.findById(adminId));
-        return "admin/gestion"; 
+        // El template "admin/gestion" no existe — cambio por listado_usuarios
+        return "redirect:/admin/listado_usuarios";
     }
     
     @GetMapping("/admin/agregar_usuario")

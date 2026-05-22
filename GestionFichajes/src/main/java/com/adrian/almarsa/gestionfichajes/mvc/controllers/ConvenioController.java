@@ -45,8 +45,9 @@ public class ConvenioController {
             return "redirect:/convenio";
         }
 
-        if (archivo.isEmpty() || !"application/pdf".equals(archivo.getContentType())) {
-            flash.addFlashAttribute("mensajeError", "Error: El archivo debe ser un PDF válido.");
+        String nombre = archivo.getOriginalFilename();
+        if (archivo.isEmpty() || nombre == null || !nombre.toLowerCase().endsWith(".pdf")) {
+            flash.addFlashAttribute("mensajeError", "Error: El archivo debe ser un PDF (.pdf).");
             return "redirect:/convenio";
         }
 
