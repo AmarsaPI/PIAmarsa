@@ -118,3 +118,78 @@
     font-weight: 800;
     color: #58CCFB;
 }
+
+/* Responsive refinements for schedule pages */
+.content-grid,
+.schedule-panel,
+.left-zone,
+.schedule-body {
+    min-width: 0;
+}
+
+.content-grid {
+    width: 100%;
+}
+
+.schedule-body {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.schedule-table {
+    min-width: 620px;
+}
+
+.schedule-head {
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.schedule-actions {
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    max-width: 100%;
+    white-space: normal;
+}
+
+@media (max-width: 960px) {
+    .content-grid {
+        flex-direction: column;
+    }
+
+    .left-zone,
+    .schedule-panel {
+        width: 100%;
+    }
+
+    .left-zone {
+        flex-shrink: 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .schedule-panel {
+        padding: 14px;
+        gap: 16px;
+    }
+
+    .schedule-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .schedule-head h2 {
+        font-size: 1.35rem;
+    }
+
+    .schedule-actions {
+        justify-content: stretch;
+    }
+
+    .schedule-actions button {
+        flex: 1 1 100%;
+    }
+}

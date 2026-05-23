@@ -1190,3 +1190,239 @@ textarea {
 	padding: 6px 0;
 	font-weight: 500;
 }
+
+/* Responsive refinements */
+img,
+table {
+	max-width: 100%;
+}
+
+.app-shell,
+.workspace,
+.content-grid,
+#mainContent,
+.main-content,
+.schedule-panel,
+.calendar-panel,
+.employee-detail-panel,
+.employee-list-panel {
+	min-width: 0;
+}
+
+.workspace {
+	padding: clamp(10px, 2vw, 18px);
+}
+
+.brand-logo {
+	max-width: min(220px, 70vw);
+	height: auto;
+}
+
+.top-tools {
+	grid-template-columns: auto minmax(0, auto) minmax(0, 1fr) auto;
+}
+
+.top-tools > div:not(.search-area) {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.content-grid {
+	grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) minmax(260px, 300px);
+	gap: clamp(14px, 2.5vw, 28px);
+}
+
+.menu-dropdown,
+.submenu-dropdown,
+.notification-card,
+.calendar-panel,
+.management-panel {
+	max-width: 100%;
+}
+
+#mainContent,
+.main-content,
+.schedule-body {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.main-content {
+	box-sizing: border-box;
+}
+
+.schedule-head {
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.schedule-table {
+	min-width: 620px;
+}
+
+.schedule-actions {
+	flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+	max-width: 100%;
+	white-space: normal;
+}
+
+@media (max-width : 960px) {
+	.content-grid {
+		grid-template-columns: minmax(0, 1fr);
+		padding-inline: 0;
+	}
+
+	.left-zone,
+	.calendar-panel,
+	.schedule-panel,
+	#mainContent,
+	.main-content,
+	.management-panel {
+		width: 100%;
+	}
+
+	.main-content {
+		margin-left: 0;
+		margin-top: 20px;
+	}
+
+	.menu-wrap {
+		min-height: auto;
+	}
+
+	.calendar-panel {
+		margin-left: 0;
+		max-width: none;
+	}
+
+	.notification-card {
+		margin-top: 16px;
+	}
+
+	.management-panel {
+		grid-column: auto;
+		position: static;
+	}
+
+	.management-options {
+		gap: 16px;
+	}
+
+	.admin-floating-sidebar {
+		position: static;
+		width: 100%;
+		max-height: none;
+		margin-bottom: 16px;
+		border-right: 0;
+		border-bottom: 1px solid #e5e7eb;
+	}
+}
+
+@media (max-width : 720px) {
+	.browser-top {
+		grid-template-columns: auto 1fr;
+	}
+
+	.url-bar {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.search-pill {
+		grid-column: 2;
+		justify-self: end;
+	}
+
+	.schedule-panel,
+	.worker-form,
+	.login-card,
+	.employee-list-panel,
+	.employee-detail-panel,
+	.employee-action-panel {
+		padding: 14px;
+	}
+
+	.schedule-actions {
+		justify-content: stretch;
+	}
+
+	.schedule-actions button,
+	.primary-action {
+		flex: 1 1 180px;
+	}
+}
+
+@media (max-width : 640px) {
+	.workspace {
+		min-height: auto;
+	}
+
+	.top-tools {
+		grid-template-columns: 1fr auto;
+	}
+
+	.top-tools > div:not(.search-area) {
+		grid-column: 1 / -1;
+		margin-left: 0 !important;
+		order: 2;
+	}
+
+	.search-area {
+		grid-column: 1 / -1;
+		order: 3;
+	}
+
+	.help-btn {
+		justify-self: end;
+	}
+
+	.browser-icons {
+		flex-wrap: wrap;
+	}
+
+	.menu-dropdown li,
+	.submenu-dropdown li {
+		font-size: 1rem;
+	}
+
+	.submenu-dropdown {
+		position: static;
+		width: 100%;
+		margin-top: 8px;
+	}
+
+	.notification-card h2 {
+		font-size: 1.35rem;
+	}
+
+	.notification-card p,
+	.choice-row button {
+		font-size: 1.05rem;
+	}
+
+	.calendar-head,
+	.schedule-head h2 {
+		font-size: 1.25rem;
+	}
+
+	.weekdays,
+	.days-grid {
+		gap: 4px;
+	}
+
+	.days-grid div {
+		width: 28px;
+		height: 28px;
+	}
+
+	.management-options {
+		grid-template-columns: 1fr;
+		padding-inline: 0;
+	}
+}
