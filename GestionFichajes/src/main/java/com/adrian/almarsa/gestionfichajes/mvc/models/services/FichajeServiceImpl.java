@@ -1,5 +1,7 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,4 +104,28 @@ public class FichajeServiceImpl implements IFichajeService {
         return fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId)
                          .orElse(null); // Si no hay nada abierto, devuelve null
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha) {
+        List<Fichaje> fichajesDelDia = fichajeDAO.findByEmpleadoIdAndFecha(empleadoId, fecha);
+        
+        if (fichajesDelDia == null || fichajesDelDia.isEmpty()) {
+            return 0.0; // Si no hay fichajes, trabajó 0 horas
+        }
+        
+        long minutosTotales = 0;
+        
+        // 2. Recorremos los fichajes del día sumando los intervalos de tiempo
+        for (Fichaje f : fichajesDelDia) {
+            if (f.getFechaEntrada() != null && f.getFechaSalida() != null) {
+                long minutos = ChronoUnit.MINUTES.between(f.getFechaEntrada(), f.getFechaSalida());
+                minutosTotales += minutos;
+            }
+        }
+        
+        // 3. Pasamos los minutos a horas decimales (ej: 45 min -> 0.75 horas)
+        return minutosTotales / 60.0;
+    }
+    
 }

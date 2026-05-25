@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calendario Global - HoraFlow</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="stylesheet" th:href="@{/styles.css}" />
+<link rel="stylesheet" th:href="@{/horario.css}" />
+
+<style>
+#mainContent { 
+	padding: 0px 20px 20px 20px !important; 
+	overflow-y: auto; 
+	flex-grow: 1; 
+}
+.dia-baja-medica {
+        background-color: #ffc107 !important; 
+        color: white !important;
+    }
+
+.dia-permiso {
+    background-color: #17a2b8 !important; /* Azul Turquesa / Cyan */
+    color: white !important;
+}
+
+.dia-aprobado {
+    background-color: #28a745 !important; /* Verde */
+    color: white !important;
+}
+.dia-pendiente {
+    background-color: #007bff !important; /* Azul */
+    color: white !important;
+}
+
+.dia-rechazado {
+    background-color: #e2e3e5 !important; 
+    color: #6c757d !important;             
+}
+
+.admin-click { 
+	cursor: pointer; 
+	transition: transform 0.1s; 
+}
+.admin-click:hover { 
+	transform: scale(1.1); 
+	box-shadow: 0 0 5px rgba(0,0,0,0.3); 
+}
+
+/* Estilos del cuadrante */
+.gantt-table th, .gantt-table td { 
+	padding: 6px 4px !important; 
+	text-align: center; 
+	font-size: 0.85em; 
+	border: 1px solid #e9ecef !important; 
+}
+.gantt-table th.col-empleado, .gantt-table td.col-empleado { 
+	text-align: left; 
+	font-weight: 600; 
+	min-width: 180px; 
+	background-color: #f8f9fa; 
+	position: sticky; 
+	left: 0; 
+	z-index: 1; 
+}
+.leyenda-item { 
+	display: inline-flex; 
+	align-items: center; 
+	margin-right: 15px; 
+	font-size: 0.9em; 
+}
+.leyenda-color { 
+	width: 16px; 
+	height: 16px; 
+	border-radius: 4px; 
+	margin-right: 6px; 
+}
+
+/* Estilo para los botones de las flechas */
+.btn-nav-mes {
+	padding: 4px 12px;
+	font-weight: bold;
+}
+
+.dia-aprobado.admin-click:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+</style>
+</head>
+
+<body>
+	<main class="app-shell">
+		<header class="browser-top"> </header>
+		
+		<section class="workspace">
+			<div class="top-tools">
+				<button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+				<div style="margin-left: 15px; font-weight: 600;">
+					Usuario: <span th:text="${usuario.nombre}">Nombre</span>
+				</div>
+				<div class="search-area"><span>🔍</span> <input type="text" placeholder="search" /></div>
+				<button class="help-btn">?</button>
+			</div>
+
+			<div id="logo-amarsa">
+				<a th:href="@{/index}"><img th:src="@{/logo.png}" alt="Logo" class="brand-logo" /></a>
+			</div>
+
+			<div class="content-grid">
+				<section class="left-zone">
+					<div class="menu-wrap">
+						<ul id="mainMenu" class="menu-dropdown">
+							<li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration: none; color: inherit;">Fichar</a></li>
+							<li data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario</a></li>
+							<li data-submenu="none"><a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit;">Vacaciones y permisos</a></li>
+							<li data-submenu="none" class="active-menu" style="font-weight: bold; color: #0d6efd;">📅 Calendario Plantilla</li>
+							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+						</ul>
+					</div>
+				</section>
+
+				<div id="mainContent">
+					<div class="schedule-head m-0 pt-1 pb-2 d-flex justify-content-between align-items-center">
+						<h2 class="m-0">📅 Calendario de Vacaciones (<span th:text="${anio}">2026</span>)</h2>
+						
+						<div class="d-flex align-items-center gap-2 bg-white p-1 rounded border shadow-sm">
+							<a th:href="@{/vacaciones/calendario-global(mes=${mesAnterior})}" class="btn btn-outline-primary btn-sm btn-nav-mes">
+								<i class="bi bi-chevron-left"></i>
+							</a>
+							
+							<span class="fw-bold px-3 text-center text-dark" style="min-width: 140px; font-size: 0.95rem;" th:text="${nombreMes}">MAYO</span>
+							
+							<a th:href="@{/vacaciones/calendario-global(mes=${mesSiguiente})}" class="btn btn-outline-primary btn-sm btn-nav-mes">
+								<i class="bi bi-chevron-right"></i>
+							</a>
+						</div>
+					</div>
+
+					<div class="bg-white p-2 rounded shadow-sm mb-3 d-flex align-items-center justify-content-between">
+						<div>
+							<span class="fw-bold small me-3 text-muted">LEYENDA:</span>
+							<div class="leyenda-item"><div class="leyenda-color dia-aprobado"></div><span>Aprobadas</span></div>
+							<div class="leyenda-item"><div class="leyenda-color dia-pendiente"></div><span>Pendientes</span></div>
+							<div class="leyenda-item"><div class="leyenda-color dia-baja-medica"></div><span>Baja Médica</span></div>
+							<div class="leyenda-item"><div class="leyenda-color dia-permiso"></div><span>Permiso</span></div>
+							<div class="leyenda-item"><div class="leyenda-color dia-rechazado"></div><span>Anuladas / Rechazadas</span></div>
+						</div>
+						<div th:if="${esAdmin}" class="badge bg-dark px-2 py-1">✨ Modo Administrador Activo</div>
+					</div>
+
+					<div class="card shadow-sm border-0 p-3 bg-white">
+						<div class="table-responsive">
+							<table class="table gantt-table table-hover align-middle mb-0">
+								<thead class="table-light">
+									<tr>
+										<th class="col-empleado">Empleado</th>
+										<th th:each="dia : ${#numbers.sequence(1, diasDelMes)}" th:text="${dia}">1</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:if="${#lists.isEmpty(plantilla)}">
+										<td th:colspan="${diasDelMes + 1}" class="text-center text-muted py-3">No hay empleados en plantilla.</td>
+									</tr>
+									<tr th:each="emp : ${plantilla}">
+										<td class="col-empleado">
+											<i class="bi bi-person-fill text-secondary me-1"></i>
+											<span th:text="${emp.nombre}">Juan Pérez</span>
+										</td>
+										
+										<td th:each="dia : ${#numbers.sequence(1, diasDelMes)}"
+										    th:with="claseColor=${mapaVacaciones.get(emp.id).get(dia)}, ausId=${mapaIds.get(emp.id).get(dia)}"
+										    th:class="${claseColor} + ' ' + (${esAdmin && claseColor != null && claseColor != ''} ? 'admin-click' : '')"
+										    th:attr="data-ausencia-id=${ausId}, data-empleado=${emp.nombre}, data-estado=${claseColor}"
+										    th:onclick="${esAdmin && claseColor != null && claseColor != ''} ? 'abrirGestor(this)' : ''">
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div th:if="${esAdmin}" class="card shadow-sm border-0 p-4 bg-white mt-4">
+						<div class="d-flex align-items-center mb-3">
+							<h4 class="m-0 fw-bold text-dark">
+								<i class="bi bi-inbox-fill text-primary me-2"></i> Bandeja de Solicitudes Pendientes
+							</h4>
+							<span class="badge bg-primary ms-2 fs-6" th:text="${#lists.size(solicitudesPendientes)}">0</span>
+						</div>
+
+						<div th:if="${#lists.isEmpty(solicitudesPendientes)}" class="alert alert-success m-0 py-3 text-center border-0 bg-light">
+							<i class="bi bi-check-circle-fill text-success fs-4 d-block mb-1"></i>
+							<span class="fw-bold text-secondary">¡Al día! No quedan solicitudes pendientes de aprobar.</span>
+						</div>
+
+						<div th:if="${!#lists.isEmpty(solicitudesPendientes)}" class="table-responsive">
+							<table class="table table-hover align-middle mb-0 border">
+								<thead class="table-light">
+									<tr>
+										<th>Empleado</th>
+										<th>Fecha Inicio</th>
+										<th>Fecha Fin</th>
+										<th class="text-center">Acciones Rápidas</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="sol : ${solicitudesPendientes}">
+										<td class="fw-bold text-dark">
+											<i class="bi bi-person-fill text-secondary me-2"></i>
+											<span th:text="${sol.empleado.nombre}">Juan Pérez</span>
+										</td>
+										<td th:text="${#temporals.format(sol.fechaInicio, 'dd/MM/yyyy')}">01/05/2026</td>
+										<td th:text="${#temporals.format(sol.fechaFin, 'dd/MM/yyyy')}">15/05/2026</td>
+										<td class="text-center">
+											<form th:action="@{/admin/vacaciones/resolver}" method="post" class="d-inline-flex gap-2">
+												<input type="hidden" name="ausenciaId" th:value="${sol.id}">
+												
+												<button type="submit" name="accion" value="APROBAR" class="btn btn-success btn-sm fw-bold px-3">
+													<i class="bi bi-check-lg"></i> Aprobar
+												</button>
+												
+												<button type="submit" name="accion" value="RECHAZAR" class="btn btn-warning btn-sm fw-bold text-white px-3">
+													<i class="bi bi-x-lg"></i> Rechazar
+												</button>
+											</form>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<div th:if="${esAdmin}" class="modal fade" id="modalGestion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title fw-bold" id="modalTitulo">Gestionar Ausencia</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="small mb-1">Trabajador: <strong id="modalNombreEmp">Empleado</strong></p>
+        
+        <div id="bloqueResolver" class="mt-3">
+            <form th:action="@{/admin/vacaciones/resolver}" method="post" class="d-flex gap-2 justify-content-center">
+                <input type="hidden" name="ausenciaId" class="input-ausencia-id">
+                <button type="submit" name="accion" value="APROBAR" class="btn btn-success btn-sm fw-bold">Aprobar</button>
+                <button type="submit" name="accion" value="RECHAZAR" class="btn btn-warning btn-sm fw-bold text-white">Rechazar</button>
+            </form>
+        </div>
+
+        <div id="bloqueAnular" class="mt-3" style="display: none;">
+            <form th:action="@{/admin/vacaciones/resolver}" method="post">
+                <input type="hidden" name="ausenciaId" class="input-ausencia-id">
+                <button type="submit" name="accion" value="RECHAZAR" class="btn btn-danger btn-sm fw-bold w-100" onclick="return confirm('¿Seguro que deseas anular y rechazar este período ya aprobado?')">
+                    <i class="bi bi-x-circle"></i> Anular y Rechazar
+                </button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/common.js}"></script>
+
+<script th:if="${esAdmin}">
+function abrirGestor(celda) {
+    const id = celda.getAttribute('data-ausencia-id');
+    const nombre = celda.getAttribute('data-empleado');
+    const estado = celda.getAttribute('data-estado'); // 'dia-pendiente', 'dia-aprobado', 'dia-baja-medica', etc.
+    
+    // Asignamos el ID de la ausencia a los inputs ocultos
+    const inputsId = document.querySelectorAll('.input-ausencia-id');
+    inputsId.forEach(input => input.value = id);
+    
+    document.getElementById('modalNombreEmp').innerText = nombre;
+    
+    // 🌟 LÓGICA DE TRAZABILIDAD:
+    if (estado === 'dia-pendiente') {
+        document.getElementById('modalTitulo').innerText = "Resolver Solicitud";
+        document.getElementById('bloqueResolver').style.display = 'block';
+        document.getElementById('bloqueAnular').style.display = 'none';
+    } else {
+        // Si ya está aprobada, es una baja o es un permiso: permitimos moverla a RECHAZADA de forma segura
+        document.getElementById('modalTitulo').innerText = "Modificar Estado";
+        document.getElementById('bloqueResolver').style.display = 'none';
+        document.getElementById('bloqueAnular').style.display = 'block';
+    }
+    
+    var myModal = new bootstrap.Modal(document.getElementById('modalGestion'));
+    myModal.show();
+}
+</script>
+</body>
+</html>

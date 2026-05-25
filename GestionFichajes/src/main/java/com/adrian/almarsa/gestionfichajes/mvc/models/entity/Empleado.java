@@ -2,6 +2,7 @@ package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,6 +60,10 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
+    
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Contrato> contratos = new ArrayList<>();
+    
 
     // --- Métodos obligatorios de UserDetails para seguridad ---
 
@@ -105,4 +110,12 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     public void setRol(Rol rol) { this.rol = rol; }
     public CalendarioLaboral getCalendario() { return calendario; }
     public void setCalendario(CalendarioLaboral calendario) { this.calendario = calendario; }
+    
+    public List<Contrato> getContratos() {
+        return contratos;
+    }
+
+    public void setContratos(List<Contrato> contratos) {
+        this.contratos = contratos;
+    }
 }

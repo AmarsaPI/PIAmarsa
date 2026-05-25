@@ -1,0 +1,307 @@
+package com.adrian.almarsa.gestionfichajes.mvc.controllers;
+
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Ausencia;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.TipoAusencia;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAusenciaService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.EstadoAusencia;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+public class VacacionesController {
+
+    @Autowired
+    private IAusenciaService ausenciaService;
+    
+    @Autowired
+    private IEmpleadoService empleadoService;
+
+    @GetMapping("/vacaciones")
+    public String verVacaciones(Model model, HttpSession session) {
+        Long id = (Long) session.getAttribute("usuarioLogueadoId");
+        if (id == null) {
+            return "redirect:/login";
+        }
+
+        Empleado empleadoLogueado = empleadoService.findById(id);
+        if (empleadoLogueado == null) {
+            return "redirect:/login";
+        }
+
+        List<Ausencia> solicitudes = ausenciaService.obtenerPorEmpleadoYTipo(empleadoLogueado.getId(), TipoAusencia.VACACIONES);
+        
+        LocalDate hoy = LocalDate.now();
+        int diasTotales = 30;
+
+        long diasDisfrutados = solicitudes.stream()
+                .filter(a -> a.getEstado() == EstadoAusencia.APROBADA)
+                .filter(a -> a.getFechaFin().isBefore(hoy))
+                .mapToLong(a -> java.time.temporal.ChronoUnit.DAYS.between(a.getFechaInicio(), a.getFechaFin()) + 1)
+                .sum();
+
+        long diasReservados = solicitudes.stream()
+                .filter(a -> a.getEstado() == EstadoAusencia.APROBADA)
+                .filter(a -> !a.getFechaFin().isBefore(hoy))
+                .mapToLong(a -> java.time.temporal.ChronoUnit.DAYS.between(a.getFechaInicio(), a.getFechaFin()) + 1)
+                .sum();
+        
+        long diasDisponibles = diasTotales - diasDisfrutados - diasReservados;
+
+        model.addAttribute("usuario", empleadoLogueado);
+        model.addAttribute("solicitudes", solicitudes);
+        model.addAttribute("diasTotales", diasTotales);
+        model.addAttribute("diasDisfrutados", diasDisfrutados);
+        model.addAttribute("diasReservados", diasReservados);
+        model.addAttribute("diasDisponibles", diasDisponibles);
+
+        return "vacaciones";
+    }
+
+    @PostMapping("/vacaciones/solicitar")
+    public String procesarSolicitud(@RequestParam("fechaInicio") String inicioStr,
+                                    @RequestParam("fechaFin") String finStr,
+                                    @RequestParam(value = "motivo", required = false) String motivo,
+                                    HttpSession session,
+                                    RedirectAttributes redirectAttributes) {
+        
+        Long id = (Long) session.getAttribute("usuarioLogueadoId");
+        if (id == null) {
+            return "redirect:/login";
+        }
+        
+        Empleado empleadoLogueado = empleadoService.findById(id); 
+        if (empleadoLogueado == null) {
+            return "redirect:/login";
+        }
+
+        LocalDate inicio = LocalDate.parse(inicioStr);
+        LocalDate fin = LocalDate.parse(finStr);
+
+        // 1. Validación cronológica básica
+        if (inicio.isAfter(fin)) {
+            redirectAttributes.addFlashAttribute("mensajeError", "❌ La fecha de inicio no puede ser posterior a la de fin.");
+            return "redirect:/vacaciones";
+        }
+
+        // 🌟 2. EVITAR DUPLICADOS Y SOLAPAMIENTOS 🌟
+        try {
+            // Obtenemos todo el histórico de ausencias del empleado que solicita
+            List<Ausencia> ausenciasExistentes = ausenciaService.obtenerAusenciasPorEmpleado(empleadoLogueado);
+
+            // Verificamos si la nueva petición choca con días ya reservados
+            boolean seSolapa = ausenciasExistentes.stream()
+                .filter(a -> a.getEstado() == EstadoAusencia.APROBADA || a.getEstado() == EstadoAusencia.PENDIENTE)
+                .anyMatch(a -> {
+                    // Lógica de colisión de fechas: (InicioA <= FinB) && (FinA >= InicioB)
+                    return !inicio.isAfter(a.getFechaFin()) && !fin.isBefore(a.getFechaInicio());
+                });
+
+            if (seSolapa) {
+                redirectAttributes.addFlashAttribute("mensajeError", "⚠️ Ya tienes una solicitud Pendiente o Aprobada que se solapa con estas fechas.");
+                return "redirect:/vacaciones";
+            }
+
+            // 3. Si todo está limpio, guardamos
+            Ausencia nuevaAusencia = new Ausencia();
+            nuevaAusencia.setEmpleado(empleadoLogueado);
+            nuevaAusencia.setFechaInicio(inicio);
+            nuevaAusencia.setFechaFin(fin);
+            nuevaAusencia.setTipo(TipoAusencia.VACACIONES);
+            nuevaAusencia.setObservaciones(motivo);
+            nuevaAusencia.setEstado(EstadoAusencia.PENDIENTE);
+
+            ausenciaService.registrarAusencia(nuevaAusencia);
+            redirectAttributes.addFlashAttribute("mensajeExito", "🚀 Solicitud de vacaciones enviada correctamente.");
+            
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "💥 Error al procesar la solicitud: " + e.getMessage());
+        }
+
+        return "redirect:/vacaciones";
+    }
+    
+    @PostMapping("/vacaciones/limpiar-rechazadas")
+    public String limpiarSolicitudesRechazadas(HttpSession session, RedirectAttributes redirectAttributes) {
+        Long id = (Long) session.getAttribute("usuarioLogueadoId");
+        if (id == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            ausenciaService.borrarRechazadasPorEmpleadoYTipo(id, TipoAusencia.VACACIONES);
+            redirectAttributes.addFlashAttribute("mensajeExito", "🧹 Historial de solicitudes rechazadas limpiado.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "💥 Error al limpiar el historial: " + e.getMessage());
+        }
+
+        return "redirect:/vacaciones";
+    }
+    
+    @GetMapping("/vacaciones/calendario-global")
+    public String verCalendarioGlobal(@RequestParam(value = "mes", required = false) Integer mes,
+                                     Model model, HttpSession session) {
+        Long idLogueado = (Long) session.getAttribute("usuarioLogueadoId");
+        if (idLogueado == null) return "redirect:/login";
+        
+        Empleado usuarioLogueado = empleadoService.findById(idLogueado);
+        model.addAttribute("usuario", usuarioLogueado);
+        
+        boolean esAdmin = usuarioLogueado.getRol() != null && usuarioLogueado.getRol().name().equals("ADMINISTRADOR");
+        model.addAttribute("esAdmin", esAdmin);
+
+        int anioActual = LocalDate.now().getYear();
+        model.addAttribute("anio", anioActual);
+
+        // 🌟 LÓGICA: Si no viene mes por la URL, usamos el mes actual del sistema
+        if (mes == null) {
+            mes = LocalDate.now().getMonthValue();
+        }
+        model.addAttribute("mesActual", mes);
+
+        // 🌟 CÁLCULO DE MES ANTERIOR Y SIGUIENTE PARA LAS FLECHAS
+        int mesAnterior = (mes == 1) ? 12 : mes - 1;
+        int mesSiguiente = (mes == 12) ? 1 : mes + 1;
+        model.addAttribute("mesAnterior", mesAnterior);
+        model.addAttribute("mesSiguiente", mesSiguiente);
+
+        // Obtener los días totales que tiene el mes seleccionado
+        int diasDelMes = LocalDate.of(anioActual, mes, 1).lengthOfMonth();
+        model.addAttribute("diasDelMes", diasDelMes);
+
+        // Lista manual de nombres para pintar el título principal
+        List<String> nombresMeses = new ArrayList<>();
+        nombresMeses.add("ENERO"); nombresMeses.add("FEBRERO"); nombresMeses.add("MARZO");
+        nombresMeses.add("ABRIL"); nombresMeses.add("MAYO"); nombresMeses.add("JUNIO");
+        nombresMeses.add("JULIO"); nombresMeses.add("AGOSTO"); nombresMeses.add("SEPTIEMBRE");
+        nombresMeses.add("OCTUBRE"); nombresMeses.add("NOVIEMBRE"); nombresMeses.add("DICIEMBRE");
+        
+        model.addAttribute("nombreMes", nombresMeses.get(mes - 1));
+
+        // Carga de la plantilla completa
+        List<Empleado> plantilla = empleadoService.findAll();
+        model.addAttribute("plantilla", plantilla);
+
+        // Estructuras de mapas para las celdas
+        Map<Long, Map<Integer, String>> mapaVacaciones = new HashMap<>();
+        Map<Long, Map<Integer, Long>> mapaIds = new HashMap<>();
+        
+        List<Ausencia> solicitudesPendientes = new ArrayList<>();
+
+        for (Empleado emp : plantilla) {
+            mapaVacaciones.put(emp.getId(), new HashMap<>());
+            mapaIds.put(emp.getId(), new HashMap<>());
+        }
+
+        for (Empleado emp : plantilla) {
+        	List<Ausencia> ausencias = ausenciaService.obtenerAusenciasPorEmpleado(emp); // Asegúrate de tener este método en tu servicio
+
+        	for (Ausencia aus : ausencias) {
+        	    if (esAdmin && aus.getEstado() == EstadoAusencia.PENDIENTE && !solicitudesPendientes.contains(aus)) {
+        	        solicitudesPendientes.add(aus);
+        	    }
+        	    
+
+        	    LocalDate curr = aus.getFechaInicio();
+        	    while (!curr.isAfter(aus.getFechaFin())) {
+        	        if (curr.getYear() == anioActual && curr.getMonthValue() == mes) {
+        	            int dia = curr.getDayOfMonth();
+        	            
+        	            String claseColor = "dia-pendiente"; // Azul para pendientes
+        	            
+        	            if (aus.getEstado() == EstadoAusencia.RECHAZADA) {
+        	                claseColor = "dia-rechazado";       // Gray / Trazabilidad
+        	            } else if (aus.getEstado() == EstadoAusencia.APROBADA) {
+        	                if (aus.getTipo() == TipoAusencia.VACACIONES) {
+        	                    claseColor = "dia-aprobado";      // Verde
+        	                } else if (aus.getTipo() == TipoAusencia.BAJA_MEDICA) {
+        	                    claseColor = "dia-baja-medica";   // Amarillo
+        	                } else if (aus.getTipo() == TipoAusencia.PERMISO_RETRIBUIDO) {
+        	                    claseColor = "dia-permiso";       // Azul Turquesa
+        	                }
+        	            }
+        	            
+        	            mapaVacaciones.get(emp.getId()).put(dia, claseColor);
+        	            mapaIds.get(emp.getId()).put(dia, aus.getId());
+        	        }
+        	        curr = curr.plusDays(1);
+        	    }
+        	}
+        }
+
+        model.addAttribute("mapaVacaciones", mapaVacaciones);
+        model.addAttribute("mapaIds", mapaIds);
+        model.addAttribute("solicitudesPendientes", solicitudesPendientes);
+
+        return "calendario_global";
+    }
+
+    @PostMapping("/admin/vacaciones/borrar")
+    public String borrarSolicitudVacaciones(@RequestParam("ausenciaId") Long ausenciaId,
+                                            RedirectAttributes redirectAttributes) {
+        try {
+            Ausencia ausencia = ausenciaService.buscarPorId(ausenciaId);
+            if (ausencia != null) {
+                int mesOrigen = ausencia.getFechaInicio().getMonthValue();
+                
+                // Eliminamos la ausencia de la base de datos
+                // Nota: Asegúrate de que tu servicio tenga un método como 'delete', 'deleteById' o 'eliminar'
+                ausenciaService.eliminarAusencia(ausenciaId);
+                
+                redirectAttributes.addFlashAttribute("mensajeExito", "🗑️ Vacaciones eliminadas correctamente.");
+                
+                // Redirigimos al mismo mes donde estábamos
+                return "redirect:/vacaciones/calendario-global?mes=" + mesOrigen;
+            } else {
+                redirectAttributes.addFlashAttribute("mensajeError", "💥 No se encontró la solicitud a borrar.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "💥 Error al borrar: " + e.getMessage());
+        }
+        
+        return "redirect:/vacaciones/calendario-global";
+    }
+    
+
+    @PostMapping("/admin/vacaciones/resolver")
+    public String resolverSolicitudVacaciones(@RequestParam("ausenciaId") Long ausenciaId,
+                                             @RequestParam("accion") String accion,
+                                             RedirectAttributes redirectAttributes) {
+        try {
+            // 1. Buscamos la solicitud en la base de datos a través del servicio
+            Ausencia ausencia = ausenciaService.buscarPorId(ausenciaId);
+            
+            if (ausencia != null) {
+                // 2. Evaluamos qué botón pulsó el administrador en el modal
+                if ("APROBAR".equals(accion)) {
+                    ausencia.setEstado(EstadoAusencia.APROBADA);
+                    redirectAttributes.addFlashAttribute("mensajeExito", "✅ Vacaciones aprobadas correctamente.");
+                } else if ("RECHAZAR".equals(accion)) {
+                    ausencia.setEstado(EstadoAusencia.RECHAZADA);
+                    redirectAttributes.addFlashAttribute("mensajeExito", "❌ Solicitud de vacaciones rechazada.");
+                }
+                
+                // 3. Guardamos los cambios en la base de datos
+                ausenciaService.registrarAusencia(ausencia); 
+            } else {
+                redirectAttributes.addFlashAttribute("mensajeError", "💥 No se encontró la solicitud seleccionada.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "💥 Error al procesar la decisión: " + e.getMessage());
+        }
+
+        // 4. Redirigimos de vuelta al Cuadrante Anual que acabamos de crear
+        return "redirect:/vacaciones/calendario-global";
+    }
+}
