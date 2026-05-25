@@ -8,20 +8,20 @@
 | 2 | Problema | Gestion dispersa de fichajes, horarios, vacaciones y documentos |
 | 3 | Solucion | Plataforma web centralizada + API + app movil |
 | 4 | Usuarios | Empleado y administrador/gestor |
-| 5 | Funcionalidades | Fichajes, horarios, empleados, vacaciones, calendario, convenio, informes |
+| 5 | Funcionalidades | Fichajes, horarios, empleados, vacaciones, calendario, contratos, convenio, informes |
 | 6 | Arquitectura | Spring Boot, MVC, JPA, PostgreSQL, Thymeleaf, Android |
 | 7 | Base de datos | Entidades principales y relaciones |
 | 8 | Demo web | Login, fichaje, horario, historial |
 | 9 | Demo administracion | Empleados, plantillas, vacaciones y calendario |
 | 10 | App movil | Login y consumo de API REST |
-| 11 | Pruebas y seguridad | Aceptacion, trazabilidad, riesgos detectados y mejoras |
+| 11 | Pruebas, bugs y seguridad | Aceptacion, trazabilidad, bugs corregidos, riesgos detectados y mejoras |
 | 12 | Conclusiones | Resultados, lecciones aprendidas y evolucion futura |
 
 ## 2. Guion de defensa
 
 ### Introduccion
 
-"PIAmarsa nace para centralizar la gestion de fichajes y horarios de una empresa en una unica herramienta. La aplicacion permite que los empleados registren su jornada y consulten su informacion, mientras que los administradores gestionan empleados, turnos, vacaciones, calendarios e informes."
+"PIAmarsa nace para centralizar la gestion de fichajes y horarios de una empresa en una unica herramienta. La aplicacion permite que los empleados registren su jornada y consulten su informacion, mientras que los administradores gestionan empleados, turnos, contratos, vacaciones, calendarios e informes."
 
 ### Problema y objetivos
 
@@ -40,13 +40,14 @@
 5. Consultar historial.
 6. Entrar como administrador.
 7. Mostrar listado de empleados.
-8. Mostrar gestion de horarios/plantillas.
+8. Mostrar gestion de horarios/plantillas y un turno partido.
 9. Resolver una solicitud o mostrar vacaciones.
-10. Mostrar convenio o informe de bolsa de horas.
+10. Descargar PDF de horario/cuadrante.
+11. Mostrar convenio o informe de bolsa de horas.
 
 ### Cierre
 
-"Como resultado, el proyecto cubre los requisitos principales definidos: autenticacion, fichajes, horarios, empleados, vacaciones, solicitudes, informes y acceso movil. Como mejora futura, reforzariamos la seguridad por roles, las pruebas automatizadas y el despliegue continuo."
+"Como resultado, el proyecto cubre los requisitos principales definidos: autenticacion, fichajes, horarios, empleados, contratos, vacaciones, solicitudes, informes, exportaciones PDF y acceso movil. Como mejora futura, reforzariamos la seguridad por roles, las pruebas automatizadas y el despliegue continuo."
 
 ## 3. Distribucion de roles
 
@@ -55,7 +56,7 @@
 | Presentador 1 | Pendiente de asignar | Problema, objetivos y usuarios |
 | Presentador 2 | Pendiente de asignar | Arquitectura, base de datos y tecnologias |
 | Presentador 3 | Pendiente de asignar | Demo web y funcionalidades |
-| Presentador 4 | Pendiente de asignar | App movil, pruebas, seguridad y cierre |
+| Presentador 4 | Pendiente de asignar | App movil, bugs corregidos, pruebas, seguridad y cierre |
 
 ## 4. Cronometria recomendada
 
@@ -92,4 +93,3 @@ Duracion total recomendada: 18-20 minutos.
 - App movil preparada o capturas disponibles si no hay emulador.
 - Documentacion de Fase 5 accesible.
 - Demo ensayada con cronometro.
-

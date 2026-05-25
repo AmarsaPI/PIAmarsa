@@ -8,6 +8,7 @@ PIAmarsa es una aplicacion de gestion de fichajes y horarios compuesta por:
 - Base de datos: PostgreSQL.
 - Frontend web: plantillas Thymeleaf, HTML, CSS y JavaScript estatico.
 - App movil: Android/Kotlin con Jetpack Compose y Retrofit.
+- Generacion documental: OpenPDF para exportar horarios y cuadrantes.
 - Documentacion y diseno: diagramas y mockups en `Diagramas`.
 
 ## 2. Capas del backend
@@ -30,13 +31,13 @@ Entidades principales:
 - `Empleado`: usuario empleado o administrador con rol, credenciales y relaciones con horarios/fichajes.
 - `Admin`: entidad de administracion.
 - `Fichaje`: registro de entrada y salida asociado a empleado.
-- `Horario`: turno real asignado a empleado.
+- `Horario`: turno real asignado a empleado. Permite jornada partida mediante `horaInicio2` y `horaFin2`.
 - `PlantillaHorario`: plantilla reutilizable de horario.
 - `SolicitudCambio`: peticion de modificacion de fichaje u horario.
 - `Ausencia`: vacaciones, permisos u otras ausencias.
 - `CalendarioLaboral`: calendario de trabajo asociado a festivos.
 - `Festivo`: dias no laborables.
-- `Contrato`: datos contractuales del empleado.
+- `Contrato`: datos contractuales del empleado, horas semanales y minutos teoricos diarios.
 
 Relaciones destacadas:
 
@@ -45,6 +46,7 @@ Relaciones destacadas:
 - Un empleado puede tener varias ausencias y contratos.
 - Un calendario laboral puede tener varios festivos.
 - Las solicitudes de cambio se vinculan al empleado y al fichaje/horario afectado.
+- La bolsa de horas compara horas fichadas contra horas teoricas de turnos/contratos y descuenta ausencias.
 
 ## 4. Endpoints principales
 
@@ -52,17 +54,29 @@ Relaciones destacadas:
 | --- | --- |
 | Login | `/login`, `/auth-check`, `/logout` |
 | Administracion | `/admin/index`, `/admin/listado_usuarios`, `/admin/agregar_usuario`, `/admin/empleados/guardar` |
-| Fichajes web | `/fichar/registrar-entrada`, `/fichar/registrar-salida`, `/historial_fichajes` |
-| Fichajes API | `/api/fichajes`, `/api/fichajes/{id}`, `/api/fichajes/empleado/{empleadoId}` |
+| Fichajes web | `/fichar/registrar-entrada`, `/fichar/registrar-salida`, `/historial_fichajes`, `/solicitar-cambio`, `/solicitudes`, `/solicitudes/procesar`, `/fichajes/editar` |
+| Fichajes API | `/api/fichajes`, `/api/fichajes/{id}`, `/api/fichajes/empleado/{empleadoId}`, `/api/fichajes/activo/{empleadoId}` |
 | Horarios | `/horario_personal`, `/crear_plantilla`, `/asignar_horario`, `/gestion_plantillas` |
-| Horarios API | `/api/horarios`, `/api/horarios-reales`, `/api/horarios/pdf/descargar` |
-| Vacaciones | `/vacaciones`, `/vacaciones/solicitar`, `/admin/vacaciones/resolver` |
-| Ausencias API | `/api/ausencias`, `/api/ausencias/empleado/{empleadoId}` |
+| Horarios API | `/api/horarios`, `/api/horarios-reales`, `/api/horarios-reales/global`, `/api/horarios-reales/mis-turnos`, `/api/horarios-reales/mis-festivos`, `/api/horarios/pdf/descargar`, `/api/horarios/pdf/descargar-equipo` |
+| Vacaciones | `/vacaciones`, `/vacaciones/solicitar`, `/vacaciones/limpiar-rechazadas`, `/vacaciones/calendario-global`, `/admin/vacaciones/resolver`, `/admin/vacaciones/borrar` |
+| Ausencias API | `/api/ausencias`, `/api/ausencias/empleado/{empleadoId}`, `/api/ausencias/verificar-estado` |
+| Contratos API | `/api/contratos`, `/api/contratos/empleado/{empleadoId}`, `/api/contratos/activo`, `/api/contratos/{id}` |
 | Calendarios | `/admin/calendarios_laborales`, `/admin/agregar_calendario` |
 | Convenio | `/convenio`, `/convenio/subir`, `/convenio/descargar` |
 | Bolsa de horas | `/bolsa/resumen`, `/bolsa/informe` |
 
-## 5. Instalacion en desarrollo
+## 5. Cambios funcionales recientes reflejados
+
+- Jornadas partidas en horarios reales y calendario personal.
+- Exportacion PDF del horario personal y del cuadrante mensual del equipo.
+- Vista global de vacaciones con navegacion mensual, estados visuales y resolucion administrativa.
+- Limpieza de solicitudes de vacaciones rechazadas por parte del empleado.
+- Contratos por empleado para calcular horas teoricas.
+- Bolsa de horas anual acumulada con comparacion entre horas fichadas, turnos, contratos y ausencias.
+- Prevencion de duplicados de horarios por empleado y fecha.
+- Filtrado mensual del historial de fichajes.
+
+## 6. Instalacion en desarrollo
 
 ### Requisitos
 
@@ -116,7 +130,7 @@ sdk.dir=C:\\Users\\USUARIO\\AppData\\Local\\Android\\Sdk
 3. Ajustar la URL base de Retrofit para que apunte al backend.
 4. Ejecutar en emulador o dispositivo.
 
-## 6. Despliegue
+## 7. Despliegue
 
 ### Preparacion
 
@@ -145,7 +159,7 @@ java -jar target/GestionFichajes-0.0.1-SNAPSHOT.jar
 - Configurar copias de seguridad de PostgreSQL.
 - Monitorizar logs y errores.
 
-## 7. Estructura del repositorio
+## 8. Estructura del repositorio
 
 ```text
 PIAmarsa/
@@ -157,4 +171,3 @@ PIAmarsa/
   Fichajes.postman_collection.json
   Documentacion/Fase5/
 ```
-

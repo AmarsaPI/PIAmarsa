@@ -2,7 +2,7 @@
 
 ## 1. Resumen del proyecto
 
-PIAmarsa es una solucion de gestion de fichajes y horarios desarrollada para centralizar en una unica plataforma procesos que normalmente se gestionan con herramientas separadas: registro de jornada, gestion de empleados, turnos, vacaciones, solicitudes de cambio, calendarios laborales, convenio colectivo e informes de horas.
+PIAmarsa es una solucion de gestion de fichajes y horarios desarrollada para centralizar en una unica plataforma procesos que normalmente se gestionan con herramientas separadas: registro de jornada, gestion de empleados, turnos, vacaciones, solicitudes de cambio, calendarios laborales, convenio colectivo, contratos e informes de horas.
 
 El producto incluye una aplicacion web basada en Spring Boot y Thymeleaf, una API REST para integracion movil y una app Android en Kotlin/Jetpack Compose.
 
@@ -13,6 +13,7 @@ El producto incluye una aplicacion web basada en Spring Boot y Thymeleaf, una AP
 - Permitir al administrador gestionar empleados, turnos y plantillas.
 - Gestionar vacaciones, ausencias y solicitudes de cambio.
 - Consultar historiales e informes de horas.
+- Controlar contratos, horas teoricas y bolsa de horas.
 - Centralizar documentos importantes como el convenio colectivo.
 - Ofrecer acceso movil a datos clave mediante API REST.
 
@@ -23,10 +24,11 @@ El producto incluye una aplicacion web basada en Spring Boot y Thymeleaf, una AP
 | Registro de jornada | Implementado mediante controladores web y API de fichajes |
 | Gestion de empleados | Implementada en panel administrativo y API |
 | Horarios y plantillas | Implementado con vistas, servicios y endpoints REST |
-| Vacaciones y ausencias | Implementado con solicitud, resolucion y calendario |
+| Vacaciones y ausencias | Implementado con solicitud, resolucion, limpieza de rechazadas y calendario global |
 | Calendarios laborales | Implementado con CRUD administrativo |
 | Convenio | Implementado con subida y descarga de PDF |
-| Informes | Implementada bolsa de horas e informes |
+| Contratos | Implementado por API con contrato activo y horas teoricas |
+| Informes | Implementada bolsa de horas, informes y exportacion PDF de horarios/cuadrantes |
 | App movil | Implementado proyecto Android con consumo de API |
 
 ## 4. Consolidacion de fases
@@ -49,7 +51,7 @@ Se organizaron funcionalidades completas y se prepararon pruebas funcionales. El
 
 ### Fase 5. Cierre
 
-Se formaliza la documentacion final: pruebas, manual de usuario, documentacion tecnica, instalacion, despliegue, informe final y preparacion de defensa.
+Se formaliza la documentacion final: pruebas, manual de usuario, documentacion tecnica, instalacion, despliegue, informe final, preparacion de defensa y listado de bugs corregidos.
 
 ## 5. Conclusiones
 
@@ -71,8 +73,13 @@ El proyecto cumple el objetivo principal: centralizar la gestion de fichajes y h
 - Anadir tests unitarios y de integracion para servicios principales.
 - Incorporar pruebas de carga automatizadas.
 - Configurar CI para compilar backend y app movil.
+- Completar la rama de aprobacion de solicitudes de cambio de fichaje.
 
-## 8. Cierre de entregables
+## 8. Bugs corregidos
+
+Durante el desarrollo se corrigieron incidencias relacionadas con fichajes duplicados, jornadas abiertas, filtrado de historial, solapamiento de vacaciones, rangos de fechas invalidos, duplicados de horarios, calculo de jornada partida, bolsa de horas y manejo de errores. El detalle completo esta en `Documentacion/Fase5/Bugs_Corregidos.md`.
+
+## 9. Cierre de entregables
 
 | Entregable | Ubicacion | Estado |
 | --- | --- | --- |
@@ -85,4 +92,4 @@ El proyecto cumple el objetivo principal: centralizar la gestion de fichajes y h
 | Manual de usuario | `Documentacion/Fase5/Manual_Usuario.md` | Entregado |
 | Documentacion tecnica/despliegue | `Documentacion/Fase5/Documentacion_Tecnica_Instalacion_Despliegue.md` | Entregado |
 | Presentacion y guion | `Documentacion/Fase5/Presentacion_Guion_Cierre.md` | Entregado |
-
+| Bugs corregidos | `Documentacion/Fase5/Bugs_Corregidos.md` | Entregado |

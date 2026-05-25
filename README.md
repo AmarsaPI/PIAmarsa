@@ -14,4 +14,5 @@ La documentacion correspondiente a la Fase 5 esta disponible en:
 - `Documentacion/Fase5/Documentacion_Tecnica_Instalacion_Despliegue.md`
 - `Documentacion/Fase5/Informe_Final_Completo.md`
 - `Documentacion/Fase5/Presentacion_Guion_Cierre.md`
+- `Documentacion/Fase5/Bugs_Corregidos.md`
 

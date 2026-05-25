@@ -14,6 +14,7 @@ Validar que PIAmarsa satisface los requisitos principales de negocio antes de la
 | Horarios | Horario personal, plantillas, asignacion, consulta global y exportacion PDF | `HorarioController`, `HorarioRestController`, `PlantillaHorarioRestController` |
 | Vacaciones y ausencias | Solicitud, resolucion por administracion y calendario global | `VacacionesController`, `AusenciaRestController` |
 | Calendarios laborales | Creacion, edicion y eliminacion de calendarios/festivos | `CalendarioLaboralController`, `FestivoRestController` |
+| Contratos | Alta, consulta de contrato activo y eliminacion por API | `ContratoRestController`, `ContratoServiceImpl` |
 | Convenio | Subida y descarga de documento PDF | `ConvenioController`, `uploads/documentos/convenio_colectivo.pdf` |
 | Bolsa de horas | Resumen e informe de horas | `BolsaHorasController` |
 | App movil | Login, consulta de empleados y fichajes via API REST | `Frontend/App_movil`, `ApiService.kt` |
@@ -32,13 +33,16 @@ Se han definido pruebas funcionales simulando dos perfiles:
 | PA-03 | Registro de entrada | Pulsar registrar entrada desde la pantalla principal | Se crea fichaje activo sin salida | Cubierto por controlador y API |
 | PA-04 | Registro de salida | Con fichaje activo, pulsar registrar salida | Se completa fecha/hora de salida | Cubierto por controlador y API |
 | PA-05 | Historial de fichajes | Abrir `/historial_fichajes` | Se muestran fichajes del empleado | Cubierto por vista |
-| PA-06 | Solicitud de cambio | Enviar solicitud de modificacion de fichaje/horario | La solicitud queda pendiente para gestion | Cubierto por controlador |
+| PA-06 | Solicitud de cambio | Enviar solicitud de modificacion de fichaje/horario | La solicitud queda pendiente para gestion | Cubierto parcialmente; ver incidencias conocidas |
 | PA-07 | Gestion de empleados | Crear/editar/eliminar empleado desde administracion | Persistencia correcta en BD | Cubierto por controlador |
 | PA-08 | Asignacion de horario | Crear plantilla y asignarla a empleado | El empleado visualiza el horario asignado | Cubierto por controlador y API |
 | PA-09 | Solicitud de vacaciones | Enviar solicitud desde `/vacaciones` | La ausencia queda pendiente | Cubierto por controlador |
 | PA-10 | Resolucion de vacaciones | Administrador aprueba/rechaza solicitud | Estado actualizado y visible en calendario | Cubierto por controlador |
 | PA-11 | Convenio colectivo | Subir y descargar PDF | El documento queda disponible | Cubierto por controlador |
 | PA-12 | Consulta desde app movil | Login y consumo de endpoints `/api` | La app recibe datos del backend | Cubierto por Retrofit |
+| PA-13 | Turno partido | Crear horario con tramo de manana y tarde | El calendario muestra ambos tramos y la bolsa de horas suma ambos | Cubierto por entidad, API y servicio |
+| PA-14 | Exportacion PDF de equipo | Descargar cuadrante mensual | Se genera PDF con empleados y semanas del mes | Cubierto por API |
+| PA-15 | Contrato activo | Consultar contrato activo de empleado/fecha | Se devuelven horas semanales y minutos teoricos diarios | Cubierto por API |
 
 ## 4. Pruebas de rendimiento final
 
@@ -50,6 +54,8 @@ Se han definido pruebas funcionales simulando dos perfiles:
 | Consulta de horario | 50 peticiones/minuto | Sin errores; datos consistentes |
 | Registro de fichaje | 30 operaciones/minuto | No se crean duplicados incoherentes |
 | Listado administrativo | 10 gestores consultando listados | Respuesta estable y sin bloqueos |
+| Cuadrante global | 50 eventos de horarios/ausencias por consulta | Renderizado sin error y filtrado correcto por rango |
+| Exportacion PDF | 10 descargas consecutivas | Generacion sin bloqueo de la aplicacion |
 
 ### Resultado
 
@@ -83,14 +89,26 @@ k6 run pruebas/rendimiento/fichajes.js
 | RF-04 Consultar historial | Historial de fichajes | `historial_fichajes.html` | Cubierto |
 | RF-05 Gestionar horarios | Plantillas y horarios reales | `HorarioController`, `HorarioRestController` | Cubierto |
 | RF-06 Consultar horario personal | Vista de horario personal | `horario_personal.html` | Cubierto |
-| RF-07 Solicitar cambios | Solicitudes de fichaje/horario | `SolicitudCambio`, `FichajeController`, `HorarioController` | Cubierto |
+| RF-07 Solicitar cambios | Solicitudes de fichaje/horario | `SolicitudCambio`, `FichajeController`, `HorarioController` | Parcial; pendiente revisar aprobacion de cambios de fichaje |
 | RF-08 Gestionar vacaciones/ausencias | Solicitud y resolucion | `VacacionesController`, `AusenciaRestController` | Cubierto |
 | RF-09 Gestionar calendarios laborales | CRUD calendarios/festivos | `CalendarioLaboralController`, `FestivoRestController` | Cubierto |
 | RF-10 Gestionar convenio | Subida/descarga PDF | `ConvenioController` | Cubierto |
 | RF-11 Informes de horas | Bolsa de horas e informe | `BolsaHorasController` | Cubierto |
 | RF-12 Acceso movil | App Android con Retrofit | `Frontend/App_movil` | Cubierto |
+| RF-13 Gestion de contratos | Contratos por empleado y contrato activo por fecha | `ContratoRestController`, `Contrato` | Cubierto por API |
+| RF-14 Exportacion documental | PDF de horario personal y cuadrante mensual de equipo | `HorarioRestController` | Cubierto |
 
-## 7. Ejecucion tecnica de pruebas
+## 7. Bugs corregidos y pendientes
+
+La lista completa de bugs corregidos durante el desarrollo queda documentada en `Bugs_Corregidos.md`.
+
+Pendientes relevantes antes de produccion:
+
+- Completar la aprobacion de solicitudes de cambio de fichaje en `SolicitudCambioServiceImpl`.
+- Endurecer la seguridad por roles en `SecurityConfig`.
+- Sustituir el login movil con password en URL por un `POST` seguro.
+
+## 8. Ejecucion tecnica de pruebas
 
 Se intentaron ejecutar las pruebas automatizadas disponibles el 25/05/2026:
 
@@ -101,4 +119,3 @@ Se intentaron ejecutar las pruebas automatizadas disponibles el 25/05/2026:
 | App Android | `.\gradlew.bat test` | No ejecutado: falta `ANDROID_HOME` o `local.properties` con `sdk.dir` |
 
 Estas incidencias no invalidan la documentacion funcional, pero deben resolverse antes de una entrega con integracion continua.
-

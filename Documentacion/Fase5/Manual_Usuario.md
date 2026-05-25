@@ -32,6 +32,7 @@ Desde la pantalla principal el empleado puede acceder a:
 - Solicitud de cambios.
 - Vacaciones.
 - Consulta de convenio, si esta habilitada.
+- Bolsa de horas, si el perfil tiene acceso al resumen.
 
 ## 3. Registro de fichaje
 
@@ -59,7 +60,9 @@ Desde la pantalla principal el empleado puede acceder a:
 
 1. Acceder a `Horario personal`.
 2. Revisar los turnos asignados.
-3. Descargar el horario en PDF cuando se requiera justificante o copia.
+3. Comprobar si existe jornada partida: el sistema muestra tramo de manana y tramo de tarde cuando ambos estan definidos.
+4. Revisar festivos marcados en el calendario personal.
+5. Descargar el horario en PDF cuando se requiera justificante o copia.
 
 ## 6. Vacaciones y ausencias
 
@@ -69,6 +72,7 @@ Desde la pantalla principal el empleado puede acceder a:
 2. Seleccionar fechas.
 3. Enviar solicitud.
 4. Esperar resolucion del administrador.
+5. Si hay solicitudes rechazadas antiguas, usar la opcion de limpieza de rechazadas para despejar el historial.
 
 ### Gestionar vacaciones como administrador
 
@@ -76,6 +80,7 @@ Desde la pantalla principal el empleado puede acceder a:
 2. Revisar solicitudes pendientes.
 3. Aprobar o rechazar.
 4. Verificar que el calendario global queda actualizado.
+5. Si procede, borrar una solicitud desde el calendario global.
 
 ## 7. Gestion administrativa
 
@@ -89,8 +94,17 @@ El perfil administrador puede:
 - Resolver solicitudes de vacaciones.
 - Consultar informes y bolsa de horas.
 - Subir y descargar el convenio colectivo.
+- Descargar el cuadrante mensual del equipo en PDF.
+- Consultar contratos y horas teoricas mediante los endpoints disponibles.
 
-## 8. App movil
+## 8. Bolsa de horas e informes
+
+1. Acceder a `Bolsa de horas`.
+2. Revisar el saldo anual acumulado.
+3. Comparar horas fichadas con horas teoricas previstas.
+4. Generar o consultar el informe cuando sea necesario para seguimiento interno.
+
+## 9. App movil
 
 La app Android permite:
 

@@ -9,6 +9,7 @@ Este directorio agrupa los entregables finales del Proyecto Intermodular PIAmars
 - [Documentacion tecnica, instalacion y despliegue](Documentacion_Tecnica_Instalacion_Despliegue.md)
 - [Informe final completo](Informe_Final_Completo.md)
 - [Presentacion, guion de defensa y cierre](Presentacion_Guion_Cierre.md)
+- [Bugs corregidos durante el desarrollo](Bugs_Corregidos.md)
 
 ## Estado de cierre
 
@@ -20,4 +21,4 @@ Este directorio agrupa los entregables finales del Proyecto Intermodular PIAmars
 | Instalacion y despliegue | `Documentacion_Tecnica_Instalacion_Despliegue.md` | Completo |
 | Informe final completo | `Informe_Final_Completo.md` | Completo |
 | Presentacion, roles, demo y preguntas | `Presentacion_Guion_Cierre.md` | Completo |
-
+| Lista de bugs corregidos y pendientes conocidos | `Bugs_Corregidos.md` | Completo |
