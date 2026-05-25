@@ -63,11 +63,8 @@
                 <section class="left-zone">
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown">
-                        
-                            <li th:if="${session.rol == 'ADMINISTRADOR'}"><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
-                            <li th:if="${usuario != null && usuario.class.name == 'com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin'}">
-						        <a th:href="@{/admin/index}" style="text-decoration: none; color: inherit;">Inicio</a>
-						    </li>
+						    <li data-submenu="none"><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
                             <li class="active-menu">Informe de Horas</li>
                             <li><a th:href="@{/logout}" style="text-decoration: none; color: red;">Salir</a></li>
                         </ul>

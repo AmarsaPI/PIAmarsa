@@ -49,14 +49,14 @@ public class LoginController {
             Admin a = (Admin) usuario;
             session.setAttribute("adminLogueadoId", a.getId());
             session.setAttribute("rol", "ADMIN");
-            return "redirect:/admin/index"; // <--- Ruta para el administrador
+            return "redirect:/admin/index"; 
         } 
         
         if (usuario instanceof Empleado) {
             Empleado e = (Empleado) usuario;
             session.setAttribute("usuarioLogueadoId", e.getId());
             session.setAttribute("rol", "EMPLEADO");
-            return "redirect:/index"; // <--- Ruta para el empleado
+            return "redirect:/index"; 
         }
         return "redirect:/login?error=true";
     }

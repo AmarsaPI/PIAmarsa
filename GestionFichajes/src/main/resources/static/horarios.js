@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tituloTurno = info.event.title;
 
             if (confirm(`¿Estás seguro de que deseas eliminar el horario del día ${fechaFormateada} (${tituloTurno})?`)) {
-                fetch(`/api/horarios-reales/${horarioId}`, {
+                fetch(`/web/horarios-reales/${horarioId}`, {
                     method: 'DELETE'
                 })
                 .then(response => {
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		eventSources: [
 		    {
 		        events: function(fetchInfo, successCallback, failureCallback) {
-		            let url = `/api/horarios-reales/global?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`;
+		            let url = `/web/horarios-reales/global?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`;;
 		            if (empleadoSeleccionadoId) url += `&empleadoId=${empleadoSeleccionadoId}`;
 		            
 		            fetch(url)
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				                return;
 				            }
 
-				            fetch(`/api/festivos/eventos?empleadoId=${idParaConsultar}`)
+				            fetch(`/web/festivos/eventos?empleadoId=${idParaConsultar}`)
 				                .then(res => res.json())
 				                .then(data => successCallback(data))
 				                .catch(err => failureCallback(err));
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (confirm(`¿Seguro que quieres borrar TODOS los turnos de este empleado en el rango seleccionado?`)) {
-                fetch(`/api/horarios-reales/empleado/${empleadoSeleccionadoId}/rango?start=${fechaInicio}&end=${fechaFin}`, {
+                fetch(`/web/horarios-reales/empleado/${empleadoSeleccionadoId}/rango?start=${fechaInicio}&end=${fechaFin}`, {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
@@ -247,7 +247,7 @@ function cargarVistaPreviaPlantilla(plantillaId) {
     
     if (!plantillaId || !previewDiv) return; // Salvaguarda si el elemento fue destruido por Thymeleaf
 
-    fetch(`/api/plantillas/${plantillaId}/preview`)
+    fetch(`/web/plantillas/${plantillaId}/preview`)
         .then(response => {
             if (!response.ok) throw new Error("No se pudo cargar la plantilla");
             return response.json();
@@ -306,7 +306,7 @@ function procesarAsignacionMasiva(event) {
         return;
     }
 
-    fetch(`/api/plantillas/${plantillaId}/preview`)
+    fetch(`/web/plantillas/${plantillaId}/preview`)
         .then(response => {
             if (!response.ok) throw new Error("No se pudo obtener el diseño de la plantilla.");
             return response.json();
@@ -350,7 +350,7 @@ function procesarAsignacionMasiva(event) {
                         nuevoHorario.horaFin2 = turnosDelDia[1].horaFin;
                     }
 
-                    let promesa = fetch('/api/horarios-reales', {
+                    let promesa = fetch('/web/horarios-reales', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(nuevoHorario)
@@ -414,7 +414,7 @@ function guardarTurnoSuelto() {
         empleado: { id: parseInt(empleadoSeleccionadoId) }
     };
 
-    fetch('/api/horarios-reales', {
+    fetch('/web/horarios-reales', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(nuevoHorarioSuelto)
@@ -452,7 +452,7 @@ function cargarHorasDesdePlantillaModal(plantillaId) {
 
     console.log("Buscando turno en plantilla para el día número (Java):", diaSemanaJava);
 
-    fetch(`/api/plantillas/${plantillaId}/preview`)
+    fetch(`/web/plantillas/${plantillaId}/preview`)
         .then(response => {
             if (!response.ok) throw new Error("No se pudo obtener el diseño de la plantilla.");
             return response.json();
@@ -505,7 +505,7 @@ function filtrarPlantillasDiariasEnModal() {
     opciones.forEach(opcion => {
         const plantillaId = opcion.value;
         
-        fetch(`/api/plantillas/${plantillaId}/preview`)
+        fetch(`/web/plantillas/${plantillaId}/preview`)
             .then(response => response.json())
             .then(plantilla => {
                 const turnos = plantilla.turnos || [];

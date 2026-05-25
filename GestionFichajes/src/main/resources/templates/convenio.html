@@ -71,14 +71,16 @@
 <body th:data-home="@{/admin/index}">
   <main class="app-shell">
 
-    <section class="workspace" style="max-width: 100%; overflow-x: hidden;">
-      <div class="top-tools">
-        <button class="menu-toggle">📜 Documentación Laboral</button>
-        <div style="font-weight: 800;">
-          Usuario: <span th:text="${rol}">ROL</span>
-        </div>
-        <button class="help-btn">?</button>
-      </div>
+    <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
+            </div>
+            
+            <div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+			</div>
+
 
       <div class="content-grid">
         <!-- Menú Lateral -->

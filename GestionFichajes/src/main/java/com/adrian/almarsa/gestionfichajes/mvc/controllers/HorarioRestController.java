@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -17,14 +16,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IEmpleadoDAO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IHorarioDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
+import com.lowagie.text.pdf.PdfPCell;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -46,135 +44,6 @@ public class HorarioRestController {
     
     @Autowired 
     IEmpleadoDAO empleadoDAO;
-    
-    @GetMapping("/horarios/pdf/descargar")
-    public void exportarPdf(HttpServletResponse response, HttpSession session) throws Exception {
-        Long empId = (Long) session.getAttribute("usuarioLogueadoId");
-        List<Horario> horarios = horarioService.findByEmpleado(empId);
-
-        // 1. Ordenar los horarios por fecha (para que salgan en orden)
-        horarios = horarios.stream()
-            .sorted((h1, h2) -> h1.getFecha().compareTo(h2.getFecha()))
-            .collect(Collectors.toList());
-
-        // 2. Configurar la respuesta
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=mi_horario.pdf");
-
-        // 3. Crear el documento
-        com.lowagie.text.Document document = new com.lowagie.text.Document();
-        com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
-
-        document.open();
-
-     // Título
-     document.add(new com.lowagie.text.Paragraph("Mi Horario Semanal"));
-     document.add(new com.lowagie.text.Paragraph(" ")); 
-
-     com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(7);
-     table.setWidthPercentage(100);
-
-     // 1. Encabezados
-     String[] dias = {"Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
-     for (String dia : dias) {
-         com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph(dia));
-         cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
-         cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-         table.addCell(cell);
-     }
-
-     // 2. Lógica para rellenar datos CON fecha y hora
-     if (!horarios.isEmpty()) {
-         // Calculamos el espacio en blanco inicial (si no empieza en lunes)
-         int diaSemanaInicio = horarios.get(0).getFecha().getDayOfWeek().getValue();
-         for (int i = 1; i < diaSemanaInicio; i++) {
-             table.addCell("-");
-         }
-
-         // Rellenar con los horarios
-         for (Horario h : horarios) {
-             // Formateamos la fecha (ej: 24/05) y el horario
-             String fechaStr = h.getFecha().getDayOfMonth() + "/" + h.getFecha().getMonthValue();
-             String horarioStr = h.getHoraInicio().toString().substring(0, 5) + "-" + 
-                                h.getHoraFin().toString().substring(0, 5);
-             
-             // Creamos una celda que tenga ambos datos
-             com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(
-                 new com.lowagie.text.Paragraph(fechaStr + "\n" + horarioStr)
-             );
-             cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-             table.addCell(cell);
-         }
-     }
-
-     document.add(table);
-     document.close();
-    }
-    
-    @GetMapping("/horarios/pdf/descargar-equipo")
-    public void exportarPdfCuadrante(HttpServletResponse response) throws Exception {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=Cuadrante_Mensual_Vertical.pdf");
-
-        com.lowagie.text.Document document = new com.lowagie.text.Document(com.lowagie.text.PageSize.A4);
-        com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
-        document.open();
-
-        LocalDate inicioMes = LocalDate.now().with(java.time.temporal.TemporalAdjusters.firstDayOfMonth());
-        LocalDate finMes = inicioMes.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
-
-     // 1. Creamos un array con los nombres de los meses en español
-        String[] mesesEsp = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-
-        // 2. Obtenemos el índice del mes (get個月Value() devuelve 1 para Enero, 12 para Diciembre)
-        int indiceMes = inicioMes.getMonthValue() - 1; 
-        String nombreMes = mesesEsp[indiceMes];
-
-        // 3. Añadimos el título al documento
-        document.add(new com.lowagie.text.Paragraph("Cuadrante: " + nombreMes + " " + inicioMes.getYear()));
-        document.add(new com.lowagie.text.Paragraph(" "));
-
-
-        // 2. Iterar por semanas (cada semana es un bloque)
-        LocalDate lunes = inicioMes.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
-        
-        while (lunes.isBefore(finMes.plusDays(7))) {
-        	String nombreMesSemana = mesesEsp[lunes.getMonthValue() - 1];
-        	document.add(new com.lowagie.text.Paragraph("Semana del " + lunes.getDayOfMonth() + " de " + nombreMesSemana));
-            
-            com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(8);
-            table.setWidthPercentage(100);
-            
-            // Encabezados
-            String[] cabeceras = {"Empleado", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
-            for (String h : cabeceras) {
-                com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph(h));
-                cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
-                table.addCell(cell);
-            }
-
-            List<Empleado> empleados = StreamSupport.stream(empleadoDAO.findAll().spliterator(), false)
-                                                    .collect(Collectors.toList());
-
-            for (Empleado emp : empleados) {
-                table.addCell(emp.getNombre());
-                for (int i = 0; i < 7; i++) {
-                    LocalDate fechaDia = lunes.plusDays(i);
-                    Horario h = horarioService.findByEmpleadoIdAndFecha(emp.getId(), fechaDia);
-                    
-                    String texto = (h != null) ? h.getHoraInicio().toString().substring(0, 5) : "-";
-                    table.addCell(new com.lowagie.text.Paragraph(texto));
-                }
-            }
-            document.add(table);
-            document.add(new com.lowagie.text.Paragraph(" ")); // Espacio entre semanas
-            
-            lunes = lunes.plusWeeks(1); // Saltar a la siguiente semana
-        }
-
-        document.close();
-    }
 
     // 1. Listado global de todos los horarios reales
     @GetMapping("/horarios-reales")

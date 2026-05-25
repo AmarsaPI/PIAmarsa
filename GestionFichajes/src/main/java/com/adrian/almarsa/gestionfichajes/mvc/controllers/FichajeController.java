@@ -121,7 +121,7 @@ public class FichajeController {
         // Guardamos
         solicitudService.guardar(sol);
         
-        flash.addFlashAttribute("success", "Solicitud enviada al admin.");
+        flash.addFlashAttribute("mensajeExito", "¡Solicitud enviada correctamente!");
         return "redirect:/historial_fichajes";
     }
     

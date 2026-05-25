@@ -173,14 +173,14 @@
 	        eventSources: [
 	            {
 	                // Esto garantiza que se envíen las fechas al controlador
-	                url: '/api/horarios-reales/mis-turnos',
+	                url: '/web/horarios-reales/mis-turnos',
 	                method: 'GET',
 	                failure: function() {
 	                    console.error('Error al cargar mis turnos');
 	                }
 	            },
 	            {
-	                url: '/api/horarios-reales/mis-festivos',
+	                url: '/web/horarios-reales/mis-festivos',
 	                method: 'GET'
 	            }
 	        ],
@@ -208,7 +208,7 @@
     	const inicio = document.getElementById('fechaInicio').value;
         const fin = document.getElementById('fechaFin').value;
         // Redirige pasando los parámetros
-        window.location.href = `/api/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
+        window.location.href = `/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
     }
 </script>
 <script th:src="@{/common.js}" defer></script>

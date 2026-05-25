@@ -6,8 +6,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -43,8 +41,7 @@ public class SecurityConfig {
 
 					// Filtro a aplicar en segunda instancia
 					.authorizeHttpRequests(auth -> auth
-							.requestMatchers("/login/**").permitAll()
-							.requestMatchers("/api/**").permitAll()
+							.requestMatchers("/api/login/**").permitAll()
 							.anyRequest().authenticated()
 					);
 
@@ -52,8 +49,6 @@ public class SecurityConfig {
 		}
 
 
-	    // Define la cadena de filtros de seguridad y permisos de rutas para la Web
-		// Se ejecuta en segundo lugar por, por descarte porque no tiene .securityMatcher
 	@Bean
 	@Order(2)
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,22 +56,18 @@ public class SecurityConfig {
 	        .csrf(csrf -> csrf.disable()) 
 	        .authorizeHttpRequests(auth -> auth
 	            // 1. RUTAS WEB Y GESTIÓN
-	            // Añadimos /admin/** para que no bloquee tu nuevo panel
+        		// Se maneja la seguridad mediante session en los controllers
 	            .requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", 
 	                             "/gestion_empleados/**", "/fichar/**", "/admin/**", "/api/**", "/crear_plantilla", "/asignar_horario", "/plantillas/guardar", "/gestion_plantillas"
-	                             , "/vacaciones/**", "/calendario-global", "/convenio/**", "/historial_fichajes/**", "/solicitudes/**", "/solicitar-cambio", "/solicitar-cambio-horario", "/bolsa/**").permitAll()
+	                             , "/vacaciones/**", "/calendario-global", "/convenio/**", "/historial_fichajes/**", "/solicitudes/**", "/solicitar-cambio", "/solicitar-cambio-horario",
+                             	   "/bolsa/**", "/horarios/pdf/**").permitAll()
+	            .requestMatchers("/web/**").permitAll()
 	            
 	            // 2. RECURSOS ESTÁTICOS
-	            // Usamos /** para asegurar que pille carpetas como /css/style.css o /js/app.js
 	            .requestMatchers("/css/**", "/js/**", "/images/**", "/*.css", "/*.js", "/*.png", "/logo.png", "/horarios.js").permitAll()
-
-	            .requestMatchers("/api/**").permitAll() 
-
-	            // El resto requiere estar autenticado (aunque de momento permitas casi todo arriba)
+	             
 	            .anyRequest().authenticated()
 	        )
-	        // Como tú controlas el login en tu Controller, comentamos el formLogin de Spring
-	        /* .formLogin(form -> form.loginPage("/login").permitAll()) */
 	        
 	        .logout(logout -> logout
 	            .logoutUrl("/logout") // Ruta que dispara el cierre
