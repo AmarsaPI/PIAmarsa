@@ -2,7 +2,7 @@
 
 ## 1. Resumen del proyecto
 
-PIAmarsa es una solucion de gestion de fichajes y horarios desarrollada para centralizar en una unica plataforma procesos que normalmente se gestionan con herramientas separadas: registro de jornada, gestion de empleados, turnos, vacaciones, solicitudes de cambio, calendarios laborales, convenio colectivo, contratos e informes de horas.
+Amarsa es una solucion de gestion de fichajes y horarios desarrollada para centralizar en una unica plataforma procesos que normalmente se gestionan con herramientas separadas: registro de jornada, gestion de empleados, turnos, vacaciones, solicitudes de cambio, calendarios laborales, convenio colectivo, contratos e informes de horas.
 
 El producto incluye una aplicacion web basada en Spring Boot y Thymeleaf, una API REST para integracion movil y una app Android en Kotlin/Jetpack Compose.
 
@@ -37,7 +37,7 @@ El producto incluye una aplicacion web basada en Spring Boot y Thymeleaf, una AP
 
 Se identifico la necesidad de una herramienta unificada para gestionar horarios y fichajes. Los requisitos principales fueron autenticacion, fichajes, gestion de empleados, horarios, solicitudes, vacaciones, informes y soporte movil.
 
-### Fase 2. Diseno
+### Fase 2. Disenio
 
 Se definieron diagramas de casos de uso, clases, actividades y despliegue disponibles en `Diagramas`. Tambien se prepararon mockups de pantallas para guiar la interfaz.
 
