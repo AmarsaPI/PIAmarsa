@@ -44,6 +44,7 @@ public class SecurityConfig {
 					// Filtro a aplicar en segunda instancia
 					.authorizeHttpRequests(auth -> auth
 							.requestMatchers("/login/**").permitAll()
+							.requestMatchers("/api/**").permitAll()
 							.anyRequest().authenticated()
 					);
 
@@ -69,8 +70,7 @@ public class SecurityConfig {
 	            // Usamos /** para asegurar que pille carpetas como /css/style.css o /js/app.js
 	            .requestMatchers("/css/**", "/js/**", "/images/**", "/*.css", "/*.js", "/*.png", "/logo.png", "/horarios.js").permitAll()
 
-	            // 3. RUTAS API MÓVIL (Tu compañero)
-	            .requestMatchers("/api/login/**", "/api/horarios/**", "/api/empleados/**").permitAll() 
+	            .requestMatchers("/api/**").permitAll() 
 
 	            // El resto requiere estar autenticado (aunque de momento permitas casi todo arriba)
 	            .anyRequest().authenticated()
