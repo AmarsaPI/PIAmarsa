@@ -21,4 +21,5 @@ public interface IAusenciaService {
     void guardar(Ausencia ausencia); 
     void borrarHorariosEnRangoAusencia(Ausencia ausencia);
     void borrarRechazadasPorEmpleadoYTipo(Long empleadoId, TipoAusencia tipo);
+    boolean esEmpleadoAusenteAprobado(Empleado empleado, LocalDate fecha);
 }

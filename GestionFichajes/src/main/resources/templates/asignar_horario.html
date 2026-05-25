@@ -55,12 +55,24 @@
 		}
 
 		.fc-daygrid-event {
-			font-size: 10px !important;
-			display: block !important;
-			padding: 3px 6px !important;
-			margin-top: 2px !important;
-			margin-bottom: 2px !important;
-			border-radius: 4px !important;
+		    background-color: #ffc107 !important;
+		    border-color: #ffc107 !important;
+		    color: black !important; /* Texto negro para que se lea mejor sobre amarillo */
+		}
+		
+		.fc .fc-bg-event {
+		    background: #ffc107 !important;
+		    opacity: 0.5 !important; /* Un poco de transparencia para ver la rejilla */
+		}
+		
+		.fc-event {
+		    border-radius: 4px;
+		    padding: 2px 4px;
+		}
+		
+		.fc-event-title {
+		    color: #000 !important; 
+		    font-weight: 600;
 		}
 
 		.fc-event-title,
@@ -70,13 +82,18 @@
 			text-overflow: clip !important;
 			word-wrap: break-word !important;
 		}
+		
+		.fc .fc-event {
+		    font-size: 0.75rem !important; 
+		}
+		
+		.fc-daygrid-event .fc-event-title {
+		    font-size: 0.7rem !important;
+		    white-space: normal !important; 
+		}
 
 		.fc-daygrid-event-dot {
 			display: none !important;
-		}
-
-		.fc-daygrid-day-frame {
-			min-height: 100px !important;
 		}
 
 		.fc-daygrid-day-events {
@@ -96,13 +113,21 @@
 			border-color: #0a58ca !important;
 		}
 
-		.fc-bg-event {
-			background: rgba(13, 110, 253, 0.3) !important;
+		.fc .fc-bg-event {
+		    opacity: 0.6 !important;
+		    background-color: #ff9f89 !important; /* Forzamos color aquí */
+		    z-index: 1 !important;
+		}
+		
+		/* Fundamental: asegura que la celda del día tenga altura */
+		.fc-daygrid-day-frame {
+		    min-height: 120px !important;
+		    position: relative !important;
 		}
 	</style>
 </head>
 
-<body th:data-home="@{/index}">
+<body th:data-home="@{/index}" th:data-empleado-id="${usuario.id}">
 	<main class="app-shell">
 		<section class="workspace">
 
@@ -115,34 +140,34 @@
 				<button class="help-btn">?</button>
 			</div>
 
-			<div id="logo-amarsa" style="text-align: left; margin: 0 0 20px 20px;">
-				<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
-			</div>
+			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
 
 			<div class="content-grid-admin">
 
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li data-submenu="none"><a th:href="@{/fichar}"
-									style="text-decoration: none; color: inherit;">Fichar</a></li>
-							<li data-submenu="none"><a th:href="@{/horario_personal}"
-									style="text-decoration: none; color: inherit;">Horario</a></li>
-							<li data-submenu="none"><a th:href="@{/vacaciones}"
-									style="text-decoration: none; color: inherit;">Vacaciones y
-									permisos</a></li>
-							<li data-submenu="none">Perfil</li>
-							<li data-submenu="subMenu_gestion">Gestión
-								<ul id="subMenu_gestion" class="submenu-dropdown">
-									<li><a th:href="@{/gestion_plantillas}">Plantillas
-											Horario</a></li>
-									<li class="active-menu">Asignar Horarios</li>
-								</ul>
-							</li>
-							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+							<li data-submenu="none"><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario Personal</a></li>
+							<li class="active-menu">Horario Equipo</li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}" style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>
+					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
+							
+							<li><a th:href="@{/logout}"
+								style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>
+					<div class="px-3" style="margin-top: 20px;">
+				        <a th:href="@{/api/horarios/pdf/descargar-equipo}"
+				           class="btn btn-primary w-100 fw-bold shadow-sm" 
+				           style="padding: 12px; font-size: 0.9rem;">
+				           <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Cuadrante Equipo
+				        </a>
+				    </div>
 				</section>
+				
 
 				<div class="container-fluid p-0">
 					<div class="row g-3">

@@ -1,6 +1,7 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -43,28 +44,24 @@ public class FichajeServiceImpl implements IFichajeService {
     @Override
     @Transactional
     public Fichaje registrarEntrada(Fichaje fichaje) {
-        // 1. Verificación de seguridad: ¿Viene el empleado?
-        if (fichaje.getEmpleado() == null || fichaje.getEmpleado().getId() == null) {
-            throw new RuntimeException("Error: Debe especificar un empleado válido para fichar.");
-        }
-
         Long empleadoId = fichaje.getEmpleado().getId();
+        Optional<Fichaje> fichajeAbierto = fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId);
 
-        // 2. Usamos el método correcto del DAO que definimos antes
-        Optional<Fichaje> fichajeActivo = fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId);
+        if (fichajeAbierto.isPresent()) {
+            Fichaje activo = fichajeAbierto.get();
+            LocalDateTime ahora = LocalDateTime.now();
+            
+            // Comparamos si el fichaje abierto es de HOY o de AYER (o antes)
+            boolean esDeHoy = activo.getFechaEntrada().toLocalDate().equals(ahora.toLocalDate());
 
-        if (fichajeActivo.isPresent()) {
-            throw new RuntimeException("Ya existe una jornada activa para este empleado. Debe cerrar la anterior.");
-        }
-
-        // 3. Si la fecha viene vacía (desde la web), le ponemos la actual
-        if (fichaje.getFechaEntrada() == null) {
-            fichaje.setFechaEntrada(java.time.LocalDateTime.now());
-        }
+            // Si es de hoy, bloqueamos porque es un fichaje en curso
+            if (esDeHoy) {
+                throw new RuntimeException("Ya tienes una jornada iniciada hoy. Por favor, regístrala antes de una nueva.");
+            }
         
-        // Aseguramos que la salida sea NULL al empezar
-        fichaje.setFechaSalida(null);
+        }
 
+        if (fichaje.getFechaEntrada() == null) fichaje.setFechaEntrada(java.time.LocalDateTime.now());
         return fichajeDAO.save(fichaje);
     }
 
@@ -107,6 +104,12 @@ public class FichajeServiceImpl implements IFichajeService {
     
     @Override
     @Transactional(readOnly = true)
+    public List<Fichaje> findFichajesConOlvido(Long empleadoId) {
+        return fichajeDAO.findFichajesConOlvido(empleadoId);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
     public double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha) {
         List<Fichaje> fichajesDelDia = fichajeDAO.findByEmpleadoIdAndFecha(empleadoId, fecha);
         
@@ -126,6 +129,20 @@ public class FichajeServiceImpl implements IFichajeService {
         
         // 3. Pasamos los minutos a horas decimales (ej: 45 min -> 0.75 horas)
         return minutosTotales / 60.0;
+    }
+    
+    public List<Fichaje> findByEmpleadoAndMonth(Long empleadoId, String anioMes) {
+        // Ejemplo lógico (ajusta según tu base de datos):
+        // SELECT f FROM Fichaje f WHERE f.empleado.id = :id 
+        // AND FUNCTION('DATE_FORMAT', f.fechaEntrada, '%Y-%m') = :anioMes
+        return fichajeDAO.findByEmpleadoAndMonth(empleadoId, anioMes);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<Fichaje> findByEmpleadoAndYear(Long empleadoId, int anio) {
+        // Usando Spring Data JPA:
+        return fichajeDAO.findByEmpleadoAndYear(empleadoId, anio);
     }
     
 }

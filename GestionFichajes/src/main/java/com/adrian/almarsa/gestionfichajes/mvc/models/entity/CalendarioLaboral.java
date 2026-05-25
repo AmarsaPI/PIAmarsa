@@ -81,7 +81,5 @@ public class CalendarioLaboral implements Serializable { // Implementa UserDetai
 	public void setFestivos(List<Festivo> festivos) {
 		this.festivos = festivos;
 	}
-
-   
     
 }

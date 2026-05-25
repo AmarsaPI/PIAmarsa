@@ -20,9 +20,15 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 	private PasswordEncoder passwordEncoder; // Inyectado desde SecurityConfig
 	
 	@Override
-	@Transactional(readOnly = true) // Optimiza la consulta al ser solo de lectura
+	@Transactional(readOnly = true)
 	public List<Empleado> findAll() {
-		return (List<Empleado>) empleadoDAO.findAll();
+	    return empleadoDAO.findByActivoTrue();
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Empleado> findAllIncluyendoInactivos() {
+	    return (List<Empleado>) empleadoDAO.findAll();
 	}
 	
 	@Override
@@ -68,4 +74,14 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
 	public Empleado findByEmail(String email) {
 	    return empleadoDAO.findByEmail(email).orElse(null);
 	}
+	
+	@Override
+    @Transactional
+    public void darDeBaja(Long id) {
+        Empleado emp = empleadoDAO.findById(id)
+            .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+        
+        emp.setActivo(false); // Cambiamos el estado a false
+        empleadoDAO.save(emp); // Persistimos el cambio
+    }
 }

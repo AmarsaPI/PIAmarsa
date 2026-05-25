@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Ausencia;
@@ -22,6 +23,8 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAusenciaService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class AdminController {
@@ -72,12 +75,38 @@ public class AdminController {
     }
     
     @GetMapping("/admin/listado_usuarios")
-    public String mostrarListadoUsuarios(HttpSession session, Model model) {
-        if (!esAdminPuro(session)) return "redirect:/login";
+    public String mostrarListadoUsuarios(
+            @RequestParam(value = "mostrarTodos", required = false, defaultValue = "false") boolean mostrarTodos,
+            HttpSession session, 
+            Model model) {
+        
+    	if (!esAdminPuro(session)) return "redirect:/login";
+
+        // Elegimos la lista basándonos en el booleano
+        List<Empleado> empleados = mostrarTodos ? 
+                                   empleadoService.findAllIncluyendoInactivos() : 
+                                   empleadoService.findAll();
+        
+        // Pasamos los objetos asegurando que no sean null
+        model.addAttribute("empleados", (empleados != null) ? empleados : new ArrayList<Empleado>());
+        
+        // Fuerza el booleano explícitamente en el modelo
+        model.addAttribute("mostrarTodos", mostrarTodos);
+        
+        if (mostrarTodos) {
+            empleados = empleadoService.findAllIncluyendoInactivos();
+        } else {
+            empleados = empleadoService.findAll(); // Tu método que filtra activos
+        }
+        
+        // PASO CRÍTICO: Si la lista es null, inicialízala vacía para evitar el error
+        model.addAttribute("empleados", (empleados != null) ? empleados : new ArrayList<>());
+        model.addAttribute("mostrarTodos", mostrarTodos);
+        
         Long adminId = (Long) session.getAttribute("adminLogueadoId");
         model.addAttribute("usuario", adminService.findById(adminId));
-        model.addAttribute("empleados", empleadoService.findAll()); 
-        return "admin/listado_usuarios"; 
+        
+        return "admin/listado_usuarios";
     }
     
     @GetMapping("/admin/empleados/editar/{id}")
@@ -117,21 +146,6 @@ public class AdminController {
         return "redirect:/admin/listado_usuarios";
     }
 
-    @PostMapping("/admin/gestion/eliminar/{id}")
-    public String eliminarEmpleado(@PathVariable Long id, HttpSession session, org.springframework.web.servlet.mvc.support.RedirectAttributes flash) {
-        if (!esAdminPuro(session)) return "redirect:/login";
-        try {
-            empleadoService.delete(id);
-            flash.addFlashAttribute("success", "Usuario eliminado con éxito.");
-        } catch (Exception e) {
-            flash.addFlashAttribute("error", "No se pudo eliminar el usuario.");
-        }
-        return "redirect:/admin/listado_usuarios";
-    }
-
-    // =========================================================================
-    // 🌟 NUEVO: VISTA PARA ASIGNAR BAJAS Y PERMISOS (SOLO ADMIN PURO)
-    // =========================================================================
     @GetMapping("/admin/asignar_ausencia")
     public String mostrarFormularioAsignar(HttpSession session, Model model) {
         if (!esAdminPuro(session)) {
@@ -139,15 +153,12 @@ public class AdminController {
         }
 
         Long adminId = (Long) session.getAttribute("adminLogueadoId");
-        model.addAttribute("usuario", adminService.findById(adminId)); // Tu barra superior
-        model.addAttribute("empleados", empleadoService.findAll());    // Lista para el select
+        model.addAttribute("usuario", adminService.findById(adminId)); 
+        model.addAttribute("empleados", empleadoService.findAll());    
 
-        return "admin/asignar_ausencia"; // Plantilla dentro de templates/admin/
+        return "admin/asignar_ausencia"; 
     }
 
-    // =========================================================================
-    // 🌟 NUEVO: PROCESAR EL GUARDADO DE LA BAJA / PERMISO
-    // =========================================================================
     @PostMapping("/admin/ausencias/guardar")
     public String guardarAusenciaOficial(@RequestParam("empleadoId") Long empleadoId,
                                          @RequestParam("fechaInicio") @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate inicio,
@@ -193,5 +204,19 @@ public class AdminController {
         }
 
         return "redirect:/admin/asignar_ausencia";
+    }
+    
+    @PostMapping("/admin/gestion/eliminar/{id}")
+    public String eliminarEmpleado(@PathVariable Long id, HttpSession session, RedirectAttributes flash) {
+        if (!esAdminPuro(session)) return "redirect:/login";
+        
+        try {
+            // En lugar de borrar de la base de datos, lo marcamos como inactivo
+            empleadoService.darDeBaja(id); 
+            flash.addFlashAttribute("success", "Empleado dado de baja correctamente.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al procesar la baja.");
+        }
+        return "redirect:/admin/listado_usuarios";
     }
 }

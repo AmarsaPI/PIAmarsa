@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,9 +23,11 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.dto.EventoCalendarioDTO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.SolicitudCambio;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.ISolicitudCambioService;
 
 import jakarta.servlet.http.HttpSession;
 import tools.jackson.core.type.TypeReference;
@@ -41,6 +44,9 @@ public class HorarioController {
 	
 	@Autowired
 	private IEmpleadoService empleadoService;
+	
+	@Autowired
+	private ISolicitudCambioService solicitudCambioService;
 	
 	//Para leer correctamente el json
 	@Autowired
@@ -207,5 +213,17 @@ public class HorarioController {
             response.put("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @PostMapping("/solicitar-cambio-horario")
+    public String procesarSolicitud(@ModelAttribute SolicitudCambio solicitud, 
+                                    HttpSession session) {
+        
+    	Empleado empleado = empleadoService.findById((Long) session.getAttribute("usuarioLogueadoId"));
+        solicitud.setEmpleado(empleado); 
+        
+        solicitudCambioService.guardar(solicitud);
+        
+        return "redirect:/horario_personal?mensaje=solicitud_enviada";
     }
 }

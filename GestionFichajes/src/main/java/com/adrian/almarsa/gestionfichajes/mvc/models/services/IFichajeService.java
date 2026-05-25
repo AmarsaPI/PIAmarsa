@@ -32,4 +32,10 @@ public interface IFichajeService {
     public Fichaje findUltimoSinCerrar(Long empleadoId);
     
     double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha);
+
+	List<Fichaje> findFichajesConOlvido(Long empleadoId);
+	
+	public List<Fichaje> findByEmpleadoAndMonth(Long empleadoId, String anioMes);
+	
+	List<Fichaje> findByEmpleadoAndYear(Long empleadoId, int anio);
 }

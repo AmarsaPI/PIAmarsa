@@ -23,5 +23,18 @@ public interface IFichajeDAO extends CrudRepository<Fichaje, Long> {
     
     @Query("SELECT f FROM Fichaje f WHERE f.empleado.id = :empleadoId AND FUNCTION('DATE', f.fechaEntrada) = :fecha")
     List<Fichaje> findByEmpleadoIdAndFecha(@Param("empleadoId") Long empleadoId, @Param("fecha") LocalDate fecha);
-
+    
+    @Query("SELECT f FROM Fichaje f WHERE f.empleado.id = :empleadoId " +
+    	       "AND f.fechaSalida IS NULL " +
+    	       "AND FUNCTION('DATE', f.fechaEntrada) < CURRENT_DATE")
+	List<Fichaje> findFichajesConOlvido(@Param("empleadoId") Long empleadoId);
+    
+    @Query("SELECT f FROM Fichaje f WHERE f.empleado.id = :empleadoId " +
+    	       "AND TO_CHAR(f.fechaEntrada, 'YYYY-MM') = :anioMes " +
+    	       "ORDER BY f.fechaEntrada ASC")
+	List<Fichaje> findByEmpleadoAndMonth(@Param("empleadoId") Long empleadoId, 
+    	                                     @Param("anioMes") String anioMes);
+    
+    @Query("SELECT f FROM Fichaje f WHERE f.empleado.id = :empleadoId AND YEAR(f.fechaEntrada) = :anio")
+    List<Fichaje> findByEmpleadoAndYear(@Param("empleadoId") Long empleadoId, @Param("anio") int anio);
 }

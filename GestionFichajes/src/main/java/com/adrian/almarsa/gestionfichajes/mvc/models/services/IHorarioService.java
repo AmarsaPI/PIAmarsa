@@ -1,6 +1,7 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
@@ -24,4 +25,8 @@ public interface IHorarioService {
     List<Horario> findByEmpleado(Long empleadoId);
     
     List<Horario> findByFechaBetween(LocalDate inicio, LocalDate fin);
+    
+    Horario findByEmpleadoIdAndFecha(Long empleadoId, LocalDate fecha);
+    
+    void actualizarTurnoProgramado(Long empleadoId, LocalDate fecha, LocalTime nuevaEntrada, LocalTime nuevaSalida, LocalTime nuevaEntrada2, LocalTime nuevaSalida2);
 }

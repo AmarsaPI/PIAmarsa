@@ -28,18 +28,11 @@
 	justify-content: center;
 	height: 100%; 
 }
-
-/* 🌟 Alinea el contenido central arriba del todo eliminando paddings innecesarios */
-#mainContent {
-	padding: 0px 20px 20px 20px !important;
-	overflow-y: auto;
-}
 </style>
 </head>
 
 <body th:data-home="@{/index}">
 	<main class="app-shell">
-		<header class="browser-top"> </header>
 
 		<section class="workspace">
 			<div class="top-tools">
@@ -64,16 +57,10 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration: none; color: inherit;">Fichar</a></li>
-							<li data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario</a></li>
-							<li data-submenu="none" class="active-menu" style="font-weight: bold; color: #0d6efd;">🏖️ Vacaciones y permisos</li>
-							<li data-submenu="none">Perfil</li>
-							<li data-submenu="subMenu_gestion">Gestión
-								<ul id="subMenu_gestion" class="submenu-dropdown" hidden="hidden">
-									<li><a th:href="@{/gestion_plantillas}">Plantillas Horario</a></li>
-									<li><a th:href="@{/asignar_horario}">Asignar Horarios</a></li>
-								</ul>
-							</li>
+							<li><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li class="active-menu">Vacaciones personales</li>
+							
 							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>

@@ -3,114 +3,157 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Buzón de Solicitudes - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <title>Gestión de Solicitudes - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/styles.css}" />
+    <style>
+    /* Asegura que el contenedor padre mantenga el layout de 3 columnas */
+    .content-grid {
+        display: grid !important;
+        grid-template-columns: 220px minmax(0, 1fr) 300px !important;
+        gap: 20px !important;
+        align-items: start !important;
+    }
+
+    /* Fuerza a que las tablas no se expandan más allá de su celda */
+    #mainContent {
+        min-width: 0 !important; /* IMPORTANTE: Permite que el grid encoja este div */
+        padding: 20px !important;
+    }
+
+    /* Evita que los formularios o tablas fuercen anchos inesperados */
+    #mainContent table {
+        width: 100% !important;
+        table-layout: auto; 
+    }
+    
+    * Elimina el margen superior del primer H2 */
+    h2:first-child {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    h2 + div {
+        margin-top: 0px !important; 
+    }
+
+    /* Asegura que mainContent no tenga un padding superior excesivo */
+    #mainContent {
+        padding-top: 10px !important; /* Ajusta este valor para subirlo más o menos */
+    }
+    .workspace {
+        padding-top: 5px !important;
+    }
+
+    /* 2. Elimina el margen superior de los títulos h2 */
+    h2 {
+        margin-top: 0 !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* 3. Asegura que el mainContent empiece desde arriba */
+    #mainContent {
+        padding-top: 0 !important;
+    }
+
+</style>
 </head>
 
-<body th:data-home="@{/admin/index}">
+<body>
     <main class="app-shell">
-        <section class="workspace p-4">
-            <div class="top-tools mb-3">
-                <button class="menu-toggle">☰ Menú Admin ▾</button>
-                <div style="font-weight: bold;">🛠️ Bandeja de Entrada de RRHH</div>
+        <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
             </div>
-
+            
             <div id="logo-amarsa">
-                <img th:src="@{/logo.png}" alt="Logo AMARSA" class="brand-logo" />
-            </div>
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+			</div>
 
-            <div class="content-grid d-flex gap-4 align-items-start">
-                <aside class="left-zone" style="min-width: 250px;">
+            <div class="content-grid">
+                <section class="left-zone">
                     <div class="menu-wrap">
-                        <ul class="menu-dropdown">
-                            <li><a th:href="@{/admin/gestion}">👥 Gestión de Empleados</a></li>
-                            <li><a th:href="@{/admin/calendarios_laborales}">🗓️ Calendarios Laborales</a></li>
-                            <li><a th:href="@{/gestion_plantillas}">🗓️ Plantillas Horario</a></li>
-                            <li class="active-menu">📥 Solicitudes Recibidas</li>
-                            <li><a th:href="@{/logout}" style="color: red;">Salir</a></li>
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li data-submenu="none"><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li><a th:href="@{/asignar_horario}" style="text-decoration: none; color: inherit;">Horario Personal</a></li>
+							<li><a th:href="@{/asignar_horario}" style="text-decoration: none; color: inherit;">Horario Equipo</a></li>							
+							<li><a th:href="@{/gestion_plantillas}" style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>
+					        <li><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+					        <li class="active-menu">Solicitudes</li>
+							
+							<li><a th:href="@{/logout}"
+								style="color: red; text-decoration: none;">Salir</a></li>
                         </ul>
                     </div>
-                </aside>
+                </section>
 
-                <div class="main-content flex-grow-1">
-                    <div class="card shadow-sm border-0 p-4">
-                        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-inbox-fill text-warning"></i> Peticiones
-                            Pendientes de Validación</h4>
-                        <p class="text-muted small mb-4">Revisa, aprueba o descarta los periodos de vacaciones y
-                            licencias reclamados por el personal.</p>
-
-                        <div th:if="${mensaje}" class="alert alert-info" th:text="${mensaje}"></div>
-
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Empleado</th>
-                                        <th>Periodo Solicitado</th>
-                                        <th class="text-center">Días</th>
-                                        <th>Comentarios</th>
-                                        <th class="text-center">Acciones Coercitivas</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:if="${#lists.isEmpty(solicitudesPendientes)}">
-                                        <td colspan="5" class="text-center py-4 text-muted">
-                                            <i class="bi bi-envelope-open text-secondary fs-3 d-block mb-2"></i> No hay
-                                            solicitudes pendientes de respuesta. ¡Bandeja limpia!
-                                        </td>
-                                    </tr>
-                                    <tr th:each="sol : ${solicitudesPendientes}">
-                                        <td>
-                                            <div class="fw-bold text-dark" th:text="${sol.empleado.nombre}">Nombre
-                                                Empleado</div>
-                                            <small class="text-muted"
-                                                th:text="${sol.empleado.email}">email@empresa.com</small>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-secondary-subtle text-dark border p-2">
-                                                <i class="bi bi-calendar-range me-1"></i>
-                                                <span
-                                                    th:text="${#temporals.format(sol.fechaInicio, 'dd/MM/yyyy')}">01/01/2026</span>
-                                                al
-                                                <span
-                                                    th:text="${#temporals.format(sol.fechaFin, 'dd/MM/yyyy')}">15/01/2026</span>
-                                            </span>
-                                        </td>
-                                        <td class="text-center fw-bold text-primary" th:text="${sol.totalDias}">15</td>
-                                        <td class="text-muted small"
-                                            style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                            th:text="${sol.motivo ?: 'Sin observaciones'}">Motivo</td>
-                                        <td class="text-center">
-                                            <div class="d-inline-flex gap-2">
-                                                <form th:action="@{/admin/solicitudes/responder}" method="post">
-                                                    <input type="hidden" name="solicitudId" th:value="${sol.id}">
-                                                    <input type="hidden" name="accion" value="APROBAR">
-                                                    <button type="submit" class="btn btn-success btn-sm px-3 fw-bold">
-                                                        <i class="bi bi-check-lg"></i> Aprobar
-                                                    </button>
-                                                </form>
-                                                <form th:action="@{/admin/solicitudes/responder}" method="post">
-                                                    <input type="hidden" name="solicitudId" th:value="${sol.id}">
-                                                    <input type="hidden" name="accion" value="RECHAZAR">
-                                                    <button type="submit" class="btn btn-danger btn-sm px-3 fw-bold">
-                                                        <i class="bi bi-x-lg"></i> Rechazar
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+                <div id="mainContent">
+    
+				    <h2>Correcciones de Fichajes</h2>
+				    <div th:each="s : ${fichajes}" style="margin-bottom: 20px; background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px;">
+				        <table style="width: 80%; border-collapse: collapse;">
+				            <tr>
+				                <td><strong>Empleado:</strong> <span th:text="${s.fichaje.empleado.nombre}"></span></td>
+				                <td><strong>Fecha:</strong> <span th:text="${#temporals.format(s.fichaje.fechaEntrada, 'dd/MM/yyyy')}"></span></td>
+				                <td><strong>Propuesta:</strong> <span th:text="${s.horaEntradaPropuesta} + ' a ' + ${s.horaSalidaPropuesta}"></span></td>
+				                <td>
+				                    <form th:action="@{/solicitudes/procesar}" method="post" style="display: flex; gap: 5px;">
+				                        <input type="hidden" name="id" th:value="${s.id}" />
+				                        <button type="submit" name="accion" value="APROBAR">Aprobar</button>
+				                        <button type="submit" name="accion" value="RECHAZAR">Rechazar</button>
+				                    </form>
+				                </td>
+				            </tr>
+				        </table>
+				    </div>
+				
+				    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd;">
+				
+				    <h2>Cambios de Turno Futuro</h2>
+				    <div th:each="s : ${turnos}" style="margin-bottom: 20px; background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px;">
+				        <table style="width: 100%; border-collapse: collapse;">
+				            <tr>
+				                <td><strong>Empleado:</strong> <span th:text="${s.empleado.nombre}"></span></td>
+				                <td><strong>Fecha Turno:</strong> <span th:text="${#temporals.format(s.fechaTurno, 'dd/MM/yyyy')}"></span></td>
+				                <td><strong>Propuesta:</strong> <span th:text="${s.horaEntradaPropuesta} + ' a ' + ${s.horaSalidaPropuesta}"></span></td>
+				                <td>
+				                    <form th:action="@{/solicitudes/procesar}" method="post">
+									    <input type="hidden" name="id" th:value="${s.id}" />
+									    
+									    <button type="submit" name="accion" value="APROBAR">Aprobar</button>
+									    <button type="submit" name="accion" value="RECHAZAR">Rechazar</button>
+									</form>
+				                </td>
+				            </tr>
+				        </table>
+				    </div>
+				    
+				</div>
+                <aside class="calendar-panel">
+				    <div class="calendar-head">
+				        <strong id="yearText">2026</strong> 
+				        <span id="dateText"></span> </div>
+				    <div class="calendar-body">
+				        <div class="month-bar">
+				            <button id="prevMonth" aria-label="mes anterior">‹</button>
+				            <span id="monthLabel">MARCH 2026</span>
+				            <button id="nextMonth" aria-label="mes siguiente">›</button>
+				        </div>
+				        <div class="weekdays" id="weekdays"></div>
+				        <div class="days-grid" id="daysGrid"></div>
+				    </div>
+				    <div class="calendar-actions">
+				        <button class="cancel">CANCEL</button>
+				        <button class="ok">OK</button>
+				    </div>
+				</aside>
             </div>
+            
+            
         </section>
     </main>
-    <script th:src="@{/common.js}"></script>
+    <script th:src="@{/app.js}"></script>
 </body>
-
 </html>
