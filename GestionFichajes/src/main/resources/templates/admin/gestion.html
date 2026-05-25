@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gestión RRHH - Gestor de horarios y fichajes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+	rel="stylesheet" />
+<!-- Usamos th:href para que Spring gestione la ruta del CSS -->
+<link rel="stylesheet" th:href="@{/styles.css}" />
+<style>
+.management-options {
+	margin-top: 0 !important;
+	margin-left: 150px;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 100px;
+	align-items: start;
+}
+
+.management-card:first-of-type {
+  min-height: 100px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+</style>
+</head>
+
+<body>
+	<main class="app-shell">
+
+		<section class="workspace">
+			<div class="top-tools">
+				<button class="menu-toggle">☰ Menú ▾</button>
+				<div style="margin-left: 15px; font-weight: 600;">
+					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
+				</div>
+				<div class="search-area">
+					<span>🔍</span> <input type="text" placeholder="search"
+						aria-label="buscar" />
+				</div>
+				<button class="help-btn">?</button>
+			</div>
+			<div id="logo-amarsa">
+				<a th:href="@{/admin/index}"><img th:src="@{/logo.png}"
+					alt="Logo del gestor" class="brand-logo" /></a>
+			</div>
+			<div class="content-grid">
+				<section class="left-zone">
+					<div class="menu-wrap">
+						<ul id="mainMenu" class="menu-dropdown">
+							<li data-submenu="none"><a th:href="@{/convenio}"
+								style="text-decoration: none; color: inherit;">Convenio</a></li>
+							<li><a th:href="@{/logout}"
+								style="color: red; text-decoration: none;">Salir</a></li>
+						</ul>
+					</div>
+				</section>
+
+				<!-- Sección de opciones adaptada -->
+				<section class="management-options">
+
+					<!-- Opción 1: Agregar Usuario -->
+					<a class="management-card" th:href="@{/admin/agregar_usuario}">
+						<h2>Agregar usuario nuevo</h2>
+						<p>Alta de un nuevo trabajador con sus datos personales.</p>
+					</a>
+
+					<!-- Opción 2: Listado y Bajas -->
+					<a class="management-card" th:href="@{/admin/listado_usuarios}">
+						<h2>Listado de Empleados</h2>
+						<p>Visualiza la plantilla actual y gestiona las bajas del
+							sistema, también es posible modificar los datos de algún usuario.</p>
+					</a>
+				</section>
+			</div>
+		</section>
+	</main>
+	<!-- Scripts -->
+	<script th:src="@{/app.js}"></script>
+	<script th:src="@{/common.js}"></script>
+</body>
+
+</html>

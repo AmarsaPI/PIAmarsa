@@ -11,5 +11,5 @@ public interface IAdminDAO extends CrudRepository<Admin, Long> {
     // Busca un admin por su email (necesario para la autenticación de Spring Security)
     // Retorna un Optional para manejar de forma segura si el usuario no existe
     Optional<Admin> findByEmail(String email);
-    
+
 }

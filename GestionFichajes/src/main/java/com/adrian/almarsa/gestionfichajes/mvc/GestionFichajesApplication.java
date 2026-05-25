@@ -9,5 +9,4 @@ public class GestionFichajesApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(GestionFichajesApplication.class, args);
 	}
-
 }

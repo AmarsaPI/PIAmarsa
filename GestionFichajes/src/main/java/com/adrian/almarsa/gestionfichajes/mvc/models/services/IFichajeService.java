@@ -1,8 +1,8 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
-import java.time.LocalDate;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
+import org.springframework.transaction.annotation.Transactional;
 
 // Interfaz que gestiona el ciclo de vida de la jornada laboral
 public interface IFichajeService {
@@ -27,9 +27,10 @@ public interface IFichajeService {
     
     // Recupera todos los fichajes realizados por un empleado específico
     List<Fichaje> findByEmpleado(Long empleadoId);
-    
+
+    // Lista el historial de fichajes de un empleado usando el método corregido del DAO
+    List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId);
+
     //Encuentra el último fichaje sin fichaje de salida
     public Fichaje findUltimoSinCerrar(Long empleadoId);
-    
-    double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha);
 }

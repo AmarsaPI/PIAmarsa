@@ -68,43 +68,36 @@
 }
 
 .alerts-container {
-	width: 90%;
-	max-width: 1000px;
-	margin: 20px auto 0 auto; /* Centrado horizontal */
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto 0 auto; /* Centrado horizontal */
 }
 
-.alert {
-	padding: 15px 20px;
-	border-radius: 8px;
-	margin-bottom: 15px;
-	display: flex;
-	align-items: center;
-	font-weight: 600;
-	animation: slideIn 0.5s ease-out;
+alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    animation: slideIn 0.5s ease-out;
 }
 
 .alert-icon {
-	margin-right: 12px;
-	font-size: 1.2rem;
+    margin-right: 12px;
+    font-size: 1.2rem;
 }
 
 .alert-success {
-	background-color: #e8f5e9;
-	color: #2e7d32;
-	border: 1px solid #c8e6c9;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
 }
 
 .alert-error {
-	background-color: #ffebee;
-	color: #c62828;
-	border: 1px solid #ffcdd2;
-}
-
-.btn-nuevo {
-    transition: background-color 0.3s;
-}
-.btn-nuevo:hover {
-    background-color: #1b5e20 !important;
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
 }
 </style>
 </head>
@@ -131,14 +124,7 @@
 					<span class="alert-icon">⚠️</span> <span th:text="${error}"></span>
 				</div>
 			</div>
-			<div style="width: 90%; max-width: 1000px; margin: 20px auto 0 auto; text-align: right;">
-			    <a th:href="@{/admin/agregar_usuario}" 
-			       style="background-color: #1976d2; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.3s;"
-			       onmouseover="this.style.backgroundColor='#1565c0'" 
-			       onmouseout="this.style.backgroundColor='#1976d2'">
-			       <span style="margin-right: 8px;">➕</span> Añadir nuevo empleado
-			    </a>
-			</div>
+
 			<!-- Contenedor central de la tabla -->
 			<section class="table-container">
 				<table class="styled-table">
@@ -152,17 +138,15 @@
 					</thead>
 					<tbody>
 						<tr th:each="e : ${empleados}">
-							<td th:text="${e.nombre}">Juan Pérez</td>
-							<td th:text="${e.email}">juan@amarsa.com</td>
-							<td th:text="${e.rol}">EMPLEADO</td>
+							<td th:text="${e.nombre}"></td>
+							<td th:text="${e.email}"></td>
 							<td><a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}"
 								class="btn-edit">Editar</a>
 								<form th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}"
 									method="post" style="display: inline;"
 									onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este empleado?');">
 									<button type="submit" class="btn-delete"
-										style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;">
-										Eliminar</button>
+										style="background: none; border: none; color: red; cursor: pointer; text-decoration: underline;">Eliminar</button>
 								</form></td>
 						</tr>
 					</tbody>

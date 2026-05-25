@@ -1,12 +1,9 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.dao;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
 
@@ -20,8 +17,4 @@ public interface IFichajeDAO extends CrudRepository<Fichaje, Long> {
     // Obtiene el historial completo de fichajes de un empleado
     // El uso de "_" (Empleado_Id) garantiza que JPA busque por el ID del objeto Empleado
     List<Fichaje> findByEmpleado_Id(Long empleadoId);
-    
-    @Query("SELECT f FROM Fichaje f WHERE f.empleado.id = :empleadoId AND FUNCTION('DATE', f.fechaEntrada) = :fecha")
-    List<Fichaje> findByEmpleadoIdAndFecha(@Param("empleadoId") Long empleadoId, @Param("fecha") LocalDate fecha);
-
 }

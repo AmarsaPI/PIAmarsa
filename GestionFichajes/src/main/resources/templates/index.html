@@ -44,43 +44,30 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li data-submenu="none"><a th:href="@{/index}"
-								style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li data-submenu="none"><a th:href="@{/fichar}"
-								style="text-decoration: none; color: inherit;"><strong>Fichar 🖊️</strong></a></li>
-							<li data-submenu="subMenu_horario">Horario
-								<ul id="subMenu_horario" class="submenu-dropdown"
+								style="text-decoration: none; color: inherit;">Fichar</a></li>
+							<li data-submenu="none"><a th:href="@{/horario_personal}"
+								style="text-decoration: none; color: inherit;">Horario</a></li>
+							<li data-submenu="none"><a th:href="@{/vacaciones}"
+								style="text-decoration: none; color: inherit;">Vacaciones y
+									permisos</a></li>
+							<li data-submenu="none">Perfil</li>
+							<li data-submenu="subMenu_gestion">Gestión
+								<ul id="subMenu_gestion" class="submenu-dropdown"
 									hidden="hidden">
-									<li><a th:href="@{/horario_personal}">Horario Individual</a></li>
-									<li><a th:href="@{/asignar_horario}">Horario Equipo</a></li>
+									<li><a th:href="@{/gestion_plantillas}">Plantillas
+											Horario</a></li>
+									<li><a th:href="@{/asignar_horario}">Asignar Horarios</a></li>
 								</ul>
 							</li>
-							<li data-submenu="subMenu_ausencias">Ausencias
-							    <ul id="subMenu_ausencias" class="submenu-dropdown" hidden="hidden">
-							        <li><a th:href="@{/vacaciones}">Solicitud Vacaciones</a></li>
-							        
-							        <li th:if="${usuario.rol.name() != 'ADMINISTRADOR'}">
-									    <a th:href="@{/vacaciones/calendario-global}">Vacaciones Equipo</a>
-									</li>
-							    </ul>
-							</li>
-							
-							<li data-submenu="none">Perfil</li>
-							
-							<li data-submenu="subMenu_gestion" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}">Gestión
-							    <ul id="subMenu_gestion" class="submenu-dropdown" hidden="hidden">
-							        <li><a th:href="@{/gestion_plantillas}">Plantillas Horario</a></li>
-							        <li><a th:href="@{/asignar_horario}">Horarios</a></li>
-							        <li><a th:href="@{/vacaciones/calendario-global}">Ausencias</a></li>
-							        <li><a th:href="@{/solicitudes}">Solicitudes</a></li>
-							    </ul>
-							</li>
-							<li data-submenu="none" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/index}"
-								style="text-decoration: none; color: inherit;">Informes</a></li>
-							<li data-submenu="none"><a th:href="@{/index}"
-								style="text-decoration: none; color: inherit;">Convenio</a></li>
 							<li><a th:href="@{/logout}"
 								style="color: red; text-decoration: none;">Salir</a></li>
+						</ul>
+						<ul id="subMenu" class="submenu-dropdown" hidden="hidden">
+							<li><a th:href="@{/horario_personal}">Ver horario
+									personal</a></li>
+							<li><a th:href="@{/empleados}">Empleados</a></li>
+							<li><a th:href="@{/departamentos}">Departamentos</a></li>
 						</ul>
 					</div>
 				</section>

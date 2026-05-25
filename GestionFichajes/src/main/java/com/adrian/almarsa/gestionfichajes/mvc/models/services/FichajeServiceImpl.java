@@ -1,7 +1,9 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,7 +98,18 @@ public class FichajeServiceImpl implements IFichajeService {
     public List<Fichaje> findByEmpleado(Long empleadoId) {
         return fichajeDAO.findByEmpleado_Id(empleadoId);
     }
-    
+
+    // Lista el historial de fichajes de un empleado usando el método corregido del DAO
+    @Transactional(readOnly = true)
+    public List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId) {
+        LocalDateTime monday = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusDays(1);
+        LocalDateTime sunday = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1);
+        System.out.println(monday);
+        System.out.println(sunday);
+        return fichajeDAO.findByEmpleado_Id(empleadoId).stream().filter(
+                fichaje -> fichaje.getFechaEntrada().isAfter(monday) && fichaje.getFechaEntrada().isBefore(sunday)).toList();
+    }
+
     //Devuelve el último fichaje sin salida
     @Override
     @Transactional(readOnly = true)
@@ -104,28 +117,4 @@ public class FichajeServiceImpl implements IFichajeService {
         return fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId)
                          .orElse(null); // Si no hay nada abierto, devuelve null
     }
-    
-    @Override
-    @Transactional(readOnly = true)
-    public double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha) {
-        List<Fichaje> fichajesDelDia = fichajeDAO.findByEmpleadoIdAndFecha(empleadoId, fecha);
-        
-        if (fichajesDelDia == null || fichajesDelDia.isEmpty()) {
-            return 0.0; // Si no hay fichajes, trabajó 0 horas
-        }
-        
-        long minutosTotales = 0;
-        
-        // 2. Recorremos los fichajes del día sumando los intervalos de tiempo
-        for (Fichaje f : fichajesDelDia) {
-            if (f.getFechaEntrada() != null && f.getFechaSalida() != null) {
-                long minutos = ChronoUnit.MINUTES.between(f.getFechaEntrada(), f.getFechaSalida());
-                minutosTotales += minutos;
-            }
-        }
-        
-        // 3. Pasamos los minutos a horas decimales (ej: 45 min -> 0.75 horas)
-        return minutosTotales / 60.0;
-    }
-    
 }

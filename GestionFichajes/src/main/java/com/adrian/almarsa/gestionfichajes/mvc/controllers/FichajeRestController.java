@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -92,8 +93,8 @@ public class FichajeRestController {
                 response.put("mensaje", "Error: no se pudo editar, el fichaje ID: " + id + " no existe");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            fichajeActual.setFechaEntrada(fichaje.getFechaEntrada());
-            fichajeActual.setFechaSalida(fichaje.getFechaSalida());
+//            fichajeActual.setFechaEntrada(fichaje.getFechaEntrada());
+            fichajeActual.setFechaSalida(LocalDateTime.now());
             if(fichaje.getEmpleado() != null) fichajeActual.setEmpleado(fichaje.getEmpleado());
 
             Fichaje fichajeUpdated = fichajeService.save(fichajeActual);
@@ -130,6 +131,23 @@ public class FichajeRestController {
         Map<String, Object> response = new HashMap<>();
         try {
             List<Fichaje> fichajes = fichajeService.findByEmpleado(empleadoId);
+            if (fichajes.isEmpty()) {
+                response.put("mensaje", "No hay fichajes para el empleado ID: " + empleadoId);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(fichajes, HttpStatus.OK);
+        } catch (DataAccessException e) {
+            response.put("mensaje", "Error al consultar fichajes");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Consulta de historial específico para un empleado
+    @GetMapping("/fichajes/empleado/{empleadoId}/SemanaActual")
+    public ResponseEntity<?> fichajesPorEmpleadoSemanaActual(@PathVariable Long empleadoId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Fichaje> fichajes = fichajeService.findByEmpleadoSemanaActual(empleadoId);
             if (fichajes.isEmpty()) {
                 response.put("mensaje", "No hay fichajes para el empleado ID: " + empleadoId);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

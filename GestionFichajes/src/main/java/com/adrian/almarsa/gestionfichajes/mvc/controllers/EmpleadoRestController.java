@@ -3,10 +3,24 @@ package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Rol;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.JwtService;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpRequestResponseHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +28,7 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 
 import jakarta.validation.Valid;
+import tools.jackson.databind.annotation.JsonAppend;
 
 // Controlador REST para gestionar las operaciones CRUD de los empleados
 @CrossOrigin(origins = {"*"}) // Permite peticiones desde cualquier origen (CORS)
@@ -23,6 +38,8 @@ public class EmpleadoRestController {
 
     @Autowired
     private IEmpleadoService empleadoService;
+
+    private JwtService jwtService = new JwtService();
 
     // Obtiene el listado completo de empleados
     @GetMapping("/empleados")
@@ -57,7 +74,7 @@ public class EmpleadoRestController {
     private PasswordEncoder passwordEncoder;
 
     // Busca empleado por Email
-    @GetMapping("/login/{email}/{password}")
+    @PostMapping("/login/{email}/{password}")
     public ResponseEntity<?> showEmail(@PathVariable String email, @PathVariable String password) {
         Empleado empleado = null;
         Map<String, Object> response = new HashMap<>();
@@ -78,7 +95,11 @@ public class EmpleadoRestController {
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
-        return new ResponseEntity<>(empleado, HttpStatus.OK);
+        JwtService jwtService = new JwtService();
+
+        String token = jwtService.generarToken(email, empleado.getId(), empleado.getRol());
+
+        return new ResponseEntity<>(Map.of("token", token, "empleado", empleado), HttpStatus.OK);
     }
 
     // Crea un nuevo empleado validando los campos obligatorios y cifrando la contraseña
