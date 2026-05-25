@@ -170,7 +170,24 @@
 	            };
 	        },
 
-	        events: '/api/horarios-reales/mis-turnos',
+	        eventSources: [
+	            {
+	                // Esto garantiza que se envíen las fechas al controlador
+	                url: '/api/horarios-reales/mis-turnos',
+	                method: 'GET',
+	                failure: function() {
+	                    console.error('Error al cargar mis turnos');
+	                }
+	            },
+	            {
+	                url: '/api/horarios-reales/mis-festivos',
+	                method: 'GET'
+	            }
+	        ],
+	        eventDidMount: function(info) {
+	            // Esto es un truco para ver si al menos se están intentando pintar
+	            console.log("Evento cargado:", info.event.title);
+	        },
 	        
 	        headerToolbar: {
 	            left: 'prev,next today',

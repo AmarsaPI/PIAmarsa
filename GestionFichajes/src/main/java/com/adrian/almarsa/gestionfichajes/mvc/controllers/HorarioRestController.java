@@ -296,7 +296,8 @@ public class HorarioRestController {
     @GetMapping("/horarios-reales/mis-turnos")
     public ResponseEntity<?> misTurnos(
             HttpSession session,
-            @RequestParam Map<String, String> allParams) { 
+            @RequestParam(required = false) String start, // Añade estos parámetros
+            @RequestParam(required = false) String end) { 
         
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
         
@@ -309,28 +310,31 @@ public class HorarioRestController {
         List<Map<String, Object>> eventos = new java.util.ArrayList<>(); 
 
         for (Horario h : listaHorarios) {
+            // Opcional: Si quieres filtrar por rango de fechas recibido (start/end)
+            // puedes añadir un if aquí similar al que tienes en 'horariosGlobales'
+            
             Map<String, Object> turno1 = new HashMap<>();
             turno1.put("start", h.getFecha().toString());
-            turno1.put("title", h.getHoraInicio() + " - " + h.getHoraFin());
+            turno1.put("title", h.getHoraInicio().toString().substring(0, 5) + " - " + h.getHoraFin().toString().substring(0, 5));
             turno1.put("backgroundColor", "#d1ecf1");
             turno1.put("textColor", "#0c5460");
-            // Se mete en un mapa llamado extendedProps para el JS
+            
+            // Es vital que el formato sea estricto para FullCalendar
             Map<String, Object> props1 = new HashMap<>();
-            props1.put("textoPersonalizado", h.getHoraInicio() + " a " + h.getHoraFin());
+            props1.put("textoPersonalizado", h.getHoraInicio().toString().substring(0, 5) + " a " + h.getHoraFin().toString().substring(0, 5));
             turno1.put("extendedProps", props1);
             
             eventos.add(turno1);
 
-            // Bloque 2 (Partido)
             if (h.getHoraInicio2() != null) { 
                 Map<String, Object> turno2 = new HashMap<>();
                 turno2.put("start", h.getFecha().toString());
-                turno2.put("title", h.getHoraInicio2() + " - " + h.getHoraFin2());
+                turno2.put("title", h.getHoraInicio2().toString().substring(0, 5) + " - " + h.getHoraFin2().toString().substring(0, 5));
                 turno2.put("backgroundColor", "#fff3cd");
                 turno2.put("textColor", "#856404");
                 
                 Map<String, Object> props2 = new HashMap<>();
-                props2.put("textoPersonalizado", h.getHoraInicio2() + " a " + h.getHoraFin2());
+                props2.put("textoPersonalizado", h.getHoraInicio2().toString().substring(0, 5) + " a " + h.getHoraFin2().toString().substring(0, 5));
                 turno2.put("extendedProps", props2);
                 
                 eventos.add(turno2);
