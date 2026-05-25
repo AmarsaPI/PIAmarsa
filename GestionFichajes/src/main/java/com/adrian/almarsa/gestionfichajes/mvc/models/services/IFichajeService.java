@@ -38,4 +38,7 @@ public interface IFichajeService {
 	public List<Fichaje> findByEmpleadoAndMonth(Long empleadoId, String anioMes);
 	
 	List<Fichaje> findByEmpleadoAndYear(Long empleadoId, int anio);
+	
+	// Lista el historial de fichajes de un empleado usando el método corregido del DAO
+    List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId);
 }
