@@ -7,13 +7,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IFestivoDAO;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 
 @Service
 public class FestivoServiceImpl implements IFestivoService {
 
     @Autowired
     private IFestivoDAO festivoDAO;
+    
+    @Autowired
+    private IHorarioService horarioService;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,7 +50,21 @@ public class FestivoServiceImpl implements IFestivoService {
     @Override
     @Transactional
     public Festivo save(Festivo festivo) {
-        return festivoDAO.save(festivo);
+        Festivo festivoGuardado = festivoDAO.save(festivo);
+
+        List<Empleado> empleadosDelCalendario = festivo.getCalendario().getEmpleados();
+
+        if (empleadosDelCalendario != null) {
+            for (Empleado emp : empleadosDelCalendario) {
+                Horario turno = horarioService.findByEmpleadoIdAndFecha(emp.getId(), festivo.getFecha());
+                
+                if (turno != null) {
+                    horarioService.delete(turno.getId());
+                }
+            }
+        }
+
+        return festivoGuardado;
     }
 
     @Override
