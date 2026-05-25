@@ -64,29 +64,21 @@ body {
 				</div>
 			</div>
 
-			<div id="logo-amarsa" style="text-align: left; margin: 0 0 20px 20px;">
-				<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
-			</div>
+			<div id="logo-amarsa"><img th:src="@{/logo.png}" alt="Logo" class="brand-logo" /></div>
 
 			<div class="content-grid">
 				
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li data-submenu="none"><a th:href="@{/fichar}"
-								style="text-decoration: none; color: inherit;">Fichar</a></li>
-							<li data-submenu="none"><a th:href="@{/horario_personal}"
-								style="text-decoration: none; color: inherit;">Horario</a></li>
-							<li data-submenu="none"><a th:href="@{/vacaciones}"
-								style="text-decoration: none; color: inherit;">Vacaciones y
-									permisos</a></li>
-							<li data-submenu="none">Perfil</li>
-							<li data-submenu="subMenu_gestion">Gestión
-								<ul id="subMenu_gestion" class="submenu-dropdown">
-									<li class="active-menu"> Plantillas Horario</li>
-									<li><a th:href="@{/asignar_horario}">Asignar Horarios</a></li>
-								</ul>
-							</li>
+							<li data-submenu="none"><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario Personal</a></li>
+							<li><a th:href="@{/asignar_horario}" style="text-decoration: none; color: inherit;">Horario Equipo</a></li>
+							<li class="active-menu"> Plantillas Horario</li>							
+					        <li><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+					        <li><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
+							
 							<li><a th:href="@{/logout}"
 								style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>

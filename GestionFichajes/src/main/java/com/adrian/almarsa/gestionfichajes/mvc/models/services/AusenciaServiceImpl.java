@@ -99,4 +99,18 @@ public class AusenciaServiceImpl implements IAusenciaService {
         // Llamamos al método de borrado filtrando por Empleado, Tipo y Estado Fijo 'RECHAZADA'
         ausenciaDAO.deleteByEmpleadoIdAndTipoAndEstado(empleadoId, tipo, EstadoAusencia.RECHAZADA);
     }
+
+	@Override
+	public boolean esEmpleadoAusenteAprobado(Empleado empleado, LocalDate fecha) {
+		List<Ausencia> ausencias = ausenciaDAO.findAusenciasEnFecha(empleado, fecha);
+	    
+	    return ausencias.stream().anyMatch(a -> {
+	        boolean esAprobada = (a.getEstado() == EstadoAusencia.APROBADA);
+	        boolean esBaja = (a.getTipo() == TipoAusencia.BAJA_MEDICA); 
+	        boolean esPermiso = (a.getTipo() == TipoAusencia.PERMISO_RETRIBUIDO);
+	        
+	        // Bloqueamos si es Baja (siempre) o si es Aprobada (vacaciones/otros)
+	        return esBaja || esAprobada || esPermiso;
+	    });
+	}
 }

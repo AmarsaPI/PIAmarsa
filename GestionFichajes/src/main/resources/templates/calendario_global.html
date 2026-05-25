@@ -112,10 +112,12 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li data-submenu="none"><a th:href="@{/fichar}" style="text-decoration: none; color: inherit;">Fichar</a></li>
-							<li data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario</a></li>
-							<li data-submenu="none"><a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit;">Vacaciones y permisos</a></li>
-							<li data-submenu="none" class="active-menu" style="font-weight: bold; color: #0d6efd;">📅 Calendario Plantilla</li>
+							<li data-submenu="none"><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}" data-submenu="none"><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario Personal</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}" data-submenu="none"><a th:href="@{/asignar_horario}" style="text-decoration: none; color: inherit;">Horario Equipo</a></li>
+							<li class="active-menu">Vacaciones Equipo</li>
+							<li th:if="${usuario.rol.name() == 'EMPLEADO'}" data-submenu="none"><a th:href="@{/vacaciones}" style="text-decoration: none; color: inherit;">Solicitud Vacaciones</a></li>
+					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
 							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>

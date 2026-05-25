@@ -61,3 +61,14 @@ document.querySelectorAll('.brand-logo').forEach((logo) => {
 		window.location.href = destino;
 	});
 });
+
+document.addEventListener("click", (event) => {
+    const isClickInsideMenu = mainMenu && mainMenu.contains(event.target);
+    const isClickInsideToggle = menuToggle && menuToggle.contains(event.target);
+
+    if (!isClickInsideMenu && !isClickInsideToggle) {
+        document.querySelectorAll(".submenu-dropdown").forEach(sub => {
+            sub.hidden = true;
+        });
+    }
+});

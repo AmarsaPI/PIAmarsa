@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Informe de Horas - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <style>
+        /* Estructura del Grid */
+        .content-grid {
+            display: grid !important;
+            grid-template-columns: 220px minmax(0, 1fr) 300px !important;
+            gap: 20px !important;
+            align-items: start !important;
+        }
+
+        #mainContent {
+            min-width: 0 !important;
+            padding: 10px 20px !important;
+        }
+
+        /* Estilos de la tabla de informe */
+        .report-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #eee;
+    		table-layout: fixed;
+        }
+        .report-table th, .report-table td {
+            width: 25%; 
+		    text-align: left; 
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+            
+        }
+        .report-table thead { background: #f8f9fa; }
+
+        /* Limpieza de espacios */
+        h2 { margin-top: 0 !important; margin-bottom: 15px !important; }
+        .workspace { padding-top: 5px !important; }
+        #logo-amarsa { margin-bottom: 10px; }
+    </style>
+</head>
+
+<body>
+    <main class="app-shell">
+        <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
+            </div>
+            
+            <div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+			</div>
+
+            <div class="content-grid">
+                <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                        
+                            <li th:if="${session.rol == 'ADMINISTRADOR'}"><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
+                            <li th:if="${usuario != null && usuario.class.name == 'com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin'}">
+						        <a th:href="@{/admin/index}" style="text-decoration: none; color: inherit;">Inicio</a>
+						    </li>
+                            <li class="active-menu">Informe de Horas</li>
+                            <li><a th:href="@{/logout}" style="text-decoration: none; color: red;">Salir</a></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div id="mainContent">
+                    <h2>📊 Balance de Horas por Empleado</h2>
+                    
+                    <div class="table-responsive">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Empleado</th>
+                                    <th>Trabajadas</th>
+                                    <th>Previstas</th>
+                                    <th>Balance</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="emp : ${listaEmpleados}">
+                                    <td class="fw-bold" th:text="${emp.nombre}">Nombre</td>
+                                    <td th:text="${emp.horasTrabajadas}">0</td>
+                                    <td th:text="${emp.horasPrevistas}">0</td>
+                                    
+                                    <td th:with="balance=${emp.horasTrabajadas - emp.horasPrevistas}">
+                                        <span th:class="${balance < 0 ? 'text-danger' : 'text-success'}"
+                                              th:text="${balance > 0 ? '+' + balance : balance}">+0</span>
+                                    </td>
+                                    
+                                    <td>
+                                        <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) < 0}" class="badge bg-danger">Debe</span>
+                                        <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) >= 0}" class="badge bg-success">Ok</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <aside class="calendar-panel">
+				    <div class="calendar-head">
+				        <strong id="yearText">2026</strong> 
+				        <span id="dateText"></span> </div>
+				    <div class="calendar-body">
+				        <div class="month-bar">
+				            <button id="prevMonth">‹</button>
+				            <span id="monthLabel">MARCH 2026</span>
+				            <button id="nextMonth">›</button>
+				        </div>
+				        <div class="weekdays" id="weekdays"></div>
+				        <div class="days-grid" id="daysGrid"></div>
+				    </div>
+				</aside>
+            </div>
+        </section>
+    </main>
+    <script th:src="@{/app.js}"></script>
+</body>
+</html></head>
+<body>
+
+</body>
+</html>

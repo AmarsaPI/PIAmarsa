@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 
@@ -23,4 +24,6 @@ public interface IFestivoService {
 
     // Eliminar un festivo
     public void delete(Long id);
+    
+    public boolean existeFestivoEnFecha(LocalDate fecha, Long empleadoId);
 }

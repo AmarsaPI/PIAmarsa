@@ -3,12 +3,17 @@ var calendar;
 var empleadoSeleccionadoId = null; 
 var modalBootstrap = null; 
 var fechaSeleccionadaSueltar = "";
+var empleadoLogueadoId = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     // 1. LEER EL ROL DEL USUARIO E INICIALIZACIÓN DE SEGURIDAD
     var calendarEl = document.getElementById('calendar');
     var usuarioRol = calendarEl ? calendarEl.dataset.rol : 'EMPLEADO'; 
     var esAdmin = (usuarioRol === 'ADMINISTRADOR'); // 🌟 Verdadero si es Admin
+	const bodyEl = document.querySelector('body');
+	    if (bodyEl && bodyEl.dataset.empleadoId) {
+	        empleadoLogueadoId = bodyEl.dataset.empleadoId;
+	    }
 
     var modalElement = document.getElementById('modalDiaSuelto');
     if (modalElement) {
@@ -131,27 +136,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
 
-        // CONSULTA DINÁMICA
-        events: function(fetchInfo, successCallback, failureCallback) {
-            let url = `/api/horarios-reales/global?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`;
-            
-            if (empleadoSeleccionadoId && empleadoSeleccionadoId !== "") {
-                url += `&empleadoId=${empleadoSeleccionadoId}`;
-            }
+		// Dentro de new FullCalendar.Calendar(...)
+		eventSources: [
+		    {
+		        events: function(fetchInfo, successCallback, failureCallback) {
+		            let url = `/api/horarios-reales/global?start=${fetchInfo.startStr}&end=${fetchInfo.endStr}`;
+		            if (empleadoSeleccionadoId) url += `&empleadoId=${empleadoSeleccionadoId}`;
+		            
+		            fetch(url)
+		                .then(res => res.json())
+		                .then(data => successCallback(data))
+		                .catch(err => failureCallback(err));
+		        }
+		    },
+		    {
+				events: function(fetchInfo, successCallback, failureCallback) {
+				            // Prioridad: 1º ID del selector (Admin), 2º ID del usuario logueado (Empleado)
+				            let idParaConsultar = empleadoSeleccionadoId || empleadoLogueadoId;
 
-            console.log("Pidiendo turnos a la API desde URL:", url);
+				            if (!idParaConsultar || idParaConsultar === "null") {
+				                successCallback([]); // No hacemos la petición si no tenemos ID
+				                return;
+				            }
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error("Error cargando los eventos de la empresa");
-                    return response.json();
-                })
-                .then(data => successCallback(data))
-                .catch(err => {
-                    console.error(err);
-                    failureCallback(err);
-                });
-        }
+				            fetch(`/api/festivos/eventos?empleadoId=${idParaConsultar}`)
+				                .then(res => res.json())
+				                .then(data => successCallback(data))
+				                .catch(err => failureCallback(err));
+				        }
+				    }
+				]
     });
     
     calendar.render();
@@ -204,6 +218,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } 
         });
     }
+	const buscador = document.getElementById('buscadorPlantillasLateral');
+	buscador.addEventListener('click', function() {
+	    this.value = ""; 
+	});
 });
 
 // Responde al cambio del selector inyectado en el Header
@@ -348,22 +366,26 @@ function procesarAsignacionMasiva(event) {
                 return;
             }
 
-            Promise.all(promesasGuardado)
-                .then(() => {
-                    alert("🎉 ¡Cuadrante masivo generado con éxito!");
-                    document.getElementById('formFechaInicio').value = "";
-                    document.getElementById('formFechaFin').value = "";
-                    
-                    document.getElementById('buscadorPlantillasLateral').value = "";
-                    document.getElementById('selectPlantillas').value = "";
-                    cargarVistaPreviaPlantilla(""); 
-                    
-                    calendar.refetchEvents();
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("❌ Hubo un error al guardar los turnos.");
-                });
+			Promise.all(promesasGuardado.map(p => 
+			                p.then(res => ({ ok: res.ok, status: res.status }))
+			                 .catch(() => ({ ok: false }))
+			            ))
+			            .then(resultados => {
+			                const total = resultados.length;
+			                const guardados = resultados.filter(r => r.ok).length;
+			                const fallidos = total - guardados;
+
+			                if (guardados === total) {
+			                    alert("🎉 ¡Cuadrante generado con éxito!");
+			                } else if (guardados > 0) {
+			                    alert(`⚠️ ¡Cuadrante procesado parcialmente!\n\nSe guardaron ${guardados} turnos.\nNo se pudieron guardar ${fallidos} turnos (posiblemente por conflicto con ausencias).`);
+			                } else {
+			                    alert("❌ No se pudo guardar ningún turno. Verifica si todos los días seleccionados tienen ausencias.");
+			                }
+
+			                calendar.unselect();
+			                calendar.refetchEvents();
+			            });
         })
         .catch(err => {
             console.error(err);
@@ -502,23 +524,13 @@ function filtrarPlantillasDiariasEnModal() {
 function detectarPlantillaSeleccionada(valorEscrito) {
     const opciones = document.querySelectorAll('#listaPlantillasLateral option');
     const inputOcultoId = document.getElementById('selectPlantillas');
-    const buscadorVisible = document.getElementById('buscadorPlantillasLateral');
     
-    let encontrado = false;
-
+	let encontrado = false;
     opciones.forEach(opcion => {
         if (opcion.value === valorEscrito) {
-            const idReal = opcion.getAttribute('data-id');
-            if(inputOcultoId) inputOcultoId.value = idReal;
+            inputOcultoId.value = opcion.getAttribute('data-id');
             encontrado = true;
-            
-            console.log("Plantilla seleccionada con éxito. ID:", idReal);
-            
-            cargarVistaPreviaPlantilla(idReal);
-            if(buscadorVisible) {
-                buscadorVisible.value = "";
-                buscadorVisible.blur();
-            }
+            cargarVistaPreviaPlantilla(inputOcultoId.value);
         }
     });
 

@@ -1,5 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,5 +52,16 @@ public class FestivoServiceImpl implements IFestivoService {
     @Transactional
     public void delete(Long id) {
         festivoDAO.deleteById(id);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeFestivoEnFecha(LocalDate fecha, Long empleadoId) {
+        // Obtenemos todos los festivos del empleado
+        List<Festivo> festivos = findByEmpleado(empleadoId);
+        
+        // Verificamos si alguno coincide con la fecha proporcionada
+        return festivos.stream()
+                .anyMatch(f -> f.getFecha().equals(fecha));
     }
 }

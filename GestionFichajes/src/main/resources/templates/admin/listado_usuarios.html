@@ -1,244 +1,86 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Listado de Empleados - Gestor</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" th:href="@{/styles.css}" />
-	<style>
-		.table-container {
-			display: flex;
-			justify-content: center;
-			padding: 20px;
-			margin-top: 20px;
-		}
-
-		.styled-table {
-			width: 90%;
-			max-width: 1000px;
-			border-collapse: collapse;
-			background-color: white;
-			border-radius: 12px;
-			overflow: hidden;
-			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-		}
-
-		.styled-table thead tr {
-			background-color: #333;
-			color: white;
-			text-align: left;
-		}
-
-		.styled-table th,
-		.styled-table td {
-			padding: 15px 20px;
-		}
-
-		.styled-table tbody tr {
-			border-bottom: 1px solid #eee;
-		}
-
-		.styled-table tbody tr:nth-of-type(even) {
-			background-color: #f9f9f9;
-		}
-
-		.btn-action {
-			padding: 6px 12px;
-			border-radius: 6px;
-			text-decoration: none;
-			font-size: 0.9rem;
-			font-weight: 600;
-			margin-right: 5px;
-		}
-
-		.btn-edit {
-			background-color: #133b91;
-			color: #ffffff;
-			padding: 6px;
-			border-radius: 10px;
-			text-decoration: none;
-			cursor: pointer;
-		}
-
-		.btn-delete {
-			background-color: #c62828;
-			color: #ffffff;
-			padding: 7px;
-			border-radius: 10px;
-			text-decoration: none;
-			cursor: pointer;
-			border: none;
-			font-family: 'Nunito', sans-serif;
-			font-size: 15px;
-		}
-
-		.alerts-container {
-			width: 90%;
-			max-width: 1000px;
-			margin: 20px auto 0 auto;
-		}
-
-		.alert {
-			padding: 15px 20px;
-			border-radius: 8px;
-			margin-bottom: 15px;
-			display: flex;
-			align-items: center;
-			font-weight: 600;
-			animation: slideIn 0.5s ease-out;
-		}
-
-		.alert-icon {
-			margin-right: 12px;
-			font-size: 1.2rem;
-		}
-
-		.alert-success {
-			background-color: #e8f5e9;
-			color: #2e7d32;
-			border: 1px solid #c8e6c9;
-		}
-
-		.alert-error {
-			background-color: #ffebee;
-			color: #c62828;
-			border: 1px solid #ffcdd2;
-		}
-
-		td {
-			color: #000000;
-		}
-
-		.btn-nuevo {
-			transition: background-color 0.3s;
-		}
-
-		.btn-nuevo:hover {
-			background-color: #1b5e20 !important;
-		}
-	</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Empleados - Panel Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/styles.css}" />
+  <style>
+    /* Estilos integrados para la tabla azul */
+    .styled-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .styled-table thead { background-color: #133b91; color: white; }
+    .styled-table th, .styled-table td { padding: 15px 20px; text-align: left; }
+    .styled-table tbody tr:nth-of-type(even) { background-color: #f8f9fa; }
+    .btn-edit { background-color: #133b91; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; }
+    .btn-delete { background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+  </style>
 </head>
-
 <body th:data-home="@{/admin/index}">
-	<main class="app-shell">
-		<section class="workspace">
-			<div class="top-tools"
-				style="display: flex; align-items: center; justify-content: center; position: relative;">
-				<h1 class="management-title" style="color: rgb(255, 255, 255); margin: 0;">
-					Listado de Plantilla
-				</h1>
-				<div style="position: absolute; right: 20px; font-weight: 600; color: rgb(255, 255, 255);">
-					Usuario: <span th:text="${usuario.nombre}">Gestor Principal</span>
-				</div>
+  <main class="app-shell">
+    <section class="workspace">
+      <div class="top-tools">
+        <button class="menu-toggle">☰ Panel Admin ▾</button>
+        <div style="margin-left: 10px; font-weight: bold; color: #133b91;">
+          🛠️ Modo Administrador: <span th:text="${usuario.nombre}">Admin</span>
+        </div>
+      </div>
+
+      <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+
+      <div class="content-grid">
+        <section class="left-zone">
+          <ul id="mainMenu" class="menu-dropdown" style="display: block;">
+            <li style="border-left: 4px solid #133b91; background: #f0f4ff;">
+              <a th:href="@{/admin/listado_usuarios}" style="color: #133b91; font-weight: 700; padding: 12px; display: block; text-decoration: none;">👥 Gestión de Empleados</a>
+            </li>
+            <li><a th:href="@{/admin/calendarios_laborales}" style="padding: 12px; display: block; text-decoration: none; color: inherit;">🗓️ Calendarios</a></li>
+            <li><a th:href="@{/bolsa/informe}" style="padding: 12px; display: block; text-decoration: none; color: inherit;">📊 Informes</a></li>
+            <li><a th:href="@{/logout}" style="color: #dc3545; padding: 12px; display: block; text-decoration: none; border-top: 1px solid #eee;">🚪 Salir</a></li>
+          </ul>
+        </section>
+
+        <section class="main-content" style="flex: 2; padding: 0 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Listado de Plantilla</h2>
+            <a th:href="@{/admin/agregar_usuario}" class="btn-nuevo" style="background: #133b91; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600;">➕ Añadir Empleado</a>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+			    <a th:href="@{/admin/listado_usuarios(mostrarTodos=${!mostrarTodos})}" 
+			       class="btn-edit" 
+			       th:text="${mostrarTodos} ? 'Ver solo activos' : 'Ver inactivos'"
+			       style="background-color: #6c757d;">
+			    </a>
 			</div>
-
-			<div id="logo-amarsa">
-				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
-			</div>
-
-			<div class="content-grid">
-
-				<section class="left-zone">
-					<div class="menu-wrap">
-						<ul id="mainMenu" class="menu-dropdown" style="display: block;">
-							<li style="border-left: 4px solid #007bff;">
-								<a th:href="@{/admin/listado_usuarios}"
-									style="text-decoration: none; color: #007bff; display: block; padding: 12px; font-weight: 600;">
-									👥 Gestión de Empleados
-								</a>
-							</li>
-							<li>
-								<a th:href="@{/admin/calendarios_laborales}"
-									style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-									🗓️ Calendarios Laborales
-								</a>
-							</li>
-							<li>
-								<a th:href="@{/convenio}"
-									style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-									📜 Convenio Laboral
-								</a>
-							</li>
-							<li>
-								<a th:href="@{/admin/asignar_ausencia}"
-									style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-									Bajas y Permisos
-								</a>
-							</li>
-							<li>
-								<a th:href="@{/admin/informes}"
-									style="text-decoration: none; color: inherit; display: block; padding: 12px;">
-									📊 Informes y Horas
-								</a>
-							</li>
-							<li>
-								<a th:href="@{/logout}"
-									style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
-									🚪 Cerrar Sesión
-								</a>
-							</li>
-						</ul>
-					</div>
-				</section>
-
-				<section class="right-zone" style="flex: 1;">
-					<div class="alerts-container">
-						<div th:if="${success}" class="alert alert-success">
-							<span class="alert-icon">✅</span> <span th:text="${success}"></span>
-						</div>
-
-						<div th:if="${error}" class="alert alert-error">
-							<span class="alert-icon">⚠️</span> <span th:text="${error}"></span>
-						</div>
-					</div>
-
-					<div style="width: 90%; max-width: 1000px; margin: 20px auto 0 auto; text-align: right;">
-						<a th:href="@{/admin/agregar_usuario}"
-							style="background-color: #1976d2; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background-color 0.3s;"
-							onmouseover="this.style.backgroundColor='#1565c0'"
-							onmouseout="this.style.backgroundColor='#1976d2'">
-							<span style="margin-right: 8px;">➕</span> Añadir nuevo empleado
-						</a>
-					</div>
-
-					<section class="table-container">
-						<table class="styled-table">
-							<thead>
-								<tr>
-									<th>Nombre</th>
-									<th>Email</th>
-									<th>Rol</th>
-									<th>Acciones</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr th:each="e : ${empleados}">
-									<td th:text="${e.nombre}">Juan Pérez</td>
-									<td th:text="${e.email}">juan@amarsa.com</td>
-									<td th:text="${e.rol}">EMPLEADO</td>
-									<td><a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}"
-											class="btn-edit">Editar</a>
-										<form th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}" method="post"
-											style="display: inline;"
-											onsubmit="return confirm('¿Estás seguro de que deseas eliminar a este empleado?');">
-											<button type="submit" class="btn-delete">
-												Eliminar</button>
-										</form>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</section>
-				</section>
-
-			</div>
-		</section>
-	</main>
-	<script th:src="@{/common.js}" defer></script>
+			
+			<table class="styled-table">
+			    <tbody>
+			        <tr th:if="${#lists.isEmpty(empleados)}">
+			            <td colspan="4" style="text-align:center;">No hay empleados para mostrar.</td>
+			        </tr>
+			        
+			        <tr th:each="e : ${empleados}">
+			            <td th:text="${e.nombre}">Juan</td>
+			            <td th:text="${e.email}">juan@test.com</td>
+			            <td>
+			                <span th:text="${e.activo} ? '🟢 Activo' : '🔴 Inactivo'"></span>
+			            </td>
+			            <td>
+			                <a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}" class="btn-edit">Editar</a>
+			                
+			                <form th:if="${e.activo}" th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}" 
+			                      method="post" style="display:inline;" 
+			                      onsubmit="return confirm('¿Seguro que desea dar de baja este empleado?');">
+			                    <button type="submit" class="btn-delete">Dar de Baja</button>
+			                </form>
+			            </td>
+			        </tr>
+			    </tbody>
+			</table>
+        </section>
+      </div>
+    </section>
+  </main>
 </body>
-
 </html>

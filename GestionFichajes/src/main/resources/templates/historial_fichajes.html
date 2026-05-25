@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial de Fichajes - Gestor de horarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <link rel="stylesheet" th:href="@{/horario.css}" />
+</head>
+
+<body th:data-home="@{/index}">
+    <main class="app-shell">
+
+        <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Usuario: <span th:text="${usuario.nombre}"></span></div>
+            </div>
+
+            <div id="logo-amarsa"><img th:src="@{/logo.png}" alt="Logo" class="brand-logo" /></div>
+
+            <div class="content-grid">
+                <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+                            <li class="active-menu">Fichajes</li>
+                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div id="mainContent" style="padding: 10px; flex: 1;">
+                    <h2 style="margin-top: 0; padding-top: 0;">Historial de Fichajes</h2>
+
+                    <div class="month-navigation" style="display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee;">
+                        <a th:href="@{/historial_fichajes(mes=${mesAnterior})}" style="text-decoration: none; font-weight: bold;">◀ Anterior</a>
+                        
+                        <h3 style="margin: 0; color: #2c3e50;">
+                            <span th:text="${T(java.time.YearMonth).parse(mesActual).month.getDisplayName(T(java.time.format.TextStyle).FULL, T(java.util.Locale).of('es','ES')).toUpperCase()}">MES</span>
+                            <span th:text="${T(java.time.YearMonth).parse(mesActual).year}">2026</span>
+                        </h3>
+                        
+                        <a th:href="@{/historial_fichajes(mes=${mesPosterior})}" style="text-decoration: none; font-weight: bold;">Siguiente ▶</a>
+                    </div>
+                    
+                    <section style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #eee;">
+                        <table class="compact-table" style="width: 100%; border-collapse: collapse;">
+						    <thead>
+						        <tr style="background: #f9f9f9; text-align: left;">
+						            <th>Día</th>
+						            <th>Entrada</th>
+						            <th>Salida</th>
+						            <th>Estado</th>
+						            <th>Acción</th> </tr>
+						    </thead>
+						    <tbody>
+						        <tr th:each="f : ${historial}">
+						            <td th:text="${#temporals.format(f.fechaEntrada, 'dd/MM/yyyy')}"></td>
+						            <td th:text="${#temporals.format(f.fechaEntrada, 'HH:mm')}"></td>
+						            <td th:text="${f.fechaSalida != null ? #temporals.format(f.fechaSalida, 'HH:mm') : 'Pendiente'}"></td>
+						            <td>
+						                <span th:if="${f.fechaSalida != null}" style="color: green;">✔</span>
+						                <span th:unless="${f.fechaSalida != null}" style="color: orange;">⚠</span>
+						            </td>
+						            <td>
+						                <button class="btn-solicitar" th:onclick="'abrirModalSolicitud(' + ${f.id} + ')'">Pedir cambio</button>
+						            </td>
+						        </tr>
+						    </tbody>
+						</table>
+						
+						<div id="modalSolicitud" style="display:none; position:fixed; top:15%; left:30%; width:40%; background:white; padding:25px; border:1px solid #ddd; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000;">
+						    <h3>Solicitar corrección de fichaje</h3>
+						    <p style="font-size: 0.9rem; color: #666;">Indica las horas correctas que debiste registrar:</p>
+						    
+						    <form th:action="@{/solicitar-cambio}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
+						        <input type="hidden" name="fichajeId" id="fichajeIdInput" />
+						        
+						        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+						            <div>
+						                <label>Nueva Entrada:</label>
+						                <input type="time" name="horaEntradaPropuesta" required class="form-control" />
+						            </div>
+						            <div>
+						                <label>Nueva Salida:</label>
+						                <input type="time" name="horaSalidaPropuesta" required class="form-control" />
+						            </div>
+						        </div>
+						        
+						        <label>Observaciones / Motivo:</label>
+						        <textarea name="motivo" placeholder="Ej: Olvidé fichar la salida por urgencia..." required style="height: 80px; padding: 8px;"></textarea>
+						        
+						        <div style="display: flex; gap: 10px; margin-top: 10px;">
+						            <button type="submit" style="flex: 2; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Enviar Solicitud</button>
+						            <button type="button" onclick="cerrarModal()" style="flex: 1; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancelar</button>
+						        </div>
+						    </form>
+						</div>
+                        
+                        <div th:if="${#lists.isEmpty(historial)}" style="text-align: center; padding: 20px; color: #888;">
+                            No hay registros para este mes.
+                        </div>
+                    </section>
+                </div>
+
+                <aside class="calendar-panel">
+				    <div class="calendar-head">
+				        <strong id="yearText">2026</strong> 
+				        <span id="dateText"></span> </div>
+				    <div class="calendar-body">
+				        <div class="month-bar">
+				            <button id="prevMonth" aria-label="mes anterior">‹</button>
+				            <span id="monthLabel">MARCH 2026</span>
+				            <button id="nextMonth" aria-label="mes siguiente">›</button>
+				        </div>
+				        <div class="weekdays" id="weekdays"></div>
+				        <div class="days-grid" id="daysGrid"></div>
+				    </div>
+				</aside>
+            </div>
+        </section>
+    </main>
+	<script>
+    function cerrarModal() {
+        document.getElementById('modalSolicitud').style.display = 'none';
+    }
+
+    // Esta es la función que abre el modal (la que ya teníamos)
+    function abrirModalSolicitud(id) {
+        document.getElementById('fichajeIdInput').value = id;
+        document.getElementById('modalSolicitud').style.display = 'flex';
+    }
+</script>
+    <script th:src="@{/app.js}"></script>
+    <script th:src="@{/common.js}"></script>
+</body>
+</html>

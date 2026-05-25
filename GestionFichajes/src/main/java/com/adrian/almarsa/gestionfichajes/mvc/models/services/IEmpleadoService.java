@@ -19,4 +19,8 @@ public interface IEmpleadoService {
     public void delete(Long id);
     
     public Empleado findByEmail(String email);
+    
+    void darDeBaja(Long id);
+    
+    List<Empleado> findAllIncluyendoInactivos();
 }

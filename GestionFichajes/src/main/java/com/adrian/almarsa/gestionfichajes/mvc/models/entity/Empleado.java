@@ -46,6 +46,9 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     
     @Column(updatable = false)
     private LocalDateTime createdAt;
+    
+    @Column(nullable = false)
+    private boolean activo = true;
 
     // Relación uno a muchos: un empleado puede tener muchos registros de fichajes
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
@@ -118,4 +121,7 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     public void setContratos(List<Contrato> contratos) {
         this.contratos = contratos;
     }
+    
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
 }

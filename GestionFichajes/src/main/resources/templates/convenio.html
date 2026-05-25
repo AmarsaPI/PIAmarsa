@@ -83,8 +83,7 @@
       <div class="content-grid">
         <!-- Menú Lateral -->
         <aside class="left-zone">
-          <div id="logo-amarsa" style=" margin-bottom: 20px;">
-            <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+          <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
             <div class="menu-wrap">
               <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
                 <li><a th:href="@{/admin/gestion}"
@@ -126,40 +125,44 @@
 
         <!-- Visor Central -->
         <article class="viewer-container">
-          <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
-            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <h2 style="margin:0; color:var(--primary)">Convenio Colectivo Vigente</h2>
-              <a th:href="@{/convenio/descargar}" download class="primary-action" style="text-decoration:none">Descargar
-                PDF</a>
-            </div>
-
-            <!-- Visor PDF principal -->
-            <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
-
-            <!-- Zona exclusiva de ADMIN -->
-            <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
-              <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
-                <label style="font-weight: bold;">Actualizar documento:</label>
-                <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                  <input type="file" name="archivo" accept="application/pdf" required>
-                  <button type="submit" class="primary-action" style="padding: 5px 15px;">Publicar</button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- Si no hay archivo -->
-          <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
-            <span style="font-size: 4rem;">📂</span>
-            <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
-            <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
-              <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
-                <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
-                <button type="submit" class="primary-action">Subir primer Convenio</button>
-              </form>
-            </div>
-          </div>
-        </article>
+    
+		    <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
+		        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+		            <h2 style="margin:0; color:var(--primary)">Convenio Colectivo Vigente</h2>
+		            <a th:href="@{/convenio/descargar}" download class="primary-action" style="text-decoration:none">Descargar PDF</a>
+		        </div>
+		
+		        <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
+		
+		        <div class="admin-upload-zone">
+		            <div th:if="${rol == 'ADMIN'}">
+		                <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+		                    <label style="font-weight: bold;">Actualizar documento:</label>
+		                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+		                        <input type="file" name="archivo" accept="application/pdf" required>
+		                        <button type="submit" class="primary-action" style="padding: 5px 15px;">Publicar</button>
+		                    </div>
+		                </form>
+		            </div>
+		            
+		            <div th:unless="${rol == 'ADMIN'}">
+		                <p style="font-size: 0.9rem; color: #666;">¿Necesitas el documento oficial?</p>
+		                <a th:href="@{/convenio/descargar}" class="primary-action" style="text-decoration:none; padding: 10px 20px; display: inline-block;">
+		                    📥 Descargar Convenio (PDF)
+		                </a>
+		            </div>
+		        </div>
+		    </div> <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
+		        <span style="font-size: 4rem;">📂</span>
+		        <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
+		        <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
+		            <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+		                <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
+		                <button type="submit" class="primary-action">Subir primer Convenio</button>
+		            </form>
+		        </div>
+		    </div> 
+    </article>
       </div>
     </section>
   </main>

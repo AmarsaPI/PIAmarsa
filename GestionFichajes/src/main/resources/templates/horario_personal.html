@@ -46,10 +46,6 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-
-				<div class="search-area">
-					<span>🔍</span> <input type="text" placeholder="search" />
-				</div>
 				<button class="help-btn">?</button>
 			</div>
 
@@ -63,50 +59,80 @@
 							<li><a th:href="@{/index}"
 								style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li class="active-menu">Horario</li>
-							<li><a th:href="@{/vacaciones}"
-								style="text-decoration: none; color: inherit;"> 🏖️
-									Vacaciones y permisos </a></li>
-							<li>Perfil</li>
+							<li><a th:href="@{/asignar_horario}"
+								style="text-decoration: none; color: inherit;">Horario Equipo</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}" style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>	
+					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
 							<li><a th:href="@{/logout}"
 								style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
-
-						<!-- Submenú para que el CSS no falle -->
-						<ul id="subMenu" class="submenu-dropdown" hidden="hidden">
-							<li>Ver horario personal</li>
-							<li>Ver equipo</li>
-						</ul>
 					</div>
-
-					<article class="notification-card">
-						<h2>Notificaciones</h2>
-						<p>
-							No tienes avisos<br />pendientes hoy.
-						</p>
-						<div class="choice-row">
-							<button class="no">Cerrar</button>
-							<button class="yes">Ver más</button>
-						</div>
-					</article>
 				</section>
 
 				<aside class="schedule-panel">
-					<div class="schedule-head">
-						<h2>Mi Horario</h2>
-					</div>
-
-					<div class="schedule-body">
-						<div id="calendar"
-							style="background: white; padding: 10px; border-radius: 8px;"></div>
-					</div>
-
-					<div class="schedule-actions">
-						<button class="btn-secondary">Exportar PDF</button>
-						<button class="btn-primary">Solicitar Cambio</button>
-					</div>
+				    <div class="schedule-head" style="display: flex; justify-content: space-between; align-items: center;">
+				        <h2>Mi Horario</h2>
+				        
+				        <div class="bolsa-badge" th:with="positivo=${saldoTotal >= 0}"
+				             th:style="${positivo ? 'background:#d4edda; color:#155724;' : 'background:#f8d7da; color:#721c24;'} + ' padding: 8px 15px; border-radius: 20px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1);'">
+				            <span>Saldo:</span>
+				            <span th:text="${#numbers.formatDecimal(saldoTotal, 1, 1) + ' h'}">0.0 h</span>
+				        </div>
+				    </div>
+				
+				    <div class="schedule-body">
+				        <div id="calendar" style="background: white; padding: 10px; border-radius: 8px;"></div>
+				    </div>
+				
+				    <div class="schedule-actions">
+					    <div style="margin-bottom: 20px;">
+						    <label>Desde:</label> <input type="date" id="fechaInicio" />
+						    <label>Hasta:</label> <input type="date" id="fechaFin" />
+						    <button class="btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+						</div>
+				        
+				        <button type="button" class="btn-primary" onclick="abrirModal()">Solicitar Cambio</button>
+				        
+				    </div>
 				</aside>
 			</div>
 		</section>
+		<div id="modalSolicitud" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; padding:25px; border:1px solid #ccc; border-radius:12px; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+		    <h3>Solicitar Cambio de Horario</h3>
+		    <form th:action="@{/solicitar-cambio-horario}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
+		        
+		        <label>Fecha a cambiar:</label>
+		        <input type="date" name="fechaTurno" required class="form-control" />
+		        
+		        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+				    <div>
+				        <label>Entrada 1:</label>
+				        <input type="time" name="horaEntradaPropuesta" required class="form-control" />
+				    </div>
+				    <div>
+				        <label>Salida 1:</label>
+				        <input type="time" name="horaSalidaPropuesta" required class="form-control" />
+				    </div>
+				    <div>
+				        <label>Entrada 2:</label>
+				        <input type="time" name="horaEntradaPropuesta2" class="form-control" />
+				    </div>
+				    <div>
+				        <label>Salida 2:</label>
+				        <input type="time" name="horaSalidaPropuesta2" class="form-control" />
+				    </div>
+				</div>
+		        
+		        <label>Razón del cambio:</label>
+		        <textarea name="motivo" placeholder="Ej: Cambio de turno por motivos personales..." required style="height: 60px;"></textarea>
+		        
+		        <div style="display: flex; gap: 10px; margin-top: 10px;">
+		            <button type="submit" class="btn-primary">Enviar Solicitud</button>
+		            <button type="button" onclick="document.getElementById('modalSolicitud').style.display='none'" class="btn-secondary">Cancelar</button>
+		        </div>
+		    </form>
+		</div>
 	</main>
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
@@ -155,6 +181,18 @@
 
 	    calendar.render();
 	});
+
+	function abrirModal() {
+        document.getElementById('modalSolicitud').style.display = 'block';
+    }
+
+    function exportarPDF() {
+        
+    	const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        // Redirige pasando los parámetros
+        window.location.href = `/api/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
+    }
 </script>
 <script th:src="@{/common.js}" defer></script>
 </body>

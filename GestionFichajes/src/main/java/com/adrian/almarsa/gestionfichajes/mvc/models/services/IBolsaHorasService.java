@@ -5,4 +5,5 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 public interface IBolsaHorasService {
 
     double calcularBolsaAnualAcumulada(Empleado empleado);
+    double obtenerHorasPrevistasTotales(Empleado emp);
 }
