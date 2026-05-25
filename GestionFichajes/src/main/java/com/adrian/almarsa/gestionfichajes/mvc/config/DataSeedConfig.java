@@ -2,7 +2,9 @@ package com.adrian.almarsa.gestionfichajes.mvc.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IAdminDAO; // DAO de la nueva entidad
@@ -64,5 +66,10 @@ public class DataSeedConfig implements CommandLineRunner {
             System.out.println("#  Pass:  pass.amarsa                             #");
             System.out.println("###################################################");
         }
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

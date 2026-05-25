@@ -1,8 +1,10 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +96,18 @@ public class FichajeServiceImpl implements IFichajeService {
         return fichajeDAO.findByEmpleado_Id(empleadoId);
     }
     
+    
+ // Lista el historial de fichajes de un empleado usando el método corregido del DAO
+    @Transactional(readOnly = true)
+    public List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId) {
+        LocalDateTime monday = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusDays(1);
+        LocalDateTime sunday = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1);
+        System.out.println(monday);
+        System.out.println(sunday);
+        return fichajeDAO.findByEmpleado_Id(empleadoId).stream().filter(
+                fichaje -> fichaje.getFechaEntrada().isAfter(monday) && fichaje.getFechaEntrada().isBefore(sunday)).toList();
+    }
+
     //Devuelve el último fichaje sin salida
     @Override
     @Transactional(readOnly = true)

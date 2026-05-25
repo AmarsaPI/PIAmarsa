@@ -22,7 +22,7 @@ public class Fichaje implements Serializable {
 
     // Fecha y hora del fin de jornada. Permanece en NULL mientras el empleado está trabajando
     @Column(name = "fecha_salida")
-    private LocalDateTime fechaSalida;
+    private LocalDateTime fechaSalida = LocalDateTime.MIN;
 
     // Relación muchos a uno: muchos fichajes pertenecen a un único empleado
     @ManyToOne(fetch = FetchType.LAZY) // LAZY mejora el rendimiento al no cargar el empleado si no es necesario
