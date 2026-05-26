@@ -104,8 +104,7 @@ public class FichajeServiceImpl implements IFichajeService {
     public List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId) {
         LocalDateTime monday = LocalDateTime.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).minusDays(1);
         LocalDateTime sunday = LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).plusDays(1);
-        System.out.println(monday);
-        System.out.println(sunday);
+
         return fichajeDAO.findByEmpleado_Id(empleadoId).stream().filter(
                 fichaje -> fichaje.getFechaEntrada().isAfter(monday) && fichaje.getFechaEntrada().isBefore(sunday)).toList();
     }

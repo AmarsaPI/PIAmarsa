@@ -61,7 +61,7 @@ public class SecurityConfig {
 
 					// 1. RUTAS WEB Y GESTIÓN
 					// Añadimos /admin/** para que no bloquee tu nuevo panel
-					.requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**",
+					.requestMatchers("/", "/login/**", "/auth-check/**", "/index/**", "/horario_personal/**",
 									 "/gestion_empleados/**", "/fichar/**", "/admin/**", "/crear_plantilla", "/asignar_horario", "/plantillas/guardar", "/gestion_plantillas").permitAll()
 
 					// 2. RECURSOS ESTÁTICOS
@@ -70,17 +70,19 @@ public class SecurityConfig {
 
 					// El resto requiere estar autenticado (aunque de momento permitas casi todo arriba)
 					.anyRequest().authenticated()
-	        )
-	        // Como tú controlas el login en tu Controller, comentamos el formLogin de Spring
-	        /* .formLogin(form -> form.loginPage("/login").permitAll()) */
+				)
+				.formLogin(form -> form.loginPage("/login"))
+
+				// Como tú controlas el login en tu Controller, comentamos el formLogin de Spring
+				/* .formLogin(form -> form.loginPage("/login").permitAll()) */
 	        
-	        .logout(logout -> logout
-	            .logoutUrl("/logout") // Ruta que dispara el cierre
-	            .logoutSuccessUrl("/login?logout")
-	            .invalidateHttpSession(true) // Importante: borra la "mochila"
-	            .deleteCookies("JSESSIONID")
-	            .permitAll()
-	        );
+				.logout(logout -> logout
+					.logoutUrl("/logout") // Ruta que dispara el cierre
+					.logoutSuccessUrl("/login?logout")
+					.invalidateHttpSession(true) // Importante: borra la "mochila"
+					.deleteCookies("JSESSIONID")
+					.permitAll()
+				);
 
 	    return http.build();
 	}
