@@ -75,31 +75,14 @@ public class AdminController {
     }
     
     @GetMapping("/admin/listado_usuarios")
-    public String mostrarListadoUsuarios(
-            @RequestParam(value = "mostrarTodos", required = false, defaultValue = "false") boolean mostrarTodos,
-            HttpSession session, 
-            Model model) {
-        
-    	if (!esAdminPuro(session)) return "redirect:/login";
+    public String mostrarListadoUsuarios(@RequestParam(value = "mostrarTodos", required = false, defaultValue = "false") boolean mostrarTodos,
+                                         HttpSession session, Model model) {
+        if (!esAdminPuro(session)) return "redirect:/login";
 
-        // Elegimos la lista basándonos en el booleano
         List<Empleado> empleados = mostrarTodos ? 
                                    empleadoService.findAllIncluyendoInactivos() : 
                                    empleadoService.findAll();
-        
-        // Pasamos los objetos asegurando que no sean null
-        model.addAttribute("empleados", (empleados != null) ? empleados : new ArrayList<Empleado>());
-        
-        // Fuerza el booleano explícitamente en el modelo
-        model.addAttribute("mostrarTodos", mostrarTodos);
-        
-        if (mostrarTodos) {
-            empleados = empleadoService.findAllIncluyendoInactivos();
-        } else {
-            empleados = empleadoService.findAll(); // Tu método que filtra activos
-        }
-        
-        // PASO CRÍTICO: Si la lista es null, inicialízala vacía para evitar el error
+
         model.addAttribute("empleados", (empleados != null) ? empleados : new ArrayList<>());
         model.addAttribute("mostrarTodos", mostrarTodos);
         

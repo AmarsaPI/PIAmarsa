@@ -1,7 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +12,9 @@ import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFichajeService;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,13 +25,13 @@ public class FichajeRestController {
     @Autowired
     private IFichajeService fichajeService;
 
-    // Lista todos los registros de fichajes del sistema
+    // --- MÉTODOS ORIGINALES (MANTENIDOS) ---
+
     @GetMapping("/fichajes")
     public List<Fichaje> index() {
         return fichajeService.findAll();
     }
     
-    // Obtiene un fichaje concreto por su ID
     @GetMapping("/fichajes/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -53,7 +49,6 @@ public class FichajeRestController {
         }
     }
 
-    // Registro de entrada: Llama a registrarEntrada para validar que no haya otro activo
     @PostMapping("/fichajes")
     public ResponseEntity<?> create(@Valid @RequestBody Fichaje fichaje, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
@@ -70,13 +65,11 @@ public class FichajeRestController {
             response.put("fichaje", fichajeNew);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Captura el error si el empleado ya tiene un fichaje sin cerrar
             response.put("mensaje", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
     
-    // Actualización manual (usualmente para cerrar un fichaje o corregir errores)
     @PutMapping("/fichajes/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody Fichaje fichaje, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -93,7 +86,7 @@ public class FichajeRestController {
                 response.put("mensaje", "Error: no se pudo editar, el fichaje ID: " + id + " no existe");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            fichajeActual.setFechaEntrada(fichaje.getFechaEntrada());
+            // Lógica original: setFechaEntrada comentada
             fichajeActual.setFechaSalida(LocalDateTime.now());
             if(fichaje.getEmpleado() != null) fichajeActual.setEmpleado(fichaje.getEmpleado());
 
@@ -107,7 +100,6 @@ public class FichajeRestController {
         }
     }
     
-    // Eliminación de un registro de fichaje
     @DeleteMapping("/fichajes/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -125,7 +117,6 @@ public class FichajeRestController {
         }
     }
     
-    // Consulta de historial específico para un empleado
     @GetMapping("/fichajes/empleado/{empleadoId}")
     public ResponseEntity<?> fichajesPorEmpleado(@PathVariable Long empleadoId) {
         Map<String, Object> response = new HashMap<>();
@@ -141,8 +132,7 @@ public class FichajeRestController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // Consulta de historial específico para un empleado
+
     @GetMapping("/fichajes/empleado/{empleadoId}/SemanaActual")
     public ResponseEntity<?> fichajesPorEmpleadoSemanaActual(@PathVariable Long empleadoId) {
         Map<String, Object> response = new HashMap<>();
@@ -159,7 +149,6 @@ public class FichajeRestController {
         }
     }
     
-    // Obtiene el fichaje activo (sin fecha de salida) de un empleado
     @GetMapping("/fichajes/activo/{empleadoId}")
     public ResponseEntity<?> obtenerFichajeActivo(@PathVariable Long empleadoId) {
         Fichaje activo = fichajeService.findUltimoSinCerrar(empleadoId);
@@ -167,5 +156,26 @@ public class FichajeRestController {
             return ResponseEntity.ok(Map.of("enJornada", false, "mensaje", "No hay jornada activa"));
         }
         return ResponseEntity.ok(activo);
+    }
+
+    // --- MÉTODOS NUEVOS (MODIFICACIONES DE LA SEGUNDA CLASE) ---
+
+    @PutMapping("/fichajes/update/full/{id}")
+    public ResponseEntity<?> updateFull(@Valid @RequestBody Fichaje fichaje, BindingResult result, @PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Fichaje fichajeActual = fichajeService.findById(id);
+            fichajeActual.setFechaEntrada(fichaje.getFechaEntrada()); 
+            fichajeActual.setFechaSalida(LocalDateTime.now());
+            if(fichaje.getEmpleado() != null) fichajeActual.setEmpleado(fichaje.getEmpleado());
+            
+            Fichaje fichajeUpdated = fichajeService.save(fichajeActual);
+            response.put("mensaje", "Fichaje actualizado (full) con éxito");
+            response.put("fichaje", fichajeUpdated);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("mensaje", "Error en actualización completa");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -85,7 +85,7 @@ public class FichajeController {
         // 1. Buscamos solo los registros de ese mes específico
         List<Fichaje> historialDelMes = fichajeService.findByEmpleadoAndMonth(id, mes);
         
-        // 2. Calcular flechas (Mes Anterior / Mes Posterior)
+        // 2. Calcular fechas (Mes Anterior / Mes Posterior)
         java.time.YearMonth current = java.time.YearMonth.parse(mes);
         String mesAnterior = current.minusMonths(1).toString();
         String mesPosterior = current.plusMonths(1).toString();
@@ -203,5 +203,24 @@ public class FichajeController {
         fichajeService.save(f); 
         
         return "redirect:/historial_fichajes";
+    }
+    
+    @GetMapping("/historial_fichajes/pendientes")
+    public String listarPendientes(Model model, HttpSession session) {
+        Long id = (Long) session.getAttribute("usuarioLogueadoId");
+        if (id == null) return "redirect:/login";
+
+        // 1. Obtén solo los fichajes del usuario logueado
+        List<Fichaje> historialUsuario = fichajeService.findByEmpleado(id); 
+        
+        // 2. Filtra los pendientes
+        List<Fichaje> pendientes = historialUsuario.stream()
+                .filter(f -> f.getFechaSalida() == null)
+                .collect(Collectors.toList());
+                
+        model.addAttribute("usuario", empleadoService.findById(id)); // ¡No olvides pasar el usuario para el nombre en el top-tools!
+        model.addAttribute("historial", pendientes);
+        
+        return "historial_pendientes";
     }
 }

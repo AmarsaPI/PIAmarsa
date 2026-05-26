@@ -19,6 +19,7 @@ public class LoginController {
 	
 	@Autowired
     private LoginService loginService;
+	
     // Muestra el formulario de login
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
@@ -60,6 +61,7 @@ public class LoginController {
         }
         return "redirect:/login?error=true";
     }
+    
     // Destruye la sesión y saca al usuario del sistema
     @GetMapping("/logout")
     public String logout(HttpSession session) {

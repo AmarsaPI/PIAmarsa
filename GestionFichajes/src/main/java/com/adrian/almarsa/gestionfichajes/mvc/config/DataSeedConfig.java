@@ -2,9 +2,7 @@ package com.adrian.almarsa.gestionfichajes.mvc.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IAdminDAO; // DAO de la nueva entidad
@@ -22,7 +20,7 @@ public class DataSeedConfig implements CommandLineRunner {
     private IEmpleadoDAO empleadoDAO;
 
     @Autowired
-    private IAdminDAO adminDAO; // Inyectamos el nuevo DAO
+    private IAdminDAO adminDAO; 
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -31,8 +29,7 @@ public class DataSeedConfig implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         
-        // --- 1. LÓGICA ORIGINAL (Empleado con Rol Administrador) ---
-        // NO se toca, se mantiene tal cual la tenías
+        // Crear empleado administrador
         String empAdminEmail = "admin@piamarsa.com";
         if (empleadoDAO.findByEmail(empAdminEmail).isEmpty()) {
             Empleado adminEmp = new Empleado();
@@ -45,12 +42,11 @@ public class DataSeedConfig implements CommandLineRunner {
                 System.out.println("--> Empleado con Rol Administrador creado.");
             } catch (Exception e) {
                 System.err.println("!!! ERROR AL CREAR EMPLEADO ADMIN: " + e.getMessage());
-                e.printStackTrace(); // Esto te dirá exactamente qué restricción falla
+                e.printStackTrace(); 
             }
         }
 
-        // --- 2. NUEVA LÓGICA (Entidad Admin Pura) ---
-        // Usuario: admin.amarsa | Pass: pass.amarsa
+        // Crear Administrador RRHH
         String adminPuroEmail = "admin.amarsa@amarsa.com";
         if (adminDAO.findByEmail(adminPuroEmail).isEmpty()) {
             Admin adminPuro = new Admin();
@@ -66,10 +62,5 @@ public class DataSeedConfig implements CommandLineRunner {
             System.out.println("#  Pass:  pass.amarsa                             #");
             System.out.println("###################################################");
         }
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -16,15 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IEmpleadoDAO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
-import com.lowagie.text.pdf.PdfPCell;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -38,20 +34,14 @@ public class HorarioRestController {
     
     @Autowired
     private IFestivoService festivoService;
-    
-    @Autowired 
-    IPlantillaHorarioService plantillaService;
-    
-    @Autowired 
-    IEmpleadoDAO empleadoDAO;
 
-    // 1. Listado global de todos los horarios reales
+    // 1. Listado global
     @GetMapping("/horarios-reales")
     public List<Horario> index() {
         return horarioService.findAll();
     }
 
-    // 2. Buscar un horario real por ID
+    // 2. Buscar por ID
     @GetMapping("/horarios-reales/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -69,7 +59,7 @@ public class HorarioRestController {
         }
     }
 
-    // 3. Crear un nuevo horario real (Asignación manual en el calendario)
+    // 3. Guardar
     @PostMapping("/horarios-reales")
     public ResponseEntity<?> guardar(@RequestBody Horario horario) {
         try {
@@ -109,7 +99,7 @@ public class HorarioRestController {
         }
     }
 
-    // 4. Actualizar un horario real
+    // 4. Actualizar
     @PutMapping("/horarios-reales/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody Horario horario, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -144,7 +134,7 @@ public class HorarioRestController {
         }
     }
 
-    // 5. Eliminar un horario real
+    // 5. Eliminar
     @DeleteMapping("/horarios-reales/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -162,56 +152,33 @@ public class HorarioRestController {
         }
     }
 
+    // 6. Mis turnos
     @GetMapping("/horarios-reales/mis-turnos")
-    public ResponseEntity<?> misTurnos(
-            HttpSession session,
-            @RequestParam(required = false) String start, // Añade estos parámetros
-            @RequestParam(required = false) String end) { 
-        
+    public ResponseEntity<?> misTurnos(HttpSession session, @RequestParam(required = false) String start, @RequestParam(required = false) String end) {
+    	
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
-        
-        if (empleadoId == null) {
-            return new ResponseEntity<>(Map.of("mensaje", "No hay sesión"), HttpStatus.UNAUTHORIZED);
-        }
+        if (empleadoId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
-        // Buscamos los horarios del empleado
         List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId);
-        List<Map<String, Object>> eventos = new java.util.ArrayList<>(); 
-
+        List<Map<String, Object>> eventos = new ArrayList<>();
         for (Horario h : listaHorarios) {
-            // Opcional: Si quieres filtrar por rango de fechas recibido (start/end)
-            // puedes añadir un if aquí similar al que tienes en 'horariosGlobales'
-            
             Map<String, Object> turno1 = new HashMap<>();
             turno1.put("start", h.getFecha().toString());
             turno1.put("title", h.getHoraInicio().toString().substring(0, 5) + " - " + h.getHoraFin().toString().substring(0, 5));
-            turno1.put("backgroundColor", "#d1ecf1");
-            turno1.put("textColor", "#0c5460");
-            
-            // Es vital que el formato sea estricto para FullCalendar
-            Map<String, Object> props1 = new HashMap<>();
-            props1.put("textoPersonalizado", h.getHoraInicio().toString().substring(0, 5) + " a " + h.getHoraFin().toString().substring(0, 5));
-            turno1.put("extendedProps", props1);
-            
+            turno1.put("extendedProps", Map.of("textoPersonalizado", h.getHoraInicio().toString().substring(0, 5) + " a " + h.getHoraFin().toString().substring(0, 5)));
             eventos.add(turno1);
-
-            if (h.getHoraInicio2() != null) { 
+            
+            if (h.getHoraInicio2() != null) {
                 Map<String, Object> turno2 = new HashMap<>();
                 turno2.put("start", h.getFecha().toString());
                 turno2.put("title", h.getHoraInicio2().toString().substring(0, 5) + " - " + h.getHoraFin2().toString().substring(0, 5));
-                turno2.put("backgroundColor", "#fff3cd");
-                turno2.put("textColor", "#856404");
-                
-                Map<String, Object> props2 = new HashMap<>();
-                props2.put("textoPersonalizado", h.getHoraInicio2().toString().substring(0, 5) + " a " + h.getHoraFin2().toString().substring(0, 5));
-                turno2.put("extendedProps", props2);
-                
                 eventos.add(turno2);
             }
         }
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
-    
+
+    // 7. Mis festivos
     @GetMapping("/horarios-reales/mis-festivos")
     public ResponseEntity<?> misFestivos(HttpSession session) {
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
@@ -230,8 +197,8 @@ public class HorarioRestController {
         }
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
-    
- // 6. Obtener los turnos reales de un empleado específico
+
+    // 8. Por empleado (Rango)
     @GetMapping("/horarios-reales/empleado/{empleadoId}")
     public ResponseEntity<?> horariosPorEmpleado(
             @PathVariable Long empleadoId,
@@ -249,6 +216,7 @@ public class HorarioRestController {
             List<Map<String, Object>> eventos = new ArrayList<>(); 
 
             for (Horario h : listaHorarios) {
+                // Filtro de rango de fechas
                 if ((h.getFecha().isEqual(fechaInicio) || h.getFecha().isAfter(fechaInicio)) && 
                     (h.getFecha().isEqual(fechaFin) || h.getFecha().isBefore(fechaFin))) {
                     
@@ -262,7 +230,7 @@ public class HorarioRestController {
                     String finStr = h.getHoraFin().toString().substring(0, 5);
                     String textoTitulo = inicioStr + " - " + finStr;
                     
-                    // Si tiene turno de tarde...
+                    // Si tiene turno de tarde, se concatena (Lógica recuperada)
                     if (h.getHoraInicio2() != null && h.getHoraFin2() != null) {
                         String inicio2Str = h.getHoraInicio2().toString().substring(0, 5);
                         String fin2Str = h.getHoraFin2().toString().substring(0, 5);
@@ -281,8 +249,8 @@ public class HorarioRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // 7. Listado Global para el Cuadrante General
+
+    // 9. Global
     @GetMapping("/horarios-reales/global")
     public ResponseEntity<?> horariosGlobales(
             @RequestParam("start") String start,
@@ -333,8 +301,8 @@ public class HorarioRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // Borrar un rango de horarios por empleado en el cuadrante global
+
+    // 10. Borrar rango
     @DeleteMapping("/horarios-reales/empleado/{empleadoId}/rango")
     public ResponseEntity<?> eliminarRangoFechas(
             @PathVariable Long empleadoId,

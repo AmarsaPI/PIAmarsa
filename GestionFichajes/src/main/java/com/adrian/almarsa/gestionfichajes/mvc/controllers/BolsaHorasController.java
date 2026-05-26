@@ -29,10 +29,6 @@ public class BolsaHorasController {
     
     @Autowired
     private IAdminService adminService;
-    
-
-    BolsaHorasController(BolsaHorasServiceImpl bolsaHorasServiceImpl) {
-    }
 
     // Este método devuelve la vista con el saldo inyectado
     @GetMapping("/resumen")
