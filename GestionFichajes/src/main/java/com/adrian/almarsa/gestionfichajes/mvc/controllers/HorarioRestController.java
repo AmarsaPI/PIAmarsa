@@ -1,6 +1,5 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,16 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IEmpleadoDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
-
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+/**
+ * API REST encargada de gestionar los horarios reales de los empleados.
+ * Permite consultarlos, crearlos, actualizarlos y detectar duplicados
+ * automáticamente según la fecha y el empleado.
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = {"*"})
@@ -35,13 +36,22 @@ public class HorarioRestController {
     @Autowired
     private IFestivoService festivoService;
 
-    // 1. Listado global
+    /**
+     * Devuelve el listado completo de horarios registrados.
+     * 
+     * @return lista con todos los horarios reales almacenados
+     */
     @GetMapping("/horarios-reales")
     public List<Horario> index() {
         return horarioService.findAll();
     }
 
-    // 2. Buscar por ID
+    /**
+     * Busca un horario concreto por su ID.
+     * 
+     * @param id identificador del horario
+     * @return el horario encontrado o un mensaje de error si no existe
+     */
     @GetMapping("/horarios-reales/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -59,7 +69,14 @@ public class HorarioRestController {
         }
     }
 
-    // 3. Guardar
+    /**
+     * Guarda un horario nuevo o actualiza uno existente si ya había un registro
+     * para el mismo empleado y la misma fecha. Esto evita duplicados y mantiene
+     * siempre un único horario por día.
+     * 
+     * @param horario datos del horario a guardar
+     * @return mensaje de confirmación o detalles del error
+     */
     @PostMapping("/horarios-reales")
     public ResponseEntity<?> guardar(@RequestBody Horario horario) {
         try {
@@ -99,7 +116,16 @@ public class HorarioRestController {
         }
     }
 
-    // 4. Actualizar
+    /**
+     * Actualiza un horario existente usando su ID.  
+     * Si el horario no existe, devuelve un mensaje informándolo.  
+     * También valida los datos recibidos antes de aplicar los cambios.
+     *
+     * @param horario datos actualizados del horario
+     * @param result resultado de la validación
+     * @param id identificador del horario a modificar
+     * @return mensaje de éxito o error según el resultado de la operación
+     */
     @PutMapping("/horarios-reales/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody Horario horario, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -134,7 +160,13 @@ public class HorarioRestController {
         }
     }
 
-    // 5. Eliminar
+    /**
+     * Elimina un horario por su ID.  
+     * Si el horario no existe, devuelve un mensaje indicándolo.
+     *
+     * @param id identificador del horario a eliminar
+     * @return mensaje confirmando el borrado o informando del error
+     */
     @DeleteMapping("/horarios-reales/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -152,7 +184,16 @@ public class HorarioRestController {
         }
     }
 
-    // 6. Mis turnos
+    /**
+     * Devuelve los turnos del empleado actualmente logueado.  
+     * La información se adapta al formato esperado por el calendario del frontend,
+     * incluyendo fecha, horas y un texto personalizado.
+     *
+     * @param session sesión del usuario para obtener su ID
+     * @param start fecha de inicio opcional para filtrar (no usada actualmente)
+     * @param end fecha de fin opcional para filtrar (no usada actualmente)
+     * @return lista de eventos con los turnos del empleado
+     */
     @GetMapping("/horarios-reales/mis-turnos")
     public ResponseEntity<?> misTurnos(HttpSession session, @RequestParam(required = false) String start, @RequestParam(required = false) String end) {
     	
@@ -178,7 +219,14 @@ public class HorarioRestController {
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
 
-    // 7. Mis festivos
+    /**
+     * Devuelve los días festivos del empleado actualmente logueado.
+     * La información se adapta al formato del calendario del frontend,
+     * mostrando cada festivo como un bloque de fondo.
+     *
+     * @param session sesión del usuario para obtener su ID
+     * @return lista de eventos con los festivos del empleado
+     */
     @GetMapping("/horarios-reales/mis-festivos")
     public ResponseEntity<?> misFestivos(HttpSession session) {
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
@@ -198,7 +246,16 @@ public class HorarioRestController {
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
 
-    // 8. Por empleado (Rango)
+    /**
+     * Obtiene los horarios de un empleado dentro de un rango de fechas.
+     * El resultado se devuelve en formato compatible con el calendario,
+     * incluyendo horas, colores y turnos partidos si los hubiera.
+     *
+     * @param empleadoId ID del empleado a consultar
+     * @param start fecha de inicio del rango (yyyy-MM-dd)
+     * @param end fecha de fin del rango (yyyy-MM-dd)
+     * @return lista de eventos del empleado dentro del rango indicado
+     */
     @GetMapping("/horarios-reales/empleado/{empleadoId}")
     public ResponseEntity<?> horariosPorEmpleado(
             @PathVariable Long empleadoId,
@@ -250,7 +307,15 @@ public class HorarioRestController {
         }
     }
 
-    // 9. Global
+    /**
+     * Devuelve los horarios de todos los empleados dentro de un rango de fechas.
+     * Cada evento incluye el nombre del empleado y sus turnos del día,
+     * formateados para mostrarse correctamente en el calendario.
+     *
+     * @param start fecha de inicio del rango (yyyy-MM-dd)
+     * @param end fecha de fin del rango (yyyy-MM-dd)
+     * @return lista de eventos globales para el calendario
+     */
     @GetMapping("/horarios-reales/global")
     public ResponseEntity<?> horariosGlobales(
             @RequestParam("start") String start,
@@ -302,7 +367,15 @@ public class HorarioRestController {
         }
     }
 
-    // 10. Borrar rango
+    /**
+     * Elimina todos los horarios de un empleado dentro de un rango de fechas.
+     * Se usa normalmente para limpiar una semana completa antes de volver a planificarla.
+     *
+     * @param empleadoId ID del empleado cuyos horarios se van a borrar
+     * @param startStr fecha de inicio del rango (yyyy-MM-dd)
+     * @param endStr fecha de fin del rango (yyyy-MM-dd)
+     * @return mensaje indicando cuántos horarios fueron eliminados
+     */
     @DeleteMapping("/horarios-reales/empleado/{empleadoId}/rango")
     public ResponseEntity<?> eliminarRangoFechas(
             @PathVariable Long empleadoId,

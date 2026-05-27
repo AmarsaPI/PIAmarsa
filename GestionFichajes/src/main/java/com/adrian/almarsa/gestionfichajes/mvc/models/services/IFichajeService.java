@@ -4,41 +4,85 @@ import java.time.LocalDate;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
 
-// Interfaz que gestiona el ciclo de vida de la jornada laboral
+/**
+ * Servicio para la gestión del ciclo de fichajes.
+ */
 public interface IFichajeService {
 
-    // Lista todos los registros de fichajes históricos
+    /**
+     * Obtiene todos los fichajes.
+     * @return lista de fichajes
+     */
     List<Fichaje> findAll();
 
-    // Obtiene un registro de fichaje por su identificador único
+    /**
+     * Busca un fichaje por ID.
+     * @return fichaje encontrado o null
+     */
     Fichaje findById(Long id);
 
-    // Elimina un registro (acción administrativa para corrección de errores)
+    /**
+     * Elimina un fichaje por ID.
+     */
     void delete(Long id);
 
-    // Guarda cambios directos en un fichaje (edición administrativa)
+    /**
+     * Guarda o actualiza un fichaje.
+     * @return fichaje guardado
+     */
     Fichaje save(Fichaje fichaje);
 
-    // Inicia una jornada laboral validando que no haya otra abierta
+    /**
+     * Registra la entrada de un empleado.
+     * @return fichaje creado
+     */
     Fichaje registrarEntrada(Fichaje fichaje);
 
-    // Finaliza una jornada laboral asignando la hora actual a la salida
+    /**
+     * Registra la salida de un fichaje.
+     * @return fichaje actualizado
+     */
     Fichaje registrarSalida(Long fichajeId);
-    
-    // Recupera todos los fichajes realizados por un empleado específico
+
+    /**
+     * Obtiene los fichajes de un empleado.
+     * @return lista de fichajes
+     */
     List<Fichaje> findByEmpleado(Long empleadoId);
-    
-    //Encuentra el último fichaje sin fichaje de salida
-    public Fichaje findUltimoSinCerrar(Long empleadoId);
-    
+
+    /**
+     * Obtiene el último fichaje sin salida.
+     * @return fichaje abierto o null
+     */
+    Fichaje findUltimoSinCerrar(Long empleadoId);
+
+    /**
+     * Obtiene las horas trabajadas en una fecha.
+     * @return horas totales del día
+     */
     double obtenerHorasTotalesPorEmpleadoYFecha(Long empleadoId, LocalDate fecha);
 
-	List<Fichaje> findFichajesConOlvido(Long empleadoId);
-	
-	public List<Fichaje> findByEmpleadoAndMonth(Long empleadoId, String anioMes);
-	
-	List<Fichaje> findByEmpleadoAndYear(Long empleadoId, int anio);
-	
-	// Lista el historial de fichajes de un empleado usando el método corregido del DAO
+    /**
+     * Obtiene fichajes con olvido de salida.
+     * @return lista de fichajes incompletos
+     */
+    List<Fichaje> findFichajesConOlvido(Long empleadoId);
+
+    /**
+     * Obtiene fichajes de un mes concreto.
+     * @return lista de fichajes del mes
+     */
+    List<Fichaje> findByEmpleadoAndMonth(Long empleadoId, String anioMes);
+
+    /**
+     * Obtiene fichajes de un año concreto.
+     * @return lista de fichajes del año
+     */
+    List<Fichaje> findByEmpleadoAndYear(Long empleadoId, int anio);
+
+    /**
+     * Obtiene los fichajes de la semana actual.
+     * @return lista de fichajes de la semana
+     */
     List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId);
 }

@@ -14,6 +14,10 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IAdminDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IEmpleadoDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin;
 
+/**
+ * Servicio de autenticación que carga usuarios (admins o empleados)
+ * y valida credenciales para el inicio de sesión.
+ */
 @Service
 public class LoginService implements UserDetailsService {
 
@@ -22,26 +26,36 @@ public class LoginService implements UserDetailsService {
 
     @Autowired
     private IAdminDAO adminDAO;
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Carga un usuario por email para Spring Security.
+     * @param email email del usuario
+     * @return detalles del usuario
+     * @throws UsernameNotFoundException si no existe
+     */
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        
-        // Buscamos en Admins
+
         Optional<Admin> admin = adminDAO.findByEmail(email);
         if (admin.isPresent()) return admin.get();
 
-        // Si no, buscamos en Empleados
         return empleadoDAO.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Email no encontrado: " + email));
     }
-    
-    // Método para login manual en el Controller
+
+    /**
+     * Valida credenciales manualmente para login desde el controlador.
+     * @param email email del usuario
+     * @param password contraseña sin cifrar
+     * @return usuario autenticado o null si falla
+     */
     public Object loginManual(String email, String password) {
         UserDetails user = null;
+
         try {
             user = loadUserByUsername(email);
         } catch (UsernameNotFoundException e) {
@@ -49,8 +63,9 @@ public class LoginService implements UserDetailsService {
         }
 
         if (passwordEncoder.matches(password, user.getPassword())) {
-            return user; // Devuelve el Admin o Empleado
+            return user;
         }
+
         return null;
     }
 }

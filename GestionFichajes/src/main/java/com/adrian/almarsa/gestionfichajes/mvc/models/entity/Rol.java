@@ -1,12 +1,13 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 
-// Define los tipos de acceso permitidos en el sistema
+/**
+ * Roles disponibles para los usuarios del sistema.
+ */
 public enum Rol {
 
-    // Usuario estándar: solo puede gestionar sus propios fichajes
+    /** Rol básico: gestiona solo sus propios fichajes y puede hacer solicitudes */
     EMPLEADO,
-    
-    // Usuario con control total: accede a la gestión de todos los empleados
-    ADMINISTRADOR
 
+    /** Rol con acceso completo a la gestión del sistema. */
+    ADMINISTRADOR
 }

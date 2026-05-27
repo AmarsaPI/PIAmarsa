@@ -11,66 +11,119 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.dto.EmpleadoBalanceDTO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.BolsaHorasServiceImpl;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAdminService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IBolsaHorasService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
+
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador encargado de mostrar la información
+ * relacionada con la bolsa de horas de los empleados.
+ */
 @Controller
 @RequestMapping("/bolsa")
 public class BolsaHorasController {
 
     @Autowired
     private IBolsaHorasService bolsaHorasService;
-    
+
     @Autowired
     private IEmpleadoService empleadoService;
-    
+
     @Autowired
     private IAdminService adminService;
 
-    // Este método devuelve la vista con el saldo inyectado
+    /**
+     * Muestra el resumen de la bolsa de horas del empleado.
+     * 
+     * @param model modelo de datos
+     * @param session sesión actual
+     * @return vista con el resumen de horas
+     */
+    
+    // Muestra el saldo total de horas del empleado
     @GetMapping("/resumen")
     public String verResumenBolsa(Model model, HttpSession session) {
+
         Long empId = (Long) session.getAttribute("usuarioLogueadoId");
+
         Empleado emp = empleadoService.findById(empId);
-        
-        // Calculamos el saldo acumulado (la Bolsa de Horas)
-        double saldoTotal = bolsaHorasService.calcularBolsaAnualAcumulada(emp);
-        
+
+        // Calcula el saldo acumulado de horas
+        double saldoTotal =
+                bolsaHorasService.calcularBolsaAnualAcumulada(emp);
+
         model.addAttribute("saldoTotal", saldoTotal);
-        return "bolsa/resumen"; // Nombre de tu vista HTML
+
+        return "bolsa/resumen";
     }
+
+    /**
+     * Muestra un informe general con el balance de horas
+     * de todos los empleados.
+     * 
+     * @param model modelo de datos
+     * @param session sesión actual
+     * @return vista del informe
+     */
     
+    // Genera un informe con las horas trabajadas y previstas
     @GetMapping("/informe")
     public String listarBalances(Model model, HttpSession session) {
-    	Long empId = (Long) session.getAttribute("usuarioLogueadoId");
+
+        Long empId = (Long) session.getAttribute("usuarioLogueadoId");
+
         Long adminId = (Long) session.getAttribute("adminLogueadoId");
 
-        // Si es Admin, cargamos el perfil de Admin, si es Empleado, el de Empleado
+        // Comprueba qué tipo de usuario ha iniciado sesión
         if (adminId != null) {
-            model.addAttribute("usuario", adminService.findById(adminId));
+
+            model.addAttribute(
+                    "usuario",
+                    adminService.findById(adminId)
+            );
+
         } else if (empId != null) {
-            model.addAttribute("usuario", empleadoService.findById(empId));
+
+            model.addAttribute(
+                    "usuario",
+                    empleadoService.findById(empId)
+            );
+
         } else {
+
             return "redirect:/login";
         }
-        
-        // 2. Obtener la lista de empleados para el informe
+
+        // Obtiene todos los empleados
         List<Empleado> empleados = empleadoService.findAll();
+
         List<EmpleadoBalanceDTO> listaReporte = new ArrayList<>();
 
+        // Calcula el balance de horas de cada empleado
         for (Empleado emp : empleados) {
-            double balance = bolsaHorasService.calcularBolsaAnualAcumulada(emp);
-            double horasPrevistas = bolsaHorasService.obtenerHorasPrevistasTotales(emp); 
-            double horasTrabajadas = horasPrevistas + balance;
-            
-            listaReporte.add(new EmpleadoBalanceDTO(emp.getNombre(), horasTrabajadas, horasPrevistas));
+
+            double balance =
+                    bolsaHorasService.calcularBolsaAnualAcumulada(emp);
+
+            double horasPrevistas =
+                    bolsaHorasService.obtenerHorasPrevistasTotales(emp);
+
+            double horasTrabajadas =
+                    horasPrevistas + balance;
+
+            listaReporte.add(
+                    new EmpleadoBalanceDTO(
+                            emp.getNombre(),
+                            horasTrabajadas,
+                            horasPrevistas
+                    )
+            );
         }
-        
+
         model.addAttribute("listaEmpleados", listaReporte);
-        
-        return "informe"; 
+
+        return "informe";
     }
 }

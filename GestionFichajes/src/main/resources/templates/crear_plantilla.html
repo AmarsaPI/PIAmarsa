@@ -50,6 +50,7 @@
                 <div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
                     Usuario: <span th:text="${usuario?.nombre}">Admin</span>
                 </div>
+                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
             </div>
 
             <div id="logo-amarsa">
@@ -157,7 +158,6 @@
                             start: arg.start,
                             end: arg.end,
                             allDay: arg.allDay,
-                            // Bloques visuales modificados a Azul Corporativo
                             backgroundColor: '#0d6efd',
                             borderColor: '#0a58ca'
                         });

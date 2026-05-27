@@ -12,43 +12,63 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 
+/**
+ * Servicio para la gestión de festivos.
+ */
 @Service
 public class FestivoServiceImpl implements IFestivoService {
 
     @Autowired
     private IFestivoDAO festivoDAO;
-    
+
     @Autowired
     @Lazy
     private IHorarioService horarioService;
 
+    /**
+     * Obtiene todos los festivos.
+     * @return lista de festivos
+     */
     @Override
     @Transactional(readOnly = true)
     public List<Festivo> findAll() {
         return (List<Festivo>) festivoDAO.findAll();
     }
 
+    /**
+     * Obtiene festivos por calendario.
+     * @return lista de festivos del calendario
+     */
     @Override
     @Transactional(readOnly = true)
     public List<Festivo> findByCalendario(Long calendarioId) {
-        // Busca festivos asociados a un ID de calendario específico
         return festivoDAO.findByCalendarioId(calendarioId);
     }
 
+    /**
+     * Obtiene festivos asociados a un empleado.
+     * @return lista de festivos del empleado
+     */
     @Override
     @Transactional(readOnly = true)
     public List<Festivo> findByEmpleado(Long empleadoId) {
-        // Este es el "atajo" que definimos en el DAO:
-        // Busca festivos navegando por la relación Calendario -> Empleado
         return festivoDAO.findByCalendario_Empleados_Id(empleadoId);
     }
 
+    /**
+     * Busca un festivo por ID.
+     * @return festivo encontrado o null
+     */
     @Override
     @Transactional(readOnly = true)
     public Festivo findById(Long id) {
         return festivoDAO.findById(id).orElse(null);
     }
 
+    /**
+     * Guarda un festivo y elimina turnos reales en esa fecha.
+     * @return festivo guardado
+     */
     @Override
     @Transactional
     public Festivo save(Festivo festivo) {
@@ -59,7 +79,6 @@ public class FestivoServiceImpl implements IFestivoService {
         if (empleadosDelCalendario != null) {
             for (Empleado emp : empleadosDelCalendario) {
                 Horario turno = horarioService.findByEmpleadoIdAndFecha(emp.getId(), festivo.getFecha());
-                
                 if (turno != null) {
                     horarioService.delete(turno.getId());
                 }
@@ -69,20 +88,23 @@ public class FestivoServiceImpl implements IFestivoService {
         return festivoGuardado;
     }
 
+    /**
+     * Elimina un festivo por ID.
+     */
     @Override
     @Transactional
     public void delete(Long id) {
         festivoDAO.deleteById(id);
     }
-    
+
+    /**
+     * Indica si existe un festivo en una fecha para un empleado.
+     * @return true si hay festivo
+     */
     @Override
     @Transactional(readOnly = true)
     public boolean existeFestivoEnFecha(LocalDate fecha, Long empleadoId) {
-        // Obtenemos todos los festivos del empleado
         List<Festivo> festivos = findByEmpleado(empleadoId);
-        
-        // Verificamos si alguno coincide con la fecha proporcionada
-        return festivos.stream()
-                .anyMatch(f -> f.getFecha().equals(fecha));
+        return festivos.stream().anyMatch(f -> f.getFecha().equals(fecha));
     }
 }

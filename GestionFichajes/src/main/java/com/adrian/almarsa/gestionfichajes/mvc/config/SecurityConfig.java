@@ -3,85 +3,161 @@ package com.adrian.almarsa.gestionfichajes.mvc.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.JwtService;
 
+/**
+ * Clase encargada de configurar toda la seguridad
+ * de la aplicación.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Define la cadena de filtros de seguridad y permisos de rutas
-	// Necesario para pasárselo a JwtAuthenticationFilter
-		private JwtService jwtService;
+	// Servicio utilizado para validar los tokens JWT
+	private JwtService jwtService;
 
-		public SecurityConfig(JwtService jwtService) {
-			this.jwtService = jwtService;
-		}
+	/**
+	 * Constructor de la configuración de seguridad.
+	 * 
+	 * @param jwtService servicio que gestiona los tokens JWT
+	 */
+	public SecurityConfig(JwtService jwtService) {
+		this.jwtService = jwtService;
+	}
 
-		// Define la cadena de filtros de seguridad y permisos de rutas para la API
-		// Se ejecuta en primer lugar para
-		@Bean
-		@Order(1)
-		public SecurityFilterChain securityFilterChainAPI(HttpSecurity api) {
-			api
-					// Filtro de desvío necesario para entrar en las rutas de la API
-					.securityMatcher("/api/**")
-					.csrf(csrf -> csrf.disable())
+	/**
+	 * Configura la seguridad de las rutas de la API.
+	 * Utiliza autenticación mediante JWT.
+	 * 
+	 * @param api configuración de seguridad de Spring
+	 * @return cadena de filtros configurada
+	 */
+	@Bean
+	@Order(1)
+	public SecurityFilterChain securityFilterChainAPI(HttpSecurity api) {
 
-					// Fuerza a no guardar el estado de la session en el servidor
-					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		api
+				// Aplica esta configuración solo a rutas /api
+				.securityMatcher("/api/**")
 
-					// Filtro personalizado a aplicar en primera instancia que verifica que se esté autenticado
-					.addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+				// Desactiva CSRF para la API
+				.csrf(csrf -> csrf.disable())
 
-					// Filtro a aplicar en segunda instancia
-					.authorizeHttpRequests(auth -> auth
-							.requestMatchers("/api/login/**").permitAll()
-							.anyRequest().authenticated()
-					);
+				// La API no guarda sesiones en servidor
+				.sessionManagement(session ->
+						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-			return api.build();
-		}
+				// Añade el filtro personalizado JWT
+				.addFilterBefore(
+						new JwtAuthenticationFilter(jwtService),
+						UsernamePasswordAuthenticationFilter.class
+				)
 
+				// Configura permisos de acceso
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/api/login/**").permitAll()
+						.anyRequest().authenticated()
+				);
 
+		return api.build();
+	}
+
+	/**
+	 * Configura la seguridad general de la aplicación web.
+	 * 
+	 * @param http configuración de seguridad
+	 * @return cadena de filtros configurada
+	 * @throws Exception posible error durante la configuración
+	 */
 	@Bean
 	@Order(2)
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
 	    http
-	        .csrf(csrf -> csrf.disable()) 
+	        // Desactiva protección CSRF
+	        .csrf(csrf -> csrf.disable())
+
+	        // Configura permisos de acceso
 	        .authorizeHttpRequests(auth -> auth
-	            // 1. RUTAS WEB Y GESTIÓN
-        		// Se maneja la seguridad mediante session en los controllers
-	            .requestMatchers("/login/**", "/auth-check/**", "/index/**", "/horario_personal/**", 
-	                             "/gestion_empleados/**", "/fichar/**", "/admin/**", "/api/**", "/crear_plantilla", "/asignar_horario", "/plantillas/guardar", "/gestion_plantillas"
-	                             , "/vacaciones/**", "/calendario-global", "/convenio/**", "/historial_fichajes/**", "/solicitudes/**", "/solicitar-cambio", "/solicitar-cambio-horario",
-                             	   "/bolsa/**", "/horarios/pdf/**", "/web/**", "/historial_pendientes").permitAll()
-	            
-	            // 2. RECURSOS ESTÁTICOS
-	            .requestMatchers("/css/**", "/js/**", "/images/**", "/*.css", "/*.js", "/*.png", "/logo.png", "/horarios.js").permitAll()
-	             
+
+	            // Rutas permitidas sin iniciar sesión
+	            .requestMatchers(
+	            		"/login/**",
+	            		"/auth-check/**",
+	            		"/index/**",
+	            		"/horario_personal/**",
+	            		"/gestion_empleados/**",
+	            		"/fichar/**",
+	            		"/admin/**",
+	            		"/api/**",
+	            		"/crear_plantilla",
+	            		"/asignar_horario",
+	            		"/plantillas/guardar",
+	            		"/gestion_plantillas",
+	            		"/vacaciones/**",
+	            		"/calendario-global",
+	            		"/convenio/**",
+	            		"/historial_fichajes/**",
+	            		"/solicitudes/**",
+	            		"/solicitar-cambio",
+	            		"/solicitar-cambio-horario",
+	            		"/bolsa/**",
+	            		"/horarios/pdf/**",
+	            		"/web/**",
+	            		"/historial_fichajes/pendientes/**",
+	            		"/perfil"
+	            ).permitAll()
+
+	            // Recursos estáticos permitidos
+	            .requestMatchers(
+	            		"/css/**",
+	            		"/js/**",
+	            		"/images/**",
+	            		"/*.css",
+	            		"/*.js",
+	            		"/*.png",
+	            		"/logo.png",
+	            		"/horarios.js",
+	            		"/ayuda.js"
+	            ).permitAll()
+
+	            // El resto necesita autenticación
 	            .anyRequest().authenticated()
 	        )
-	        
+
+	        // Configuración del logout
 	        .logout(logout -> logout
-	            .logoutUrl("/logout") // Ruta que dispara el cierre
+	            .logoutUrl("/logout")
 	            .logoutSuccessUrl("/login?logout")
-	            .invalidateHttpSession(true) // Importante: borra la "mochila"
+
+	            // Elimina la sesión actual
+	            .invalidateHttpSession(true)
+
+	            // Borra la cookie de sesión
 	            .deleteCookies("JSESSIONID")
+
 	            .permitAll()
 	        );
 
 	    return http.build();
 	}
-	
-	// Define el algoritmo de hashing para las contraseñas (BCrypt)
+
+	/**
+	 * Define el sistema de cifrado para las contraseñas.
+	 * 
+	 * @return codificador BCrypt
+	 */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

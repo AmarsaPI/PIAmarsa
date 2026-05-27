@@ -5,7 +5,9 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
-// Entidad que registra la jornada laboral (entrada y salida) de los empleados
+/**
+ * Registro de entrada y salida de un empleado.
+ */
 @Entity
 @Table(name = "fichajes")
 public class Fichaje implements Serializable {
@@ -16,56 +18,53 @@ public class Fichaje implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Fecha y hora exacta del inicio de la jornada
+    /** Fecha y hora de entrada. */
     @Column(name = "fecha_entrada")
     private LocalDateTime fechaEntrada;
 
-    // Fecha y hora del fin de jornada. Permanece en NULL mientras el empleado está trabajando
+    /** Fecha y hora de salida (puede ser null mientras está trabajando). */
     @Column(name = "fecha_salida")
     private LocalDateTime fechaSalida = LocalDateTime.MIN;
 
-    // Relación muchos a uno: muchos fichajes pertenecen a un único empleado
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY mejora el rendimiento al no cargar el empleado si no es necesario
-    @JoinColumn(name = "empleado_id", nullable = false) // Clave foránea en la base de datos
+    /** Empleado que realiza el fichaje. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empleado_id", nullable = false)
     private Empleado empleado;
 
-    // Constructor vacío requerido por JPA
+    /** Constructor vacío requerido por JPA. */
     public Fichaje() {}
 
-    // Constructor para inicializar fichajes con datos específicos
+    /**
+     * Crea un fichaje.
+     *
+     * @param fechaEntrada entrada
+     * @param fechaSalida salida
+     * @param empleado empleado asociado
+     */
     public Fichaje(LocalDateTime fechaEntrada, LocalDateTime fechaSalida, Empleado empleado) {
         this.fechaEntrada = fechaEntrada;
         this.fechaSalida = fechaSalida;
         this.empleado = empleado;
     }
 
-    // --- Getters y Setters ---
+    /** @return id del fichaje */
+    public Long getId() { return id; }
 
-    public Long getId() {
-        return id;
-    }
+    /** @return fecha de entrada */
+    public LocalDateTime getFechaEntrada() { return fechaEntrada; }
 
-    public LocalDateTime getFechaEntrada() {
-        return fechaEntrada;
-    }
+    /** @param fechaEntrada nueva fecha de entrada */
+    public void setFechaEntrada(LocalDateTime fechaEntrada) { this.fechaEntrada = fechaEntrada; }
 
-    public void setFechaEntrada(LocalDateTime fechaEntrada) {
-        this.fechaEntrada = fechaEntrada;
-    }
+    /** @return fecha de salida */
+    public LocalDateTime getFechaSalida() { return fechaSalida; }
 
-    public LocalDateTime getFechaSalida() {
-        return fechaSalida;
-    }
+    /** @param fechaSalida nueva fecha de salida */
+    public void setFechaSalida(LocalDateTime fechaSalida) { this.fechaSalida = fechaSalida; }
 
-    public void setFechaSalida(LocalDateTime fechaSalida) {
-        this.fechaSalida = fechaSalida;
-    }
+    /** @return empleado asociado */
+    public Empleado getEmpleado() { return empleado; }
 
-    public Empleado getEmpleado() {
-        return empleado;
-    }
-
-    public void setEmpleado(Empleado empleado) {
-        this.empleado = empleado;
-    }
+    /** @param empleado nuevo empleado asociado */
+    public void setEmpleado(Empleado empleado) { this.empleado = empleado; }
 }

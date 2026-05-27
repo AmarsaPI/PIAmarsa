@@ -26,7 +26,11 @@ import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioS
 
 import jakarta.validation.Valid;
 
-// Controlador para la gestión de turnos y planificación semanal
+/**
+ * Controlador REST encargado de gestionar las plantillas de horarios semanales.
+ * Permite crear, consultar, actualizar y eliminar turnos base, así como obtener
+ * una vista previa completa de una plantilla por nombre.
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = {"*"})
@@ -35,13 +39,22 @@ public class PlantillaHorarioRestController {
     @Autowired
     private IPlantillaHorarioService plantillaService;
 
-    // Listado global de todos los horarios configurados
+    /**
+     * Devuelve el listado completo de horarios configurados en la plantilla.
+     *
+     * @return lista de todos los registros de plantilla
+     */
     @GetMapping("/horarios")
     public List<PlantillaHorario> index() {
         return plantillaService.findAll();
     }
 
-    // Busca un turno específico por su ID
+    /**
+     * Busca un horario de plantilla por su ID.
+     *
+     * @param id identificador del horario
+     * @return el horario encontrado o un mensaje si no existe
+     */
     @GetMapping("/horarios/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -59,7 +72,14 @@ public class PlantillaHorarioRestController {
         }
     }
     
-    // Crea una nueva asignación de horario para un empleado
+    /**
+     * Crea un nuevo registro de plantilla (día + horas).
+     * Valida los datos antes de guardarlos.
+     *
+     * @param horario datos del turno a crear
+     * @param result resultado de la validación
+     * @return mensaje de éxito o errores de validación
+     */
     @PostMapping("/horarios")
     public ResponseEntity<?> create(@Valid @RequestBody PlantillaHorario horario, BindingResult result) {
         Map<String, Object> response = new HashMap<>();
@@ -81,7 +101,15 @@ public class PlantillaHorarioRestController {
         }
     }
     
-    // Actualiza los detalles de un horario (día, hora inicio/fin o empleado asignado)
+    /**
+     * Actualiza un turno de plantilla existente.
+     * Permite modificar el día de la semana y las horas asignadas.
+     *
+     * @param horario datos actualizados
+     * @param result validación de campos
+     * @param id ID del turno a modificar
+     * @return mensaje de éxito o error
+     */
     @PutMapping("/horarios/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody PlantillaHorario horario, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -112,7 +140,12 @@ public class PlantillaHorarioRestController {
         }
     }
     
-    // Elimina un registro de horario
+    /**
+     * Elimina un turno de plantilla por su ID.
+     *
+     * @param id identificador del turno
+     * @return mensaje indicando si se eliminó correctamente
+     */
     @DeleteMapping("/horarios/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -130,6 +163,13 @@ public class PlantillaHorarioRestController {
         }
     }
     
+    /**
+     * Obtiene una vista previa de todos los turnos pertenecientes a una plantilla,
+     * usando como referencia el nombre de la plantilla del registro solicitado.
+     *
+     * @param id ID de cualquier turno perteneciente a la plantilla
+     * @return nombre de la plantilla y lista de turnos ordenados por día
+     */
     @GetMapping("/plantillas/{id}/preview")
     public ResponseEntity<?> obtenerDetallePlantilla(@PathVariable Long id) {
         PlantillaHorario registroBase = plantillaService.findById(id); 
@@ -159,6 +199,13 @@ public class PlantillaHorarioRestController {
         return new ResponseEntity<>(respuesta, HttpStatus.OK);
     }
     
+    /**
+     * Elimina todos los turnos asociados a una plantilla según su nombre.
+     * Útil para borrar plantillas completas como "Mañana", "Tarde", etc.
+     *
+     * @param nombre nombre de la plantilla a eliminar
+     * @return mensaje indicando el resultado de la operación
+     */
     @DeleteMapping("/plantillas/nombre/{nombre}")
     public ResponseEntity<?> eliminarPlantillaPorNombre(@PathVariable String nombre) {
         Map<String, Object> response = new HashMap<>();

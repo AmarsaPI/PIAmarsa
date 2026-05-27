@@ -29,15 +29,13 @@ body {
 	padding: 5px 8px;
 }
 
-/* 🔥 TRUCO DE RECONSTRUCCIÓN: Forzado de alineación matemática superior */
 .content-grid {
     display: flex !important;
     gap: 20px !important;
-    align-items: flex-start !important; /* Clava las partes superiores */
+    align-items: flex-start !important; 
     margin-top: 15px !important;
 }
 
-/* Anulamos cualquier padding o margin fantasma que venga de styles.css */
 .left-zone, .main-content {
     margin-top: 0 !important;
     padding-top: 0 !important;
@@ -58,6 +56,7 @@ body {
 				<div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
 					Ususario: <span th:text="${usuario?.nombre}">Admin</span>
 				</div>
+				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
 
 			<div id="logo-amarsa"><img th:src="@{/logo.png}" alt="Logo" class="brand-logo" /></div>
