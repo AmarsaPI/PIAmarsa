@@ -8,11 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-// Captura excepciones de forma global en todos los controladores REST
+/**
+ * Manejador global de excepciones para toda la aplicación.
+ * 
+ * Esta clase captura cualquier error no controlado que ocurra en los
+ * controladores y devuelve una respuesta JSON uniforme, evitando que
+ * el usuario reciba trazas internas o mensajes poco claros.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Maneja cualquier tipo de excepción no controlada específicamente
+	/**
+     * Captura cualquier excepción no gestionada de forma específica.
+     * Devuelve un mensaje genérico y el detalle del error para facilitar
+     * el diagnóstico sin exponer información sensible.
+     *
+     * @param ex excepción lanzada durante la ejecución
+     * @return respuesta JSON con el mensaje de error y código HTTP 400
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception ex) {
 

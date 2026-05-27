@@ -19,6 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador encargado de gestionar todo el flujo de vacaciones y ausencias
+ * de los empleados: visualización, solicitud, validación, aprobación,
+ * rechazo y representación en el calendario global.
+ */
 @Controller
 public class VacacionesController {
 
@@ -28,6 +33,15 @@ public class VacacionesController {
     @Autowired
     private IEmpleadoService empleadoService;
 
+    /**
+     * Muestra la página de vacaciones del empleado logueado.
+     * Calcula los días disponibles, disfrutados y reservados,
+     * además de listar todas sus solicitudes.
+     *
+     * @param model datos enviados a la vista
+     * @param session sesión del usuario
+     * @return vista de vacaciones o redirección al login si no hay sesión
+     */
     @GetMapping("/vacaciones")
     public String verVacaciones(Model model, HttpSession session) {
         Long id = (Long) session.getAttribute("usuarioLogueadoId");
@@ -69,6 +83,18 @@ public class VacacionesController {
         return "vacaciones";
     }
 
+    /**
+     * Procesa una nueva solicitud de vacaciones.
+     * Valida fechas, evita solapamientos con otras solicitudes
+     * y registra la ausencia como pendiente.
+     *
+     * @param inicioStr fecha de inicio en formato texto
+     * @param finStr fecha de fin en formato texto
+     * @param motivo motivo opcional de la solicitud
+     * @param session sesión del usuario
+     * @param redirectAttributes mensajes flash para la vista
+     * @return redirección a la página de vacaciones
+     */
     @PostMapping("/vacaciones/solicitar")
     public String procesarSolicitud(@RequestParam("fechaInicio") String inicioStr,
                                     @RequestParam("fechaFin") String finStr,
@@ -95,7 +121,7 @@ public class VacacionesController {
             return "redirect:/vacaciones";
         }
 
-        // 🌟 2. EVITAR DUPLICADOS Y SOLAPAMIENTOS 🌟
+        // Evitar duplicados o solapamiento
         try {
             // Obtenemos todo el histórico de ausencias del empleado que solicita
             List<Ausencia> ausenciasExistentes = ausenciaService.obtenerAusenciasPorEmpleado(empleadoLogueado);
@@ -132,6 +158,14 @@ public class VacacionesController {
         return "redirect:/vacaciones";
     }
     
+    /**
+     * Elimina todas las solicitudes de vacaciones rechazadas
+     * del empleado logueado para mantener su historial limpio.
+     *
+     * @param session sesión del usuario
+     * @param redirectAttributes mensajes flash
+     * @return redirección a la página de vacaciones
+     */
     @PostMapping("/vacaciones/limpiar-rechazadas")
     public String limpiarSolicitudesRechazadas(HttpSession session, RedirectAttributes redirectAttributes) {
         Long id = (Long) session.getAttribute("usuarioLogueadoId");
@@ -149,6 +183,16 @@ public class VacacionesController {
         return "redirect:/vacaciones";
     }
     
+    /**
+     * Muestra el calendario global de ausencias del mes seleccionado.
+     * Incluye colores por tipo de ausencia, solicitudes pendientes
+     * y navegación entre meses.
+     *
+     * @param mes mes a visualizar (si no se envía, se usa el actual)
+     * @param model datos enviados a la vista
+     * @param session sesión del usuario
+     * @return vista del calendario global
+     */
     @GetMapping("/vacaciones/calendario-global")
     public String verCalendarioGlobal(@RequestParam(value = "mes", required = false) Integer mes,
                                      Model model, HttpSession session) {
@@ -164,13 +208,13 @@ public class VacacionesController {
         int anioActual = LocalDate.now().getYear();
         model.addAttribute("anio", anioActual);
 
-        // 🌟 LÓGICA: Si no viene mes por la URL, usamos el mes actual del sistema
+        // Si no viene mes por la URL, usamos el mes actual del sistema
         if (mes == null) {
             mes = LocalDate.now().getMonthValue();
         }
         model.addAttribute("mesActual", mes);
 
-        // 🌟 CÁLCULO DE MES ANTERIOR Y SIGUIENTE PARA LAS FLECHAS
+        // Cálculo del mes anterior y el siguiente para las fechas
         int mesAnterior = (mes == 1) ? 12 : mes - 1;
         int mesSiguiente = (mes == 12) ? 1 : mes + 1;
         model.addAttribute("mesAnterior", mesAnterior);
@@ -247,6 +291,14 @@ public class VacacionesController {
         return "calendario_global";
     }
 
+    /**
+     * Permite al administrador eliminar una solicitud de vacaciones.
+     * Tras borrar, redirige al mes donde estaba la ausencia.
+     *
+     * @param ausenciaId ID de la ausencia a eliminar
+     * @param redirectAttributes mensajes flash
+     * @return redirección al calendario global
+     */
     @PostMapping("/admin/vacaciones/borrar")
     public String borrarSolicitudVacaciones(@RequestParam("ausenciaId") Long ausenciaId,
                                             RedirectAttributes redirectAttributes) {
@@ -256,7 +308,6 @@ public class VacacionesController {
                 int mesOrigen = ausencia.getFechaInicio().getMonthValue();
                 
                 // Eliminamos la ausencia de la base de datos
-                // Nota: Asegúrate de que tu servicio tenga un método como 'delete', 'deleteById' o 'eliminar'
                 ausenciaService.eliminarAusencia(ausenciaId);
                 
                 redirectAttributes.addFlashAttribute("mensajeExito", "🗑️ Vacaciones eliminadas correctamente.");
@@ -273,7 +324,15 @@ public class VacacionesController {
         return "redirect:/vacaciones/calendario-global";
     }
     
-
+    /**
+     * Permite al administrador aprobar o rechazar una solicitud de vacaciones.
+     * Actualiza el estado y vuelve al calendario global.
+     *
+     * @param ausenciaId ID de la solicitud
+     * @param accion acción elegida (APROBAR o RECHAZAR)
+     * @param redirectAttributes mensajes flash
+     * @return redirección al calendario global
+     */
     @PostMapping("/admin/vacaciones/resolver")
     public String resolverSolicitudVacaciones(@RequestParam("ausenciaId") Long ausenciaId,
                                              @RequestParam("accion") String accion,
@@ -301,7 +360,7 @@ public class VacacionesController {
             redirectAttributes.addFlashAttribute("mensajeError", "💥 Error al procesar la decisión: " + e.getMessage());
         }
 
-        // 4. Redirigimos de vuelta al Cuadrante Anual que acabamos de crear
+        // 4. Redirigimos de vuelta al Cuadrante Anual
         return "redirect:/vacaciones/calendario-global";
     }
 }

@@ -1,9 +1,17 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 
-//Define los tipos de acceso permitidos en el sistema
+/**
+ * Tipos de ausencia permitidos.
+ */
 public enum TipoAusencia {
 
-	VACACIONES,
-	BAJA_MEDICA,
-	PERMISO_RETRIBUIDO
+    /** Vacaciones del empleado. */
+    VACACIONES,
+
+    /** Baja médica. */
+    BAJA_MEDICA,
+
+    /** Permiso retribuido. */
+    PERMISO_RETRIBUIDO
 }
+

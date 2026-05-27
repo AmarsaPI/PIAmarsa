@@ -15,10 +15,19 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
-// Entidad principal que representa a los empleados en la base de datos
+/**
+ * Entidad que representa a un empleado dentro del sistema.
+ *
+ * Los empleados pueden autenticarse mediante Spring Security, por lo que
+ * esta clase implementa {@link UserDetails}. El email actúa como nombre
+ * de usuario y el rol determina los permisos dentro de la aplicación.
+ *
+ * Además, un empleado puede tener fichajes, contratos y un calendario laboral
+ * asociado, lo que permite gestionar su jornada, ausencias y planificación.
+ */
 @Entity
 @Table(name = "empleados")
-public class Empleado implements Serializable, UserDetails { // Implementa UserDetails para integrarse con Spring Security
+public class Empleado implements Serializable, UserDetails {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,74 +35,125 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Nombre completo del empleado.
+     */
     @Column(nullable = false)
     @NotEmpty(message = "El nombre no puede estar vacío")
     private String nombre;
 
+    /**
+     * Email único del empleado, utilizado como identificador de login.
+     */
     @NotEmpty(message = "El email no puede estar vacío")
     @Email(message = "Debe introducir un email válido")
-    @Column(nullable = false, unique = true) // El email es el identificador único para el login
+    @Column(nullable = false, unique = true)
     private String email;
-    
+
+    /**
+     * Contraseña cifrada del empleado.
+     */
     @NotEmpty(message = "La contraseña no puede estar vacía")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING) // Guarda el nombre del rol (ADMINISTRADOR/EMPLEADO) como texto
+    /**
+     * Rol del empleado dentro del sistema (ADMINISTRADOR o EMPLEADO).
+     */
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Rol rol;
-    
+
+    /**
+     * Fecha de creación del registro.
+     * Se establece automáticamente al insertar el empleado.
+     */
     @Column(updatable = false)
     private LocalDateTime createdAt;
-    
+
+    /**
+     * Indica si el empleado está activo en el sistema.
+     */
     @Column(nullable = false)
     private boolean activo = true;
 
-    // Relación uno a muchos: un empleado puede tener muchos registros de fichajes
+    /**
+     * Lista de fichajes realizados por el empleado.
+     */
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
     private List<Fichaje> fichajes;
-    
+
+    /**
+     * Calendario laboral asignado al empleado.
+     */
     @ManyToOne
     @JoinColumn(name = "calendario_id")
     private CalendarioLaboral calendario;
 
-    // Se ejecuta automáticamente antes de insertar el registro en la DB
+    /**
+     * Lista de contratos laborales del empleado.
+     */
+    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Contrato> contratos = new ArrayList<>();
+
+    /**
+     * Se ejecuta automáticamente antes de insertar el registro.
+     * Registra la fecha de creación del empleado.
+     */
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
     }
-    
-    @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Contrato> contratos = new ArrayList<>();
-    
 
-    // --- Métodos obligatorios de UserDetails para seguridad ---
-
+    //Métodos seguridad
+    /**
+     * Convierte el rol del empleado en una autoridad entendible por Spring Security.
+     *
+     * @return colección con la autoridad ROLE_{ROL}
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convierte el Rol en una autoridad entendible por Spring Security (prefijo ROLE_)
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.rol.name()));
     }
 
+    /**
+     * El email se utiliza como nombre de usuario para el login.
+     *
+     * @return email del empleado
+     */
     @Override
     public String getUsername() {
-        return this.email; // Usamos el email como nombre de usuario para el login
+        return this.email;
     }
 
+    /** @return siempre true, indicando que la cuenta no expira */
     @Override
     public boolean isAccountNonExpired() { return true; }
+
+    /** @return siempre true, indicando que la cuenta no está bloqueada */
     @Override
     public boolean isAccountNonLocked() { return true; }
+
+    /** @return siempre true, indicando que las credenciales no expiran */
     @Override
     public boolean isCredentialsNonExpired() { return true; }
+
+    /** @return siempre true, indicando que la cuenta está habilitada */
     @Override
     public boolean isEnabled() { return true; }
 
-    // --- Constructores, Getters y Setters ---
-
+    /** Constructor vacío requerido por JPA. */
     public Empleado() {}
 
+    /**
+     * Constructor principal para crear empleados manualmente.
+     *
+     * @param nombre nombre del empleado
+     * @param email email del empleado
+     * @param password contraseña cifrada
+     * @param rol rol del empleado
+     */
     public Empleado(String nombre, String email, String password, Rol rol) {
         this.nombre = nombre;
         this.email = email;
@@ -101,27 +161,51 @@ public class Empleado implements Serializable, UserDetails { // Implementa UserD
         this.rol = rol;
     }
 
+    /** @return identificador único del empleado */
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public Rol getRol() { return rol; }
-    public void setRol(Rol rol) { this.rol = rol; }
-    public CalendarioLaboral getCalendario() { return calendario; }
-    public void setCalendario(CalendarioLaboral calendario) { this.calendario = calendario; }
-    
-    public List<Contrato> getContratos() {
-        return contratos;
-    }
 
-    public void setContratos(List<Contrato> contratos) {
-        this.contratos = contratos;
-    }
-    
+    /** @param id nuevo identificador */
+    public void setId(Long id) { this.id = id; }
+
+    /** @return nombre del empleado */
+    public String getNombre() { return nombre; }
+
+    /** @param nombre nuevo nombre del empleado */
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    /** @return email del empleado */
+    public String getEmail() { return email; }
+
+    /** @param email nuevo email del empleado */
+    public void setEmail(String email) { this.email = email; }
+
+    /** @return contraseña cifrada del empleado */
+    public String getPassword() { return password; }
+
+    /** @param password nueva contraseña cifrada */
+    public void setPassword(String password) { this.password = password; }
+
+    /** @return rol del empleado */
+    public Rol getRol() { return rol; }
+
+    /** @param rol nuevo rol del empleado */
+    public void setRol(Rol rol) { this.rol = rol; }
+
+    /** @return calendario laboral asignado */
+    public CalendarioLaboral getCalendario() { return calendario; }
+
+    /** @param calendario nuevo calendario laboral */
+    public void setCalendario(CalendarioLaboral calendario) { this.calendario = calendario; }
+
+    /** @return lista de contratos del empleado */
+    public List<Contrato> getContratos() { return contratos; }
+
+    /** @param contratos nueva lista de contratos */
+    public void setContratos(List<Contrato> contratos) { this.contratos = contratos; }
+
+    /** @return true si el empleado está activo */
     public boolean isActivo() { return activo; }
+
+    /** @param activo nuevo estado de actividad */
     public void setActivo(boolean activo) { this.activo = activo; }
 }

@@ -28,11 +28,10 @@
             width: 100%;
         }
         
-        /* 🔥 TRUCO DE RECONSTRUCCIÓN: Forzado de alineación matemática superior */
         .content-grid {
             display: flex !important;
             gap: 20px !important;
-            align-items: flex-start !important; /* Clava las partes superiores */
+            align-items: flex-start !important; 
             margin-top: 15px !important;
         }
 
@@ -49,13 +48,14 @@
             <div class="top-tools mb-3">
                 <button class="menu-toggle" id="menuToggle">☰ Panel Admin ▾</button>
                 <div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
-                    🛠️ Modo Administrador: <span th:text="${usuario?.nombre}">Admin</span>
+                    Usuario: <span th:text="${usuario?.nombre}">Admin</span>
                 </div>
+                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
             </div>
 
-            <div id="logo-amarsa" style="text-align: left; margin: 0 0 20px 20px;">
-                <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" style="max-height: 55px;" />
-            </div>
+            <div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
+			</div>
 
             <div class="content-grid">
                 
@@ -144,6 +144,7 @@
                 selectable: true,
                 selectMirror: true,
                 dayHeaderFormat: { weekday: 'long' },
+                height: '600px',
                 headerToolbar: {
                     left: '',
                     center: '',
@@ -157,7 +158,6 @@
                             start: arg.start,
                             end: arg.end,
                             allDay: arg.allDay,
-                            // Bloques visuales modificados a Azul Corporativo
                             backgroundColor: '#0d6efd',
                             borderColor: '#0a58ca'
                         });

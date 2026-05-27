@@ -13,65 +13,68 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+/**
+ * Representa un día festivo dentro de un calendario laboral.
+ */
 @Entity
 @Table(name = "festivos")
 public class Festivo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    /** Fecha del festivo. */
     @Column(nullable = false)
     @NotNull(message = "La fecha no puede estar vacía")
     private LocalDate fecha;
-    
+
+    /** Descripción opcional del festivo. */
     @Column(nullable = true)
     private String descripcion;
 
+    /** Calendario al que pertenece el festivo. */
     @ManyToOne
     @JoinColumn(name = "calendario_id")
-    private CalendarioLaboral calendario;  
+    private CalendarioLaboral calendario;
 
-	public Festivo() {
-	}
+    /** Constructor vacío requerido por JPA. */
+    public Festivo() {}
 
-	public Festivo(@NotEmpty(message = "La fecha no puede estar vacía") LocalDate fecha, String descripcion,
-			CalendarioLaboral calendario) {
-		super();
-		this.fecha = fecha;
-		this.descripcion = descripcion;
-		this.calendario = calendario;
-	}
+    /**
+     * Crea un festivo.
+     *
+     * @param fecha fecha del festivo
+     * @param descripcion descripción opcional
+     * @param calendario calendario asociado
+     */
+    public Festivo(LocalDate fecha, String descripcion, CalendarioLaboral calendario) {
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.calendario = calendario;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    /** @return id del festivo */
+    public Long getId() { return id; }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /** @param id nuevo id */
+    public void setId(Long id) { this.id = id; }
 
-	public LocalDate getFecha() {
-		return fecha;
-	}
+    /** @return fecha del festivo */
+    public LocalDate getFecha() { return fecha; }
 
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
+    /** @param fecha nueva fecha */
+    public void setFecha(LocalDate fecha) { this.fecha = fecha; }
 
-	public String getDescripcion() {
-		return descripcion;
-	}
+    /** @return descripción del festivo */
+    public String getDescripcion() { return descripcion; }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    /** @param descripcion nueva descripción */
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-	public CalendarioLaboral getCalendario() {
-		return calendario;
-	}
+    /** @return calendario asociado */
+    public CalendarioLaboral getCalendario() { return calendario; }
 
-	public void setCalendario(CalendarioLaboral calendario) {
-		this.calendario = calendario;
-	}
-    
+    /** @param calendario nuevo calendario */
+    public void setCalendario(CalendarioLaboral calendario) { this.calendario = calendario; }
 }

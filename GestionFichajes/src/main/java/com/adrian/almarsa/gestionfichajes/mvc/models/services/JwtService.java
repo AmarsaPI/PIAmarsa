@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 /**
- * Clase para generar y verificar tokens de autenticación para app móvil
+ * Servicio para la generación y validación de tokens JWT usados por la app móvil.
  */
 @Service
 public class JwtService {
@@ -17,24 +17,33 @@ public class JwtService {
     private static final String GENERATOR = "Piamarsa_API";
     private static final String SECRET_KEY = "MiClaveSecretaSuperSeguraParaLaEmpresaPiamarsa";
 
-    // Genera un token que expira en 1 día
+    /**
+     * Genera un token JWT con datos del usuario.
+     * @param email email del usuario
+     * @param id identificador del usuario
+     * @param rol rol del usuario
+     * @return token generado
+     */
     public String generarToken(String email, Long id, Rol rol) {
         return JWT.create()
-                .withSubject(email) // Username (Email)
-                .withIssuer(GENERATOR) // Firma del token
+                .withSubject(email)
+                .withIssuer(GENERATOR)
                 .withClaim("id", id)
-                .withClaim("rol", rol.toString()) // Guardar datos útiles dentro del token
-                .withIssuedAt(new Date()) // Fecha y hora de creación del token
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1800000)) // Caducidad de 24 horas
-                .sign(Algorithm.HMAC256(SECRET_KEY)); // Encriptación con HMAC256
+                .withClaim("rol", rol.toString())
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1800000))
+                .sign(Algorithm.HMAC256(SECRET_KEY));
     }
 
-    // Valida el token y extrae la información descifrada.
-    // Si es válida, devuelve un DecodedJWT, si no es LANZA EXCEPCION
+    /**
+     * Valida un token JWT y devuelve su contenido descodificado.
+     * @param token token a validar
+     * @return información descodificada del token
+     */
     public DecodedJWT validarToken(String token) {
-        return JWT.require(Algorithm.HMAC256(SECRET_KEY)) // Validador de token con la clave secreta
-                .withIssuer(GENERATOR) // Validador del token con la firma correcta (opcional)
-                .build() // Construye el validador
-                .verify(token); // Ejecuta las validaciones
+        return JWT.require(Algorithm.HMAC256(SECRET_KEY))
+                .withIssuer(GENERATOR)
+                .build()
+                .verify(token);
     }
 }

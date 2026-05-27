@@ -4,20 +4,38 @@ import java.util.List;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.CalendarioLaboral;
 
+/**
+ * Servicio para la gestión de calendarios laborales.
+ */
 public interface ICalendarioLaboralService {
 
-	// Recupera todos los calendarios laborales configurados en el sistema
-    public List<CalendarioLaboral> findAll();
-	
-    // Crea un nuevo calendario laboral o actualiza uno existente para un empleado
-    public CalendarioLaboral save(CalendarioLaboral horario);
+    /**
+     * Obtiene todos los calendarios laborales.
+     * @return lista de calendarios
+     */
+    List<CalendarioLaboral> findAll();
 
-    // Obtiene un registro de calendario laboral mediante su ID
-    public CalendarioLaboral findById(Long id);
-	
-    // Elimina un calendario laboral
-    public void delete(Long id);
-	
-    // Recupera el calendario laboral de un empleado concreto
-    public CalendarioLaboral findByEmpleado(Long empleadoId);
+    /**
+     * Guarda o actualiza un calendario laboral.
+     * @return calendario guardado
+     */
+    CalendarioLaboral save(CalendarioLaboral horario);
+
+    /**
+     * Busca un calendario laboral por ID.
+     * @return calendario encontrado o null
+     */
+    CalendarioLaboral findById(Long id);
+
+    /**
+     * Elimina un calendario laboral por ID.
+     */
+    void delete(Long id);
+
+    /**
+     * Obtiene el calendario laboral asignado a un empleado.
+     * @return calendario del empleado o null
+     */
+    CalendarioLaboral findByEmpleado(Long empleadoId);
 }
+

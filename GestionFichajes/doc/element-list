@@ -1,0 +1,8 @@
+com.adrian.almarsa.gestionfichajes.mvc
+com.adrian.almarsa.gestionfichajes.mvc.config
+com.adrian.almarsa.gestionfichajes.mvc.controllers
+com.adrian.almarsa.gestionfichajes.mvc.exception
+com.adrian.almarsa.gestionfichajes.mvc.models.dao
+com.adrian.almarsa.gestionfichajes.mvc.models.dto
+com.adrian.almarsa.gestionfichajes.mvc.models.entity
+com.adrian.almarsa.gestionfichajes.mvc.models.services

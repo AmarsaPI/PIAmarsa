@@ -11,17 +11,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Fichaje;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.SolicitudCambio;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IBolsaHorasService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFichajeService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.ISolicitudCambioService;
 
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Controlador encargado de las vistas principales
+ * relacionadas con los empleados.
+ */
 @Controller
 public class EmpleadoController {
 
@@ -34,88 +36,157 @@ public class EmpleadoController {
     @Autowired 
     private IBolsaHorasService bolsaHorasService;
 
-    // Página de inicio tras el login
-    //HttpSession crea en memoria una sesión que le da al servidor una cookie llamada JSESSIONID(parecido a un token)
-    //Así sabremos siempre el usuario que está logueado, otra forma seria hacerlo con un método en sucrityFilterChain
-    //llamado processLogin, así no depende del id ni se pasa la pass por la url(más seguro).
-    @Autowired private IFichajeService fichajeService; 
-    @Autowired private ISolicitudCambioService solicitudService;
+    @Autowired 
+    private IFichajeService fichajeService; 
+    
+    @Autowired 
+    private ISolicitudCambioService solicitudService;
 
+    /**
+     * Muestra la página principal después del login.
+     * 
+     * @param session sesión actual
+     * @param model modelo de datos
+     * @return vista principal
+     */
+
+    // Página principal tras iniciar sesión
     @GetMapping("/index")
     public String mostrarIndex(HttpSession session, Model model) {
-        Long id = (Long) session.getAttribute("usuarioLogueadoId");
-        if (id == null) return "redirect:/login";
+
+        Long id =
+                (Long) session.getAttribute("usuarioLogueadoId");
+
+        // Comprueba si el usuario ha iniciado sesión
+        if (id == null) {
+
+            return "redirect:/login";
+        }
 
         Empleado usuario = empleadoService.findById(id);
-        Fichaje ultimo = fichajeService.findUltimoSinCerrar(id);
-        List<Fichaje> listaOlvidos = fichajeService.findFichajesConOlvido(id);
 
-        // --- NUEVA LÓGICA PARA EL HORARIO DE HOY ---
+        // Busca el último fichaje sin cerrar
+        Fichaje ultimo =
+                fichajeService.findUltimoSinCerrar(id);
+
+        // Busca fichajes con olvidos
+        List<Fichaje> listaOlvidos =
+                fichajeService.findFichajesConOlvido(id);
+
+        // Obtiene el horario del día actual
         LocalDate hoy = LocalDate.now();
-        // Suponiendo que tienes un método findByEmpleadoAndFecha en tu IHorarioService
-        Horario horarioHoy = horarioService.findByEmpleadoIdAndFecha(id, hoy);
+
+        Horario horarioHoy =
+                horarioService.findByEmpleadoIdAndFecha(id, hoy);
         
         model.addAttribute("usuario", usuario);
-        model.addAttribute("ultimoFichaje", ultimo);
-        model.addAttribute("enJornada", ultimo != null);
-        model.addAttribute("listaOlvidos", listaOlvidos);
-        model.addAttribute("horarioActual", horarioHoy);
-        System.out.println("DEBUG: Horario encontrado para hoy: " + horarioHoy);// <--- ESTO ES LO QUE TE FALTABA
 
-        // Lógica de notificaciones (lo que ya tenías)
+        model.addAttribute("ultimoFichaje", ultimo);
+
+        model.addAttribute("enJornada", ultimo != null);
+
+        model.addAttribute("listaOlvidos", listaOlvidos);
+
+        model.addAttribute("horarioActual", horarioHoy);
+
+        // Mensaje de prueba para comprobar el horario
+        System.out.println(
+                "DEBUG: Horario encontrado para hoy: "
+                        + horarioHoy
+        );
+
+        // Si es administrador carga solicitudes pendientes
         if ("ADMINISTRADOR".equals(usuario.getRol().name())) {
-            List<SolicitudCambio> pendientes = solicitudService.findPendientes();
-            model.addAttribute("solicitudesPendientes", pendientes);
+
+            List<SolicitudCambio> pendientes =
+                    solicitudService.findPendientes();
+
+            model.addAttribute(
+                    "solicitudesPendientes",
+                    pendientes
+            );
         }
 
         return "index";
     }
-    // Página específica de horarios personales
+
+    /**
+     * Muestra el horario personal del empleado.
+     * 
+     * @param session sesión actual
+     * @param model modelo de datos
+     * @return vista del horario
+     */
+
+    // Página con el horario personal del empleado
     @GetMapping("/horario_personal")
     public String mostrarHorario(HttpSession session, Model model) {
-        Long id = (Long) session.getAttribute("usuarioLogueadoId");
 
-        if (id == null) return "redirect:/login";
+        Long id =
+                (Long) session.getAttribute("usuarioLogueadoId");
 
-        // 1. Buscamos al usuario
+        // Comprueba si el usuario ha iniciado sesión
+        if (id == null) {
+
+            return "redirect:/login";
+        }
+
+        // Obtiene el empleado
         Empleado usuario = empleadoService.findById(id);
         
-        // 2. Buscamos horarios (los que ya tenías)
-        List<Horario> horariosReales = horarioService.findByEmpleado(id);
+        // Obtiene los horarios del empleado
+        List<Horario> horariosReales =
+                horarioService.findByEmpleado(id);
 
-        // 3. CALCULAMOS LA BOLSA DE HORAS
-        double saldo = bolsaHorasService.calcularBolsaAnualAcumulada(usuario);
+        // Calcula el saldo total de horas
+        double saldo =
+                bolsaHorasService.calcularBolsaAnualAcumulada(usuario);
 
-        // 4. Enviamos todo a la vista
         model.addAttribute("usuario", usuario);
+
         model.addAttribute("horarios", horariosReales);
-        model.addAttribute("saldoTotal", saldo); // <--- Esto es lo que usaremos en el HTML
+
+        model.addAttribute("saldoTotal", saldo);
+
         model.addAttribute("rangoSemana", "Semana Actual");
 
         return "horario_personal";
     }
     
+    /**
+     * Muestra la vista de gestión de empleados.
+     * Solo accesible para administradores.
+     * 
+     * @param session sesión actual
+     * @param model modelo de datos
+     * @return vista de gestión o redirección
+     */
+
+    // Página de gestión de empleados
     @GetMapping("/gestion_empleados")
     public String mostrarGestion(HttpSession session, Model model) {
-        // NIVEL 1: ¿Está autenticado?
-        Long id = (Long) session.getAttribute("usuarioLogueadoId");
+
+        Long id =
+                (Long) session.getAttribute("usuarioLogueadoId");
         
+        // Comprueba si el usuario está autenticado
         if (id == null) {
-            // No está autenticado -> Al login
+
             return "redirect:/login";
         }
 
-        // Buscamos al empleado real en la DB
+        // Busca el usuario en la base de datos
         Empleado usuario = empleadoService.findById(id);
 
-        // NIVEL 2: ¿Es administrador?
-        if (usuario == null || !usuario.getRol().name().equals("ADMINISTRADOR")) {
-            // Está autenticado pero NO es admin -> Al index con error
+        // Comprueba si el usuario es administrador
+        if (usuario == null
+                || !usuario.getRol().name().equals("ADMINISTRADOR")) {
+
             return "redirect:/index?error=no_autorizado";
         }
 
-        // SI PASA LOS DOS FILTROS:
         model.addAttribute("usuario", usuario);
-        return "gestion_empleados"; // Nombre de tu archivo HTML
+
+        return "gestion_empleados";
     }
 }

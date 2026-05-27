@@ -3,24 +3,48 @@ package com.adrian.almarsa.gestionfichajes.mvc.models.services;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 
-// Interfaz que define las operaciones de negocio para la entidad Empleado
+/**
+ * Servicio para la gestión de empleados.
+ */
 public interface IEmpleadoService {
-	
-    // Recupera la lista completa de empleados registrados
-    public List<Empleado> findAll();
-    
-    // Guarda un nuevo empleado o actualiza uno existente (incluye el hash de contraseña)
-    public Empleado save(Empleado empleado);
 
-    // Busca un empleado específico por su clave primaria (ID)
-    public Empleado findById(Long id);
-    
-    // Elimina un empleado del sistema permanentemente
-    public void delete(Long id);
-    
-    public Empleado findByEmail(String email);
-    
+    /**
+     * Obtiene todos los empleados activos.
+     * @return lista de empleados activos
+     */
+    List<Empleado> findAll();
+
+    /**
+     * Guarda o actualiza un empleado, cifrando la contraseña si corresponde.
+     * @return empleado guardado
+     */
+    Empleado save(Empleado empleado);
+
+    /**
+     * Busca un empleado por ID.
+     * @return empleado encontrado o null
+     */
+    Empleado findById(Long id);
+
+    /**
+     * Elimina un empleado por ID.
+     */
+    void delete(Long id);
+
+    /**
+     * Busca un empleado por email.
+     * @return empleado encontrado o null
+     */
+    Empleado findByEmail(String email);
+
+    /**
+     * Marca un empleado como inactivo.
+     */
     void darDeBaja(Long id);
-    
+
+    /**
+     * Obtiene todos los empleados, incluidos los inactivos.
+     * @return lista completa de empleados
+     */
     List<Empleado> findAllIncluyendoInactivos();
 }

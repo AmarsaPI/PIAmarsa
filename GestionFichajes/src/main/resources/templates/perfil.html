@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial de Fichajes - Gestor de horarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/styles.css}" />
+    <link rel="stylesheet" th:href="@{/horario.css}" />
+</head>
+
+<body th:data-home="@{/index}">
+    <main class="app-shell">
+
+        <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Usuario: <span th:text="${usuario.nombre}"></span></div>
+                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
+            </div>
+
+            <div id="logo-amarsa"><img th:src="@{/logo.png}" alt="Logo" class="brand-logo" /></div>
+
+            <div class="content-grid">
+                <section class="left-zone">
+                    <div class="menu-wrap">
+                        <ul id="mainMenu" class="menu-dropdown">
+                            <li><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
+                            <li class="active-menu">Perfil</li>
+                            <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <div id="mainContent" style="padding: 10px; flex: 1; margin-right: 50px;">
+				    <h2>Mi Perfil</h2>
+				   <div class="content-grid" style="padding: 20px;">
+					    
+					    <section style="background: white; padding: 25px; border-radius: 12px;">
+					        <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+					        <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+					        <p><strong>Rol:</strong> <span th:text="${usuario.rol}"></span></p>
+					        
+					        <hr>
+					        
+					        <h3>Seguridad</h3>
+					        <form>
+					            <button type="submit" style="background: #0d6efd; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+					                Enviar enlace de cambio de contraseña a mi email (Próximamente)
+					            </button>
+					        </form>
+					    </section>
+					</div>
+				</div>
+
+                <aside class="calendar-panel">
+				    <div class="calendar-head">
+				        <strong id="yearText">2026</strong> 
+				        <span id="dateText"></span> </div>
+				    <div class="calendar-body">
+				        <div class="month-bar">
+				            <button id="prevMonth" aria-label="mes anterior">‹</button>
+				            <span id="monthLabel">MARCH 2026</span>
+				            <button id="nextMonth" aria-label="mes siguiente">›</button>
+				        </div>
+				        <div class="weekdays" id="weekdays"></div>
+				        <div class="days-grid" id="daysGrid"></div>
+				    </div>
+				</aside>
+            </div>
+        </section>
+    </main>
+    <script th:src="@{/app.js}"></script>
+    <script th:src="@{/common.js}"></script>
+</body>
+</html>

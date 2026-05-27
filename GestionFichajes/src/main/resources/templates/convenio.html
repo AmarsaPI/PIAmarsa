@@ -26,7 +26,6 @@
       border-radius: 20px;
       padding: 25px;
       height: 88vh;
-      /* Aumentado el alto */
       min-height: 800px;
       display: flex;
       flex-direction: column;
@@ -71,19 +70,21 @@
 <body th:data-home="@{/admin/index}">
   <main class="app-shell">
 
-    <section class="workspace" style="max-width: 100%; overflow-x: hidden;">
-      <div class="top-tools">
-        <button class="menu-toggle">📜 Documentación Laboral</button>
-        <div style="font-weight: 800;">
-          Usuario: <span th:text="${rol}">ROL</span>
-        </div>
-        <button class="help-btn">?</button>
-      </div>
+    <section class="workspace">
+            <div class="top-tools">
+                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+                <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
+                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
+            </div>
+            
+            <div id="logo-amarsa">
+				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+			</div>
+
 
       <div class="content-grid">
         <!-- Menú Lateral -->
         <aside class="left-zone">
-          <img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
             <div class="menu-wrap">
               <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
                 <li><a th:href="@{/admin/gestion}"
@@ -112,7 +113,6 @@
               </ul>
             </div>
 
-            <!-- Notificaciones -->
             <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}"
               style="margin-top: 20px;">
               <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
@@ -123,7 +123,6 @@
             </article>
         </aside>
 
-        <!-- Visor Central -->
         <article class="viewer-container">
     
 		    <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">

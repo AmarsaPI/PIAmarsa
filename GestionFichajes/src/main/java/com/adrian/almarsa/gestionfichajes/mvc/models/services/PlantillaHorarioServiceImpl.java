@@ -8,47 +8,64 @@ import org.springframework.transaction.annotation.Transactional;
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IPlantillaHorarioDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 
-// Servicio que gestiona la lógica de los turnos de trabajo asignados
+/**
+ * Servicio para la gestión de plantillas de horarios.
+ */
 @Service
 public class PlantillaHorarioServiceImpl implements IPlantillaHorarioService {
 
-	@Autowired
-	private IPlantillaHorarioDAO horarioDAO;
-	
-	// Obtiene todos los horarios del sistema (útil para administración)
-	@Override
-	@Transactional(readOnly = true)
-	public List<PlantillaHorario> findAll() {
-		return (List<PlantillaHorario>) horarioDAO.findAll();
-	}
-	
-	// Registra o edita un horario. Incluye una validación básica de integridad
-	@Override
-	@Transactional
-	public PlantillaHorario save(PlantillaHorario horario) {
-		if(horario.getHoraInicio() == null || horario.getHoraFin() == null) {
-		    throw new RuntimeException("Las horas del horario no pueden ser nulas");
-		}
-		return horarioDAO.save(horario);
-	}
-	
-	// Recupera un horario individual por su ID
-	@Override
-	@Transactional(readOnly = true) 
-	public PlantillaHorario findById(Long id) {
-		return horarioDAO.findById(id).orElse(null);
-	}
-	
-	// Elimina un turno específico de la base de datos
-	@Override
-	@Transactional
-	public void delete(Long id) {
-		horarioDAO.deleteById(id);
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla) {
-	    return horarioDAO.findByNombrePlantilla(nombrePlantilla);
-	}
+    @Autowired
+    private IPlantillaHorarioDAO horarioDAO;
+
+    /**
+     * Obtiene todas las plantillas de horario.
+     * @return lista de plantillas
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlantillaHorario> findAll() {
+        return (List<PlantillaHorario>) horarioDAO.findAll();
+    }
+
+    /**
+     * Guarda o actualiza una plantilla de horario.
+     * @return plantilla guardada
+     */
+    @Override
+    @Transactional
+    public PlantillaHorario save(PlantillaHorario horario) {
+        if (horario.getHoraInicio() == null || horario.getHoraFin() == null) {
+            throw new RuntimeException("Las horas del horario no pueden ser nulas");
+        }
+        return horarioDAO.save(horario);
+    }
+
+    /**
+     * Busca una plantilla por ID.
+     * @return plantilla encontrada o null
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public PlantillaHorario findById(Long id) {
+        return horarioDAO.findById(id).orElse(null);
+    }
+
+    /**
+     * Elimina una plantilla por ID.
+     */
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        horarioDAO.deleteById(id);
+    }
+
+    /**
+     * Obtiene plantillas por nombre.
+     * @return lista de plantillas coincidentes
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla) {
+        return horarioDAO.findByNombrePlantilla(nombrePlantilla);
+    }
 }

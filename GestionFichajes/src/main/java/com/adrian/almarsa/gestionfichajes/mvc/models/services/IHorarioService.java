@@ -6,27 +6,56 @@ import java.util.List;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 
-// Interfaz que define las operaciones para gestionar los turnos laborales
+/**
+ * Servicio para la gestión de horarios laborales.
+ */
 public interface IHorarioService {
 
-    // Recupera todos los horarios configurados en el sistema
-    public List<Horario> findAll();
-	
-    // Crea un nuevo turno o actualiza uno existente para un empleado
-    public Horario save(Horario horario);
+    /**
+     * Obtiene todos los horarios del sistema.
+     * @return lista de horarios
+     */
+    List<Horario> findAll();
 
-    // Obtiene un registro de horario específico mediante su ID
-    public Horario findById(Long id);
-	
-    // Elimina la asignación de un horario
-    public void delete(Long id);
-	
-    // Recupera la planificación semanal (lista de horarios) de un empleado concreto
+    /**
+     * Guarda o actualiza un horario.
+     * @return horario guardado
+     */
+    Horario save(Horario horario);
+
+    /**
+     * Busca un horario por ID.
+     * @return horario encontrado o null
+     */
+    Horario findById(Long id);
+
+    /**
+     * Elimina un horario por ID.
+     */
+    void delete(Long id);
+
+    /**
+     * Obtiene los horarios de un empleado.
+     * @return lista de horarios
+     */
     List<Horario> findByEmpleado(Long empleadoId);
-    
+
+    /**
+     * Obtiene horarios dentro de un rango de fechas.
+     * @return lista de horarios
+     */
     List<Horario> findByFechaBetween(LocalDate inicio, LocalDate fin);
-    
+
+    /**
+     * Obtiene un horario por empleado y fecha.
+     * @return horario encontrado o null
+     */
     Horario findByEmpleadoIdAndFecha(Long empleadoId, LocalDate fecha);
-    
-    void actualizarTurnoProgramado(Long empleadoId, LocalDate fecha, LocalTime nuevaEntrada, LocalTime nuevaSalida, LocalTime nuevaEntrada2, LocalTime nuevaSalida2);
+
+    /**
+     * Actualiza o crea un turno programado para un empleado.
+     */
+    void actualizarTurnoProgramado(Long empleadoId, LocalDate fecha,
+                                   LocalTime nuevaEntrada, LocalTime nuevaSalida,
+                                   LocalTime nuevaEntrada2, LocalTime nuevaSalida2);
 }

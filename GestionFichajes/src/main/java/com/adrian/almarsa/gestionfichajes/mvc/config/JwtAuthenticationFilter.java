@@ -2,66 +2,90 @@ package com.adrian.almarsa.gestionfichajes.mvc.config;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.JwtService;
 import com.auth0.jwt.interfaces.DecodedJWT;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Filtra los tokens válidos y los guarda en SpringSecurity
+ * Filtro encargado de comprobar los tokens JWT enviados
+ * en las peticiones de la aplicación.
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-
     private JwtService jwtService;
 
+    /**
+     * Constructor del filtro.
+     * 
+     * @param jwtService servicio que valida y gestiona los tokens
+     */
     public JwtAuthenticationFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
-    // Valida y guarda el token si no dispara una EXCEPCION
+    /**
+     * Método que intercepta cada petición para comprobar si el token es válido.
+     * Si el token es correcto, guarda la autenticación en Spring Security.
+     * 
+     * @param request petición recibida
+     * @param response respuesta enviada
+     * @param filterChain cadena de filtros de Spring
+     * @throws ServletException error relacionado con el servlet
+     * @throws IOException error de entrada o salida
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Obtiene la clave Authorization de la cabecera de la petición
+        // Obtiene la cabecera Authorization de la petición
         String authHeader = request.getHeader("Authorization");
 
-        // En caso de que exista la cabecera y que comience con Bearer
+        // Comprueba que exista y que empiece por Bearer
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
-            // Extrae el token puro
+            // Extrae el token quitando el texto "Bearer "
             String token = authHeader.substring(7);
 
-            // Intenta decodificar el token. Si no es válido SALTA UNA EXCEPCION
             try {
+
+                // Valida el token recibido
                 DecodedJWT decodedJWT = jwtService.validarToken(token);
 
-                // Extrae datos del token
+                // Obtiene el email guardado en el token
                 String email = decodedJWT.getSubject();
+
+                // Obtiene el rol del usuario
                 String rol = decodedJWT.getClaim("rol").toString();
 
-                // Genera una lista de autoridades (roles) que tiene el usuario
-                List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + rol));
-                // Genera el token con el identificador (email) y los roles
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, null, authorities);
-                // Guarda el token en el Security Context de Spring
+                // Crea la lista de permisos del usuario
+                List<SimpleGrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + rol));
+
+                // Crea el objeto de autenticación
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(email, null, authorities);
+
+                // Guarda la autenticación en Spring Security
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
             } catch (Exception e) {
-                // Elimina rastros de este token del Security Context
+
+                // Si el token falla, limpia el contexto de seguridad
                 SecurityContextHolder.clearContext();
             }
         }
 
-        // Pasa al siguiente filtro del controlador
+        // Continúa con el siguiente filtro
         filterChain.doFilter(request, response);
     }
 }

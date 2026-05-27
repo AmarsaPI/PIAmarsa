@@ -4,26 +4,49 @@ import java.time.LocalDate;
 import java.util.List;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 
+/**
+ * Servicio para la gestión de festivos.
+ */
 public interface IFestivoService {
 
-    // Para el administrador: Ver todos los festivos (opcional)
-    public List<Festivo> findAll();
+    /**
+     * Obtiene todos los festivos.
+     * @return lista de festivos
+     */
+    List<Festivo> findAll();
 
-    // Para el calendario: Obtener los festivos de un calendario específico
-    public List<Festivo> findByCalendario(Long calendarioId);
+    /**
+     * Obtiene los festivos de un calendario laboral.
+     * @return lista de festivos del calendario
+     */
+    List<Festivo> findByCalendario(Long calendarioId);
 
-    // Para el calendario: Obtener festivos directamente por el ID del empleado
-    // (Navegando: Empleado -> Calendario -> Festivos)
-    public List<Festivo> findByEmpleado(Long empleadoId);
+    /**
+     * Obtiene los festivos asociados a un empleado.
+     * @return lista de festivos del empleado
+     */
+    List<Festivo> findByEmpleado(Long empleadoId);
 
-    // Guardar o actualizar un festivo
-    public Festivo save(Festivo festivo);
+    /**
+     * Guarda o actualiza un festivo.
+     * @return festivo guardado
+     */
+    Festivo save(Festivo festivo);
 
-    // Buscar un festivo por su ID
-    public Festivo findById(Long id);
+    /**
+     * Busca un festivo por ID.
+     * @return festivo encontrado o null
+     */
+    Festivo findById(Long id);
 
-    // Eliminar un festivo
-    public void delete(Long id);
-    
-    public boolean existeFestivoEnFecha(LocalDate fecha, Long empleadoId);
+    /**
+     * Elimina un festivo por ID.
+     */
+    void delete(Long id);
+
+    /**
+     * Indica si existe un festivo en una fecha para un empleado.
+     * @return true si la fecha es festiva
+     */
+    boolean existeFestivoEnFecha(LocalDate fecha, Long empleadoId);
 }

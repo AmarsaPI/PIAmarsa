@@ -22,14 +22,13 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-				<button class="help-btn">?</button>
+				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
 
 			<div id="logo-amarsa">
 				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
 			</div>
 
-			<!-- INICIO DE TU ESTRUCTURA ORIGINAL -->
 			<div class="content-grid">
 				
 				<section class="left-zone">
@@ -51,7 +50,7 @@
 									</li>
 							    </ul>
 							</li>
-							<li data-submenu="none">Perfil</li>
+							<li data-submenu="none"><a th:href="@{/perfil}" style="text-decoration: none; color: inherit;">Perfil</a></li>
 							<li data-submenu="subMenu_gestion" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}">
 							    Gestión 
 							    <span th:if="${solicitudesPendientes != null && !#lists.isEmpty(solicitudesPendientes)}" 
@@ -67,7 +66,7 @@
 							    </ul>
 							</li>
 							<li data-submenu="none" th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/bolsa/informe}" style="text-decoration: none; color: inherit;">Informes</a></li>
-							<li data-submenu="none"><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Convenio</a></li>
+							<li data-submenu="none"><a th:href="@{/convenio}" style="text-decoration: none; color: inherit;">Convenio</a></li>
 							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>
@@ -79,7 +78,7 @@
 				             style="background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
 				        <h3 style="color: #856404; margin: 0 0 5px 0; font-size: 1.1rem;">⚠️ Fichajes Pendientes</h3>
 				        <p style="margin: 0; color: #856404;">Tienes <span th:text="${#lists.size(listaOlvidos)}">0</span> jornada(s) sin cerrar.</p>
-				        <a th:href="@{/solicitar-correccion}" style="color: #664d03; font-weight: bold; text-decoration: underline;">Gestionar correcciones</a>
+				        <a th:href="@{/historial_fichajes/pendientes}" style="color: #664d03; font-weight: bold; text-decoration: underline;">Gestionar correcciones</a>
 				    </section>
 				
 				    <div class="fichar-zone" style="background: #ffffff; padding: 30px; border-radius: 15px; border: 1px solid #e0e0e0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -144,12 +143,14 @@
 						<div class="days-grid" id="daysGrid"></div>
 					</div>
 				</aside>
-			</div> <!-- Cierre del content-grid original -->
+			</div> 
 		</section>
+		
 	</main>
 
 	<script th:src="@{/app.js}"></script>
 	<script th:src="@{/common.js}"></script>
+	<script th:src="@{/ayuda.js}"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 		    const inicioStr = document.getElementById('horaInicio')?.innerText;
@@ -177,5 +178,20 @@
 		    }
 		});
 	</script>
+	<div id="modalAyuda" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+	    <div style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+	        <h2 style="margin-top:0; color:#0d6efd;">¿Cómo funciona esta página?</h2>
+	        <p>Bienvenido a Amarsa.</p>
+	        <ul style="padding-left:20px; line-height:1.6;">
+	            <li><strong>Inicio</strong> Usa los botones principales para registra tu entrada y salida, si tienes fichajes olvidados, puedes acceder desde aquí</li>
+	            <li><strong>Historial:</strong> Accede a tus fichajes pasados desde el menú lateral.</li>
+	            <li><strong>Gestión:</strong> Si eres administrador, verás las opciones para gestionar plantillas, horarios y solicitudes de ausencias y turnos.</li>
+	            <li><strong>Perfil:</strong> Puedes actualizar tus datos y gestionar tu contraseña.</li>
+	            <li><strong>Informe:</strong> Si eres administrador, accede a un informe de horas de tu plantilla</li>
+	            <li><strong>Convenio:</strong> Consulta el convenio o descargalo</li>
+	        </ul>
+	        <button onclick="cerrarAyuda()" style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
+	    </div>
+	</div>
 </body>
 </html>

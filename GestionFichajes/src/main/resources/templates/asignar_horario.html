@@ -57,12 +57,12 @@
 		.fc-daygrid-event {
 		    background-color: #ffc107 !important;
 		    border-color: #ffc107 !important;
-		    color: black !important; /* Texto negro para que se lea mejor sobre amarillo */
+		    color: black !important; 
 		}
 		
 		.fc .fc-bg-event {
 		    background: #ffc107 !important;
-		    opacity: 0.5 !important; /* Un poco de transparencia para ver la rejilla */
+		    opacity: 0.5 !important; 
 		}
 		
 		.fc-event {
@@ -101,10 +101,12 @@
 		}
 
 		.content-grid-admin {
-			display: grid;
-			grid-template-columns: 260px 1fr;
-			gap: 20px;
-			padding: 20px;
+		    display: grid;
+		    grid-template-columns: 260px 1fr; 
+		    gap: 20px;
+		    padding: 20px;
+		    width: 100%;
+		    max-width: 100%; 
 		}
 
 		.fc-v-event,
@@ -115,11 +117,9 @@
 
 		.fc .fc-bg-event {
 		    opacity: 0.6 !important;
-		    background-color: #ff9f89 !important; /* Forzamos color aquí */
+		    background-color: #ff9f89 !important; 
 		    z-index: 1 !important;
 		}
-		
-		/* Fundamental: asegura que la celda del día tenga altura */
 		.fc-daygrid-day-frame {
 		    min-height: 120px !important;
 		    position: relative !important;
@@ -137,7 +137,7 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-				<button class="help-btn">?</button>
+				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
 
 			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
@@ -160,7 +160,7 @@
 						</ul>
 					</div>
 					<div class="px-3" style="margin-top: 20px;">
-				        <a th:href="@{/api/horarios/pdf/descargar-equipo}"
+				        <a th:href="@{/horarios/pdf/descargar-equipo}"
 				           class="btn btn-primary w-100 fw-bold shadow-sm" 
 				           style="padding: 12px; font-size: 0.9rem;">
 				           <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Cuadrante Equipo

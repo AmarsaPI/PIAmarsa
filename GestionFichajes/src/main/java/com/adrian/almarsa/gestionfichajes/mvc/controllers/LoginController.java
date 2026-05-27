@@ -1,7 +1,6 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +13,27 @@ import jakarta.servlet.http.HttpSession;
 
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.LoginService;
 
+/**
+ * Controlador encargado de gestionar el proceso de login y logout
+ * tanto para administradores como para empleados. 
+ * Se encarga de validar credenciales, guardar los datos básicos
+ * en sesión y redirigir al área correspondiente según el rol.
+ */
 @Controller
 public class LoginController {
 	
 	@Autowired
     private LoginService loginService;
-    // Muestra el formulario de login
+	
+	/**
+     * Muestra la página de login.  
+     * Si se recibe un parámetro de error, se añade un mensaje informativo
+     * para indicar que las credenciales no fueron válidas.
+     *
+     * @param error indica si hubo un intento fallido de autenticación
+     * @param model modelo para enviar datos a la vista
+     * @return vista del formulario de login
+     */
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error,
                         Model model) {
@@ -30,7 +44,18 @@ public class LoginController {
         return "login";
     }
 
-    // Procesa las credenciales enviadas por POST
+    /**
+     * Procesa las credenciales enviadas desde el formulario de login.
+     * El sistema busca al usuario tanto en la tabla de administradores
+     * como en la de empleados.  
+     * Si las credenciales son correctas, se guarda el ID y el rol en sesión
+     * y se redirige al área correspondiente.
+     *
+     * @param username email introducido por el usuario
+     * @param password contraseña introducida
+     * @param session sesión HTTP donde se guardará la información del usuario
+     * @return redirección al panel correspondiente o al login si falla
+     */
     @PostMapping("/auth-check")
     public String autenticar(@RequestParam String username, 
                              @RequestParam String password, 
@@ -44,23 +69,30 @@ public class LoginController {
             return "redirect:/login?error=true";
         }
 
-        // 3. LÓGICA DE REDIRECCIÓN SEGÚN EL TIPO
+        // 3. Lógica de redirección según el tipo de empleado
         if (usuario instanceof Admin) {
             Admin a = (Admin) usuario;
             session.setAttribute("adminLogueadoId", a.getId());
             session.setAttribute("rol", "ADMIN");
-            return "redirect:/admin/index"; // <--- Ruta para el administrador
+            return "redirect:/admin/index"; 
         } 
         
         if (usuario instanceof Empleado) {
             Empleado e = (Empleado) usuario;
             session.setAttribute("usuarioLogueadoId", e.getId());
             session.setAttribute("rol", "EMPLEADO");
-            return "redirect:/index"; // <--- Ruta para el empleado
+            return "redirect:/index"; 
         }
         return "redirect:/login?error=true";
     }
-    // Destruye la sesión y saca al usuario del sistema
+    
+    /**
+     * Cierra la sesión del usuario eliminando todos los datos almacenados
+     * y lo redirige nuevamente a la pantalla de login.
+     *
+     * @param session sesión actual del usuario
+     * @return redirección al login tras cerrar sesión
+     */
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         // Borramos todos los datos de la "mochila" (el ID guardado)

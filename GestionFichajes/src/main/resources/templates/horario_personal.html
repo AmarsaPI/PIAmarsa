@@ -14,7 +14,6 @@
 <link rel="stylesheet" th:href="@{/styles.css}" />
 <link rel="stylesheet" th:href="@{/horario.css}" />
 <style>
-/* Permite que el texto respire y se vea centrado en la cuadrícula */
 .evento-celda {
     font-size: 0.85em;
     padding: 2px 4px;
@@ -24,7 +23,6 @@
     white-space: nowrap;
 }
 
-/* Estilo para los bloques de eventos en la vista de cuadrícula */
 .fc-daygrid-event {
     border: none !important;
     margin: 2px 5px !important;
@@ -46,10 +44,8 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-				<button class="help-btn">?</button>
+				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
-
-			<!-- LOGO -->
 			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
 
 			<div class="content-grid">
@@ -173,19 +169,18 @@
 	        eventSources: [
 	            {
 	                // Esto garantiza que se envíen las fechas al controlador
-	                url: '/api/horarios-reales/mis-turnos',
+	                url: '/web/horarios-reales/mis-turnos',
 	                method: 'GET',
 	                failure: function() {
 	                    console.error('Error al cargar mis turnos');
 	                }
 	            },
 	            {
-	                url: '/api/horarios-reales/mis-festivos',
+	                url: '/web/horarios-reales/mis-festivos',
 	                method: 'GET'
 	            }
 	        ],
 	        eventDidMount: function(info) {
-	            // Esto es un truco para ver si al menos se están intentando pintar
 	            console.log("Evento cargado:", info.event.title);
 	        },
 	        
@@ -207,8 +202,7 @@
         
     	const inicio = document.getElementById('fechaInicio').value;
         const fin = document.getElementById('fechaFin').value;
-        // Redirige pasando los parámetros
-        window.location.href = `/api/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
+        window.location.href = `/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
     }
 </script>
 <script th:src="@{/common.js}" defer></script>

@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/styles.css}" />
     <style>
-        /* Estructura del Grid */
         .content-grid {
             display: grid !important;
             grid-template-columns: 220px minmax(0, 1fr) 300px !important;
@@ -20,7 +19,6 @@
             padding: 10px 20px !important;
         }
 
-        /* Estilos de la tabla de informe */
         .report-table {
             width: 100%;
             border-collapse: separate;
@@ -40,7 +38,6 @@
         }
         .report-table thead { background: #f8f9fa; }
 
-        /* Limpieza de espacios */
         h2 { margin-top: 0 !important; margin-bottom: 15px !important; }
         .workspace { padding-top: 5px !important; }
         #logo-amarsa { margin-bottom: 10px; }
@@ -53,6 +50,7 @@
             <div class="top-tools">
                 <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
                 <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
+                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
             </div>
             
             <div id="logo-amarsa">
@@ -63,11 +61,8 @@
                 <section class="left-zone">
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown">
-                        
-                            <li th:if="${session.rol == 'ADMINISTRADOR'}"><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
-                            <li th:if="${usuario != null && usuario.class.name == 'com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin'}">
-						        <a th:href="@{/admin/index}" style="text-decoration: none; color: inherit;">Inicio</a>
-						    </li>
+						    <li data-submenu="none"><a th:href="@{/index}"
+								style="text-decoration: none; color: inherit;">Inicio</a></li>
                             <li class="active-menu">Informe de Horas</li>
                             <li><a th:href="@{/logout}" style="text-decoration: none; color: red;">Salir</a></li>
                         </ul>
@@ -91,12 +86,15 @@
                             <tbody>
                                 <tr th:each="emp : ${listaEmpleados}">
                                     <td class="fw-bold" th:text="${emp.nombre}">Nombre</td>
-                                    <td th:text="${emp.horasTrabajadas}">0</td>
-                                    <td th:text="${emp.horasPrevistas}">0</td>
+                                    <td th:text="${#numbers.formatDecimal(emp.horasTrabajadas, 1, 2)}"></td>
+									<td th:text="${#numbers.formatDecimal(emp.horasPrevistas, 1, 2)}"></td>
                                     
                                     <td th:with="balance=${emp.horasTrabajadas - emp.horasPrevistas}">
                                         <span th:class="${balance < 0 ? 'text-danger' : 'text-success'}"
-                                              th:text="${balance > 0 ? '+' + balance : balance}">+0</span>
+										      th:text="${balance > 0 
+										                ? '+' + #numbers.formatDecimal(balance, 1, 2) 
+										                : #numbers.formatDecimal(balance, 1, 2)}">
+										</span>
                                     </td>
                                     
                                     <td>
@@ -127,9 +125,5 @@
         </section>
     </main>
     <script th:src="@{/app.js}"></script>
-</body>
-</html></head>
-<body>
-
 </body>
 </html>

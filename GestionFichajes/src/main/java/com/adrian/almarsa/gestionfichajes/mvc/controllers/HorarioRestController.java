@@ -1,13 +1,10 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -16,20 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IEmpleadoDAO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IHorarioDAO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
-
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+/**
+ * API REST encargada de gestionar los horarios reales de los empleados.
+ * Permite consultarlos, crearlos, actualizarlos y detectar duplicados
+ * automáticamente según la fecha y el empleado.
+ */
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = {"*"})
@@ -40,149 +35,23 @@ public class HorarioRestController {
     
     @Autowired
     private IFestivoService festivoService;
-    
-    @Autowired 
-    IPlantillaHorarioService plantillaService;
-    
-    @Autowired 
-    IEmpleadoDAO empleadoDAO;
-    
-    @GetMapping("/horarios/pdf/descargar")
-    public void exportarPdf(HttpServletResponse response, HttpSession session) throws Exception {
-        Long empId = (Long) session.getAttribute("usuarioLogueadoId");
-        List<Horario> horarios = horarioService.findByEmpleado(empId);
 
-        // 1. Ordenar los horarios por fecha (para que salgan en orden)
-        horarios = horarios.stream()
-            .sorted((h1, h2) -> h1.getFecha().compareTo(h2.getFecha()))
-            .collect(Collectors.toList());
-
-        // 2. Configurar la respuesta
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=mi_horario.pdf");
-
-        // 3. Crear el documento
-        com.lowagie.text.Document document = new com.lowagie.text.Document();
-        com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
-
-        document.open();
-
-     // Título
-     document.add(new com.lowagie.text.Paragraph("Mi Horario Semanal"));
-     document.add(new com.lowagie.text.Paragraph(" ")); 
-
-     com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(7);
-     table.setWidthPercentage(100);
-
-     // 1. Encabezados
-     String[] dias = {"Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
-     for (String dia : dias) {
-         com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph(dia));
-         cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
-         cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-         table.addCell(cell);
-     }
-
-     // 2. Lógica para rellenar datos CON fecha y hora
-     if (!horarios.isEmpty()) {
-         // Calculamos el espacio en blanco inicial (si no empieza en lunes)
-         int diaSemanaInicio = horarios.get(0).getFecha().getDayOfWeek().getValue();
-         for (int i = 1; i < diaSemanaInicio; i++) {
-             table.addCell("-");
-         }
-
-         // Rellenar con los horarios
-         for (Horario h : horarios) {
-             // Formateamos la fecha (ej: 24/05) y el horario
-             String fechaStr = h.getFecha().getDayOfMonth() + "/" + h.getFecha().getMonthValue();
-             String horarioStr = h.getHoraInicio().toString().substring(0, 5) + "-" + 
-                                h.getHoraFin().toString().substring(0, 5);
-             
-             // Creamos una celda que tenga ambos datos
-             com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(
-                 new com.lowagie.text.Paragraph(fechaStr + "\n" + horarioStr)
-             );
-             cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-             table.addCell(cell);
-         }
-     }
-
-     document.add(table);
-     document.close();
-    }
-    
-    @GetMapping("/horarios/pdf/descargar-equipo")
-    public void exportarPdfCuadrante(HttpServletResponse response) throws Exception {
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=Cuadrante_Mensual_Vertical.pdf");
-
-        com.lowagie.text.Document document = new com.lowagie.text.Document(com.lowagie.text.PageSize.A4);
-        com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
-        document.open();
-
-        LocalDate inicioMes = LocalDate.now().with(java.time.temporal.TemporalAdjusters.firstDayOfMonth());
-        LocalDate finMes = inicioMes.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
-
-     // 1. Creamos un array con los nombres de los meses en español
-        String[] mesesEsp = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
-
-        // 2. Obtenemos el índice del mes (get個月Value() devuelve 1 para Enero, 12 para Diciembre)
-        int indiceMes = inicioMes.getMonthValue() - 1; 
-        String nombreMes = mesesEsp[indiceMes];
-
-        // 3. Añadimos el título al documento
-        document.add(new com.lowagie.text.Paragraph("Cuadrante: " + nombreMes + " " + inicioMes.getYear()));
-        document.add(new com.lowagie.text.Paragraph(" "));
-
-
-        // 2. Iterar por semanas (cada semana es un bloque)
-        LocalDate lunes = inicioMes.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
-        
-        while (lunes.isBefore(finMes.plusDays(7))) {
-        	String nombreMesSemana = mesesEsp[lunes.getMonthValue() - 1];
-        	document.add(new com.lowagie.text.Paragraph("Semana del " + lunes.getDayOfMonth() + " de " + nombreMesSemana));
-            
-            com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(8);
-            table.setWidthPercentage(100);
-            
-            // Encabezados
-            String[] cabeceras = {"Empleado", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
-            for (String h : cabeceras) {
-                com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph(h));
-                cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
-                table.addCell(cell);
-            }
-
-            List<Empleado> empleados = StreamSupport.stream(empleadoDAO.findAll().spliterator(), false)
-                                                    .collect(Collectors.toList());
-
-            for (Empleado emp : empleados) {
-                table.addCell(emp.getNombre());
-                for (int i = 0; i < 7; i++) {
-                    LocalDate fechaDia = lunes.plusDays(i);
-                    Horario h = horarioService.findByEmpleadoIdAndFecha(emp.getId(), fechaDia);
-                    
-                    String texto = (h != null) ? h.getHoraInicio().toString().substring(0, 5) : "-";
-                    table.addCell(new com.lowagie.text.Paragraph(texto));
-                }
-            }
-            document.add(table);
-            document.add(new com.lowagie.text.Paragraph(" ")); // Espacio entre semanas
-            
-            lunes = lunes.plusWeeks(1); // Saltar a la siguiente semana
-        }
-
-        document.close();
-    }
-
-    // 1. Listado global de todos los horarios reales
+    /**
+     * Devuelve el listado completo de horarios registrados.
+     * 
+     * @return lista con todos los horarios reales almacenados
+     */
     @GetMapping("/horarios-reales")
     public List<Horario> index() {
         return horarioService.findAll();
     }
 
-    // 2. Buscar un horario real por ID
+    /**
+     * Busca un horario concreto por su ID.
+     * 
+     * @param id identificador del horario
+     * @return el horario encontrado o un mensaje de error si no existe
+     */
     @GetMapping("/horarios-reales/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -200,7 +69,14 @@ public class HorarioRestController {
         }
     }
 
-    // 3. Crear un nuevo horario real (Asignación manual en el calendario)
+    /**
+     * Guarda un horario nuevo o actualiza uno existente si ya había un registro
+     * para el mismo empleado y la misma fecha. Esto evita duplicados y mantiene
+     * siempre un único horario por día.
+     * 
+     * @param horario datos del horario a guardar
+     * @return mensaje de confirmación o detalles del error
+     */
     @PostMapping("/horarios-reales")
     public ResponseEntity<?> guardar(@RequestBody Horario horario) {
         try {
@@ -240,7 +116,16 @@ public class HorarioRestController {
         }
     }
 
-    // 4. Actualizar un horario real
+    /**
+     * Actualiza un horario existente usando su ID.  
+     * Si el horario no existe, devuelve un mensaje informándolo.  
+     * También valida los datos recibidos antes de aplicar los cambios.
+     *
+     * @param horario datos actualizados del horario
+     * @param result resultado de la validación
+     * @param id identificador del horario a modificar
+     * @return mensaje de éxito o error según el resultado de la operación
+     */
     @PutMapping("/horarios-reales/{id}")
     public ResponseEntity<?> update(@Valid @RequestBody Horario horario, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -275,7 +160,13 @@ public class HorarioRestController {
         }
     }
 
-    // 5. Eliminar un horario real
+    /**
+     * Elimina un horario por su ID.  
+     * Si el horario no existe, devuelve un mensaje indicándolo.
+     *
+     * @param id identificador del horario a eliminar
+     * @return mensaje confirmando el borrado o informando del error
+     */
     @DeleteMapping("/horarios-reales/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -293,56 +184,49 @@ public class HorarioRestController {
         }
     }
 
+    /**
+     * Devuelve los turnos del empleado actualmente logueado.  
+     * La información se adapta al formato esperado por el calendario del frontend,
+     * incluyendo fecha, horas y un texto personalizado.
+     *
+     * @param session sesión del usuario para obtener su ID
+     * @param start fecha de inicio opcional para filtrar (no usada actualmente)
+     * @param end fecha de fin opcional para filtrar (no usada actualmente)
+     * @return lista de eventos con los turnos del empleado
+     */
     @GetMapping("/horarios-reales/mis-turnos")
-    public ResponseEntity<?> misTurnos(
-            HttpSession session,
-            @RequestParam(required = false) String start, // Añade estos parámetros
-            @RequestParam(required = false) String end) { 
-        
+    public ResponseEntity<?> misTurnos(HttpSession session, @RequestParam(required = false) String start, @RequestParam(required = false) String end) {
+    	
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
-        
-        if (empleadoId == null) {
-            return new ResponseEntity<>(Map.of("mensaje", "No hay sesión"), HttpStatus.UNAUTHORIZED);
-        }
+        if (empleadoId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
-        // Buscamos los horarios del empleado
         List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId);
-        List<Map<String, Object>> eventos = new java.util.ArrayList<>(); 
-
+        List<Map<String, Object>> eventos = new ArrayList<>();
         for (Horario h : listaHorarios) {
-            // Opcional: Si quieres filtrar por rango de fechas recibido (start/end)
-            // puedes añadir un if aquí similar al que tienes en 'horariosGlobales'
-            
             Map<String, Object> turno1 = new HashMap<>();
             turno1.put("start", h.getFecha().toString());
             turno1.put("title", h.getHoraInicio().toString().substring(0, 5) + " - " + h.getHoraFin().toString().substring(0, 5));
-            turno1.put("backgroundColor", "#d1ecf1");
-            turno1.put("textColor", "#0c5460");
-            
-            // Es vital que el formato sea estricto para FullCalendar
-            Map<String, Object> props1 = new HashMap<>();
-            props1.put("textoPersonalizado", h.getHoraInicio().toString().substring(0, 5) + " a " + h.getHoraFin().toString().substring(0, 5));
-            turno1.put("extendedProps", props1);
-            
+            turno1.put("extendedProps", Map.of("textoPersonalizado", h.getHoraInicio().toString().substring(0, 5) + " a " + h.getHoraFin().toString().substring(0, 5)));
             eventos.add(turno1);
-
-            if (h.getHoraInicio2() != null) { 
+            
+            if (h.getHoraInicio2() != null) {
                 Map<String, Object> turno2 = new HashMap<>();
                 turno2.put("start", h.getFecha().toString());
                 turno2.put("title", h.getHoraInicio2().toString().substring(0, 5) + " - " + h.getHoraFin2().toString().substring(0, 5));
-                turno2.put("backgroundColor", "#fff3cd");
-                turno2.put("textColor", "#856404");
-                
-                Map<String, Object> props2 = new HashMap<>();
-                props2.put("textoPersonalizado", h.getHoraInicio2().toString().substring(0, 5) + " a " + h.getHoraFin2().toString().substring(0, 5));
-                turno2.put("extendedProps", props2);
-                
                 eventos.add(turno2);
             }
         }
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
-    
+
+    /**
+     * Devuelve los días festivos del empleado actualmente logueado.
+     * La información se adapta al formato del calendario del frontend,
+     * mostrando cada festivo como un bloque de fondo.
+     *
+     * @param session sesión del usuario para obtener su ID
+     * @return lista de eventos con los festivos del empleado
+     */
     @GetMapping("/horarios-reales/mis-festivos")
     public ResponseEntity<?> misFestivos(HttpSession session) {
         Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
@@ -361,8 +245,17 @@ public class HorarioRestController {
         }
         return new ResponseEntity<>(eventos, HttpStatus.OK);
     }
-    
- // 6. Obtener los turnos reales de un empleado específico
+
+    /**
+     * Obtiene los horarios de un empleado dentro de un rango de fechas.
+     * El resultado se devuelve en formato compatible con el calendario,
+     * incluyendo horas, colores y turnos partidos si los hubiera.
+     *
+     * @param empleadoId ID del empleado a consultar
+     * @param start fecha de inicio del rango (yyyy-MM-dd)
+     * @param end fecha de fin del rango (yyyy-MM-dd)
+     * @return lista de eventos del empleado dentro del rango indicado
+     */
     @GetMapping("/horarios-reales/empleado/{empleadoId}")
     public ResponseEntity<?> horariosPorEmpleado(
             @PathVariable Long empleadoId,
@@ -380,6 +273,7 @@ public class HorarioRestController {
             List<Map<String, Object>> eventos = new ArrayList<>(); 
 
             for (Horario h : listaHorarios) {
+                // Filtro de rango de fechas
                 if ((h.getFecha().isEqual(fechaInicio) || h.getFecha().isAfter(fechaInicio)) && 
                     (h.getFecha().isEqual(fechaFin) || h.getFecha().isBefore(fechaFin))) {
                     
@@ -393,7 +287,7 @@ public class HorarioRestController {
                     String finStr = h.getHoraFin().toString().substring(0, 5);
                     String textoTitulo = inicioStr + " - " + finStr;
                     
-                    // Si tiene turno de tarde...
+                    // Si tiene turno de tarde, se concatena (Lógica recuperada)
                     if (h.getHoraInicio2() != null && h.getHoraFin2() != null) {
                         String inicio2Str = h.getHoraInicio2().toString().substring(0, 5);
                         String fin2Str = h.getHoraFin2().toString().substring(0, 5);
@@ -412,8 +306,16 @@ public class HorarioRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // 7. Listado Global para el Cuadrante General
+
+    /**
+     * Devuelve los horarios de todos los empleados dentro de un rango de fechas.
+     * Cada evento incluye el nombre del empleado y sus turnos del día,
+     * formateados para mostrarse correctamente en el calendario.
+     *
+     * @param start fecha de inicio del rango (yyyy-MM-dd)
+     * @param end fecha de fin del rango (yyyy-MM-dd)
+     * @return lista de eventos globales para el calendario
+     */
     @GetMapping("/horarios-reales/global")
     public ResponseEntity<?> horariosGlobales(
             @RequestParam("start") String start,
@@ -464,8 +366,16 @@ public class HorarioRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // Borrar un rango de horarios por empleado en el cuadrante global
+
+    /**
+     * Elimina todos los horarios de un empleado dentro de un rango de fechas.
+     * Se usa normalmente para limpiar una semana completa antes de volver a planificarla.
+     *
+     * @param empleadoId ID del empleado cuyos horarios se van a borrar
+     * @param startStr fecha de inicio del rango (yyyy-MM-dd)
+     * @param endStr fecha de fin del rango (yyyy-MM-dd)
+     * @return mensaje indicando cuántos horarios fueron eliminados
+     */
     @DeleteMapping("/horarios-reales/empleado/{empleadoId}/rango")
     public ResponseEntity<?> eliminarRangoFechas(
             @PathVariable Long empleadoId,

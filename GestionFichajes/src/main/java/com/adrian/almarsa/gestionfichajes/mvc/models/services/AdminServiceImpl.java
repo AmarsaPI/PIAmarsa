@@ -10,45 +10,66 @@ import org.springframework.transaction.annotation.Transactional;
 import com.adrian.almarsa.gestionfichajes.mvc.models.dao.IAdminDAO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Admin;
 
+/**
+ * Servicio para la gestión de administradores.
+ */
 @Service
 public class AdminServiceImpl implements IAdminService {
 
-	@Autowired
-	private IAdminDAO adminDAO;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder; // Inyectado desde SecurityConfig
-	
-	@Override
-	@Transactional(readOnly = true) // Optimiza la consulta al ser solo de lectura
-	public List<Admin> findAll() {
-		return (List<Admin>) adminDAO.findAll();
-	}
-	
-	@Override
-	@Transactional
-	public Admin save(Admin admin) {
-		// Cifra la contraseña en texto plano a BCrypt antes de persistir en la DB
-		// Esto es obligatorio para que coincida con lo que espera Spring Security
-		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		return adminDAO.save(admin);
-	}
-	
-	@Override
-	@Transactional(readOnly = true) 
-	public Admin findById(Long id) {
-		// Retorna el admin o null si no existe (manejado por el Controller)
-		return adminDAO.findById(id).orElse(null);
-	}
+    @Autowired
+    private IAdminDAO adminDAO;
 
-	@Override
-	@Transactional
-	public void delete(Long id) {
-		adminDAO.deleteById(id);
-	}
-	@Override
-	@Transactional(readOnly = true)
-	public Admin findByEmail(String email) {
-	    return adminDAO.findByEmail(email).orElse(null);
-	}
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    /**
+     * Obtiene todos los administradores.
+     * @return lista de administradores
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Admin> findAll() {
+        return (List<Admin>) adminDAO.findAll();
+    }
+
+    /**
+     * Guarda un administrador cifrando su contraseña.
+     * @return administrador guardado
+     */
+    @Override
+    @Transactional
+    public Admin save(Admin admin) {
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        return adminDAO.save(admin);
+    }
+
+    /**
+     * Busca un administrador por ID.
+     * @return admin encontrado o null
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Admin findById(Long id) {
+        return adminDAO.findById(id).orElse(null);
+    }
+
+    /**
+     * Elimina un administrador por ID.
+     */
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        adminDAO.deleteById(id);
+    }
+
+    /**
+     * Busca un administrador por email.
+     * @return admin encontrado o null
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Admin findByEmail(String email) {
+        return adminDAO.findByEmail(email).orElse(null);
+    }
 }
+
