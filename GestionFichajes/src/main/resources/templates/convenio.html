@@ -71,101 +71,122 @@
   <main class="app-shell">
 
     <section class="workspace">
-            <div class="top-tools">
-                <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
-                <div style="margin-left: 15px; font-weight: 600;">Administrador: <span th:text="${usuario.nombre}"></span></div>
-                <button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
-            </div>
-            
-            <div id="logo-amarsa">
-				<img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
-			</div>
+      <div class="top-tools">
+        <button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
+        <div style="margin-left: 15px; font-weight: 600;">Usuario: <span th:text="${usuario.nombre}"></span></div>
+        <button class="help-btn" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
+      </div>
+
+      <div id="logo-amarsa">
+        <a th:href="${rol == 'ADMIN'} ? @{/admin/index} : @{/index}">
+          <img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
+        </a>
+      </div>
 
 
-      <div class="content-grid">
+      <div class="content-grid" th:style="${rol == 'ADMIN'} ? '' : 'grid-template-columns: 1fr;'">
         <!-- Menú Lateral -->
-        <aside class="left-zone">
-            <div class="menu-wrap">
-              <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
-                <li><a th:href="@{/admin/gestion}"
-                    style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-                    👥 Gestión de Empleados </a></li>
-                <li>
-                  <a th:href="@{/admin/calendarios_laborales}"
-                    style="text-decoration: none; color: #f8f8f8; display: block; padding: 12px; font-weight: 700;">
-                    🗓️ Calendarios Laborales </a>
-                </li>
-                <li style="border-left: 4px solid #007bff;"><a th:href="@{/convenio}"
-                    style="text-decoration: none; color: #007bff; display: block; padding: 12px; font-weight: 600;">
-                    📜 Convenio Laboral </a></li>
-                <li>
-                  <a th:href="@{/admin/asignar_ausencia}"
-                    style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
-                    Bajas y Permisos
-                  </a>
-                </li>
-                <li><a th:href="@{/admin/informes}"
-                    style="text-decoration: none; color: inherit; display: block; padding: 12px;">
-                    📊 Informes y Horas </a></li>
-                <li><a th:href="@{/logout}"
-                    style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
-                    🚪 Cerrar Sesión </a></li>
-              </ul>
-            </div>
+        <aside class="left-zone" th:if="${rol == 'ADMIN'}">
+          <div class="menu-wrap">
+            <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
+              <li><a th:href="@{/admin/gestion}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                  👥 Gestión de Empleados </a></li>
+              <li>
+                <a th:href="@{/admin/calendarios_laborales}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 700;">
+                  🗓️ Calendarios Laborales </a>
+              </li>
+              <li style="border-left: 4px solid #007bff;"><a th:href="@{/convenio}"
+                  style="text-decoration: none; color: #007bff; display: block; padding: 12px; font-weight: 600;">
+                  📜 Convenio Laboral </a></li>
+              <li>
+                <a th:href="@{/admin/asignar_ausencia}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                  Bajas y Permisos
+                </a>
+              </li>
+              <li><a th:href="@{/admin/informes}"
+                  style="text-decoration: none; color: inherit; display: block; padding: 12px;">
+                  📊 Informes y Horas </a></li>
+              <li><a th:href="@{/logout}"
+                  style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
+                  🚪 Cerrar Sesión </a></li>
+            </ul>
+          </div>
 
-            <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}"
-              style="margin-top: 20px;">
-              <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
-              <p th:text="${mensajeExito ?: mensajeError}"></p>
-              <div class="choice-row">
-                <button class="yes" style="width:100%" onclick="this.closest('article').remove()">Entendido</button>
-              </div>
-            </article>
+          <article class="notification-card" th:if="${mensajeExito != null or mensajeError != null}"
+            style="margin-top: 20px;">
+            <h2 th:text="${mensajeExito != null ? '¡Éxito!' : 'Aviso'}"></h2>
+            <p th:text="${mensajeExito ?: mensajeError}"></p>
+            <div class="choice-row">
+              <button class="yes" style="width:100%" onclick="this.closest('article').remove()">Entendido</button>
+            </div>
+          </article>
         </aside>
 
-        <article class="viewer-container">
-    
-		    <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
-		        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-		            <h2 style="margin:0; color:var(--primary)">Convenio Colectivo Vigente</h2>
-		            <a th:href="@{/convenio/descargar}" download class="primary-action" style="text-decoration:none">Descargar PDF</a>
-		        </div>
-		
-		        <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
-		
-		        <div class="admin-upload-zone">
-		            <div th:if="${rol == 'ADMIN'}">
-		                <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
-		                    <label style="font-weight: bold;">Actualizar documento:</label>
-		                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-		                        <input type="file" name="archivo" accept="application/pdf" required>
-		                        <button type="submit" class="primary-action" style="padding: 5px 15px;">Publicar</button>
-		                    </div>
-		                </form>
-		            </div>
-		            
-		            <div th:unless="${rol == 'ADMIN'}">
-		                <p style="font-size: 0.9rem; color: #666;">¿Necesitas el documento oficial?</p>
-		                <a th:href="@{/convenio/descargar}" class="primary-action" style="text-decoration:none; padding: 10px 20px; display: inline-block;">
-		                    📥 Descargar Convenio (PDF)
-		                </a>
-		            </div>
-		        </div>
-		    </div> <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
-		        <span style="font-size: 4rem;">📂</span>
-		        <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
-		        <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
-		            <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
-		                <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
-		                <button type="submit" class="primary-action">Subir primer Convenio</button>
-		            </form>
-		        </div>
-		    </div> 
-    </article>
+        <article class="viewer-container" th:style="${rol == 'ADMIN'} ? '' : 'grid-column: 1;'">
+
+          <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <h2 style="margin:0; color:var(--primary)">Convenio Colectivo Vigente</h2>
+
+            </div>
+
+            <iframe th:src="@{/convenio/descargar}" class="pdf-iframe"></iframe>
+
+            <div class="admin-upload-zone">
+              <div th:if="${rol == 'ADMIN'}">
+                <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+                  <label style="font-weight: bold;">Actualizar documento:</label>
+                  <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                    <input type="file" name="archivo" accept="application/pdf" required>
+                    <button type="submit" class="primary-action" style="padding: 5px 15px;">Publicar</button>
+                  </div>
+                </form>
+              </div>
+
+              <div th:unless="${rol == 'ADMIN'}">
+                <p style="font-size: 0.9rem; color: #666;">¿Necesitas el documento oficial?</p>
+                <a th:href="@{/convenio/descargar}" class="primary-action"
+                  style="text-decoration:none; padding: 10px 20px; display: inline-block;">
+                  📥 Descargar Convenio (PDF)
+                </a>
+              </div>
+            </div>
+          </div>
+          <div th:unless="${existeArchivo}" style="text-align:center; padding: 50px; flex: 1;">
+            <span style="font-size: 4rem;">📂</span>
+            <p style="font-size: 1.5rem; font-weight: 800;">No hay ningún documento publicado.</p>
+            <div th:if="${rol == 'ADMIN'}" class="admin-upload-zone">
+              <form th:action="@{/convenio/subir}" method="post" enctype="multipart/form-data">
+                <input type="file" name="archivo" accept="application/pdf" required style="margin-bottom: 10px;">
+                <button type="submit" class="primary-action">Subir primer Convenio</button>
+              </form>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
+    <div id="modalAyuda"
+      style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+      <div
+        style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        <h2 style="margin-top:0; color:#0d6efd;">¿Cómo funciona esta página?</h2>
+        <p>Esta página te permite consultar y gestionar el convenio laboral vigente.</p>
+        <ul style="padding-left:20px; line-height:1.6;">
+          <li><strong>Convenio vigente:</strong> Aquí puedes ver el convenio laboral vigente.</li>
+          <li><strong>Subir nuevo convenio:</strong> Si eres administrador, puedes subir un nuevo convenio laboral.</li>
+          <li><strong>Descargar convenio:</strong> Si no eres administrador, puedes descargar el convenio laboral.</li>
+
+        </ul>
+        <button id="cerrarAyuda"
+          style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
+      </div>
+    </div>
   </main>
   <script th:src="@{/common.js}"></script>
+  <script th:src="@{/ayuda.js}"></script>
 </body>
 
 </html>

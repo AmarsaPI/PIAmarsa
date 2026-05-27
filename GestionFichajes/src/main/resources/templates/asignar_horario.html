@@ -55,24 +55,24 @@
 		}
 
 		.fc-daygrid-event {
-		    background-color: #ffc107 !important;
-		    border-color: #ffc107 !important;
-		    color: black !important; 
+			background-color: #ffc107 !important;
+			border-color: #ffc107 !important;
+			color: black !important;
 		}
-		
+
 		.fc .fc-bg-event {
-		    background: #ffc107 !important;
-		    opacity: 0.5 !important; 
+			background: #ffc107 !important;
+			opacity: 0.5 !important;
 		}
-		
+
 		.fc-event {
-		    border-radius: 4px;
-		    padding: 2px 4px;
+			border-radius: 4px;
+			padding: 2px 4px;
 		}
-		
+
 		.fc-event-title {
-		    color: #000 !important; 
-		    font-weight: 600;
+			color: #000 !important;
+			font-weight: 600;
 		}
 
 		.fc-event-title,
@@ -82,14 +82,14 @@
 			text-overflow: clip !important;
 			word-wrap: break-word !important;
 		}
-		
+
 		.fc .fc-event {
-		    font-size: 0.75rem !important; 
+			font-size: 0.75rem !important;
 		}
-		
+
 		.fc-daygrid-event .fc-event-title {
-		    font-size: 0.7rem !important;
-		    white-space: normal !important; 
+			font-size: 0.7rem !important;
+			white-space: normal !important;
 		}
 
 		.fc-daygrid-event-dot {
@@ -101,12 +101,12 @@
 		}
 
 		.content-grid-admin {
-		    display: grid;
-		    grid-template-columns: 260px 1fr; 
-		    gap: 20px;
-		    padding: 20px;
-		    width: 100%;
-		    max-width: 100%; 
+			display: grid;
+			grid-template-columns: 260px 1fr;
+			gap: 20px;
+			padding: 20px;
+			width: 100%;
+			max-width: 100%;
 		}
 
 		.fc-v-event,
@@ -116,13 +116,14 @@
 		}
 
 		.fc .fc-bg-event {
-		    opacity: 0.6 !important;
-		    background-color: #ff9f89 !important; 
-		    z-index: 1 !important;
+			opacity: 0.6 !important;
+			background-color: #ff9f89 !important;
+			z-index: 1 !important;
 		}
+
 		.fc-daygrid-day-frame {
-		    min-height: 120px !important;
-		    position: relative !important;
+			min-height: 120px !important;
+			position: relative !important;
 		}
 	</style>
 </head>
@@ -137,7 +138,7 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
+				<button class="help-btn" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
 
 			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
@@ -148,26 +149,29 @@
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
 							<li data-submenu="none"><a th:href="@{/index}"
-								style="text-decoration: none; color: inherit;">Inicio</a></li>
-							<li><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario Personal</a></li>
+									style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li><a th:href="@{/horario_personal}" style="text-decoration: none; color: inherit;">Horario
+									Personal</a></li>
 							<li class="active-menu">Horario Equipo</li>
-							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}" style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>
-					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
-					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
-							
-							<li><a th:href="@{/logout}"
-								style="color: red; text-decoration: none;">Salir</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}"
+									style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a
+									th:href="@{/vacaciones/calendario-global}"
+									style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}"
+									style="text-decoration: none; color: inherit;">Solicitudes</a></li>
+
+							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>
 					<div class="px-3" style="margin-top: 20px;">
-				        <a th:href="@{/horarios/pdf/descargar-equipo}"
-				           class="btn btn-primary w-100 fw-bold shadow-sm" 
-				           style="padding: 12px; font-size: 0.9rem;">
-				           <i class="bi bi-file-earmark-pdf-fill"></i> Descargar Cuadrante Equipo
-				        </a>
-				    </div>
+						<a th:href="@{/horarios/pdf/descargar-equipo}" class="btn btn-primary w-100 fw-bold shadow-sm"
+							style="padding: 12px; font-size: 0.9rem;">
+							<i class="bi bi-file-earmark-pdf-fill"></i> Descargar Cuadrante Equipo
+						</a>
+					</div>
 				</section>
-				
+
 
 				<div class="container-fluid p-0">
 					<div class="row g-3">
@@ -317,11 +321,36 @@
 			</div>
 		</div>
 	</div>
+	<div id="modalAyuda"
+		style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+		<div
+			style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+			<h2 style="margin-top:0; color:#0d6efd;">¿Cómo funciona esta página?</h2>
+			<p>Desde aquí puedes consultar y gestionar los horarios de todo el equipo.</p>
+			<ul style="padding-left:20px; line-height:1.6;">
+				<li><strong>Calendario del equipo:</strong> Visualiza los turnos de todos los empleados en un
+					calendario compartido (vista semanal o mensual).</li>
+				<li><strong>Filtrar por empleado:</strong> Usa el selector de empleados para ver únicamente los
+					turnos de una persona concreta.</li>
+				<li><strong>Asignar plantilla:</strong> Selecciona un empleado, un rango de fechas y una plantilla
+					semanal para asignar horarios de forma masiva.</li>
+				<li><strong>Turno individual:</strong> Haz clic en un día del calendario para añadir un turno suelto a
+					un empleado concreto.</li>
+				<li><strong>Borrar rango:</strong> Selecciona un rango de fechas y pulsa "Borrar Rango" para
+					eliminar los turnos asignados en ese periodo.</li>
+				<li><strong>Descargar cuadrante:</strong> Pulsa "Descargar Cuadrante Equipo" en el menú lateral para
+					obtener un PDF con los horarios de toda la plantilla.</li>
+			</ul>
+			<button id="cerrarAyuda"
+				style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
+		</div>
+	</div>
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 	<script th:src="@{/common.js}"></script>
 	<script th:src="@{/horarios.js}"></script>
+	<script th:src="@{/ayuda.js}"></script>
 </body>
 
 </html>
