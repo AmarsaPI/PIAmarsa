@@ -1,37 +1,35 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Mi Horario - Gestor de horarios y fichajes</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com"
-	crossorigin="anonymous" />
-<link
-	href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap"
-	rel="stylesheet" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Mi Horario - Gestor de horarios y fichajes</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;display=swap"
+		rel="stylesheet" />
 
-<link rel="stylesheet" th:href="@{/styles.css}" />
-<link rel="stylesheet" th:href="@{/horario.css}" />
-<style>
-.evento-celda {
-    font-size: 0.85em;
-    padding: 2px 4px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
+	<link rel="stylesheet" th:href="@{/styles.css}" />
+	<link rel="stylesheet" th:href="@{/horario.css}" />
+	<style>
+		.evento-celda {
+			font-size: 0.85em;
+			padding: 2px 4px;
+			text-align: center;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 
-.fc-daygrid-event {
-    border: none !important;
-    margin: 2px 5px !important;
-    border-radius: 4px !important;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-</style>
-<script
-	src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+		.fc-daygrid-event {
+			border: none !important;
+			margin: 2px 5px !important;
+			border-radius: 4px !important;
+			box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+		}
+	</style>
+	<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 </head>
 
 <body th:data-home="@{/index}">
@@ -44,7 +42,7 @@
 				<div style="margin-left: 15px; font-weight: 600;">
 					Usuario: <span th:text="${usuario.nombre}">Nombre Apellido</span>
 				</div>
-				<button class="help-btn" onclick="abrirAyuda()" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
+				<button class="help-btn" style="margin-left:auto; margin-right:15px; cursor:pointer;">?</button>
 			</div>
 			<img th:src="@{/logo.png}" alt="Logo" class="brand-logo" />
 
@@ -52,159 +50,189 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li><a th:href="@{/index}"
-								style="text-decoration: none; color: inherit;">Inicio</a></li>
+							<li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li class="active-menu">Horario</li>
-							<li><a th:href="@{/asignar_horario}"
-								style="text-decoration: none; color: inherit;">Horario Equipo</a></li>
-							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}" style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>	
-					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/vacaciones/calendario-global}" style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
-					        <li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}" style="text-decoration: none; color: inherit;">Solicitudes</a></li>
-							<li><a th:href="@{/logout}"
-								style="color: red; text-decoration: none;">Salir</a></li>
+							<li><a th:href="@{/asignar_horario}" style="text-decoration: none; color: inherit;">Horario
+									Equipo</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/gestion_plantillas}"
+									style="text-decoration: none; color: inherit;">Plantillas Horario</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a
+									th:href="@{/vacaciones/calendario-global}"
+									style="text-decoration: none; color: inherit;">Ausencias Equipo</a></li>
+							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}"><a th:href="@{/solicitudes}"
+									style="text-decoration: none; color: inherit;">Solicitudes</a></li>
+							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
 						</ul>
 					</div>
 				</section>
 
 				<aside class="schedule-panel">
-				    <div class="schedule-head" style="display: flex; justify-content: space-between; align-items: center;">
-				        <h2>Mi Horario</h2>
-				        
-				        <div class="bolsa-badge" th:with="positivo=${saldoTotal >= 0}"
-				             th:style="${positivo ? 'background:#d4edda; color:#155724;' : 'background:#f8d7da; color:#721c24;'} + ' padding: 8px 15px; border-radius: 20px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1);'">
-				            <span>Saldo:</span>
-				            <span th:text="${#numbers.formatDecimal(saldoTotal, 1, 1) + ' h'}">0.0 h</span>
-				        </div>
-				    </div>
-				
-				    <div class="schedule-body">
-				        <div id="calendar" style="background: white; padding: 10px; border-radius: 8px;"></div>
-				    </div>
-				
-				    <div class="schedule-actions">
-					    <div style="margin-bottom: 20px;">
-						    <label>Desde:</label> <input type="date" id="fechaInicio" />
-						    <label>Hasta:</label> <input type="date" id="fechaFin" />
-						    <button class="btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+					<div class="schedule-head"
+						style="display: flex; justify-content: space-between; align-items: center;">
+						<h2>Mi Horario</h2>
+
+						<div class="bolsa-badge" th:with="positivo=${saldoTotal >= 0}"
+							th:style="${positivo ? 'background:#d4edda; color:#155724;' : 'background:#f8d7da; color:#721c24;'} + ' padding: 8px 15px; border-radius: 20px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1);'">
+							<span>Saldo:</span>
+							<span th:text="${#numbers.formatDecimal(saldoTotal, 1, 1) + ' h'}">0.0 h</span>
 						</div>
-				        
-				        <button type="button" class="btn-primary" onclick="abrirModal()">Solicitar Cambio</button>
-				        
-				    </div>
+					</div>
+
+					<div class="schedule-body">
+						<div id="calendar" style="background: white; padding: 10px; border-radius: 8px;"></div>
+					</div>
+
+					<div class="schedule-actions">
+						<div style="margin-bottom: 20px;">
+							<label>Desde:</label> <input type="date" id="fechaInicio" />
+							<label>Hasta:</label> <input type="date" id="fechaFin" />
+							<button class="btn-secondary" onclick="exportarPDF()">Exportar PDF</button>
+						</div>
+
+						<button type="button" class="btn-primary" onclick="abrirModal()">Solicitar Cambio</button>
+
+					</div>
 				</aside>
 			</div>
 		</section>
-		<div id="modalSolicitud" style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; padding:25px; border:1px solid #ccc; border-radius:12px; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-		    <h3>Solicitar Cambio de Horario</h3>
-		    <form th:action="@{/solicitar-cambio-horario}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
-		        
-		        <label>Fecha a cambiar:</label>
-		        <input type="date" name="fechaTurno" required class="form-control" />
-		        
-		        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-				    <div>
-				        <label>Entrada 1:</label>
-				        <input type="time" name="horaEntradaPropuesta" required class="form-control" />
-				    </div>
-				    <div>
-				        <label>Salida 1:</label>
-				        <input type="time" name="horaSalidaPropuesta" required class="form-control" />
-				    </div>
-				    <div>
-				        <label>Entrada 2:</label>
-				        <input type="time" name="horaEntradaPropuesta2" class="form-control" />
-				    </div>
-				    <div>
-				        <label>Salida 2:</label>
-				        <input type="time" name="horaSalidaPropuesta2" class="form-control" />
-				    </div>
+		<div id="modalSolicitud"
+			style="display:none; position:fixed; top:20%; left:30%; width:40%; background:white; padding:25px; border:1px solid #ccc; border-radius:12px; z-index:1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+			<h3>Solicitar Cambio de Horario</h3>
+			<form th:action="@{/solicitar-cambio-horario}" method="post"
+				style="display: flex; flex-direction: column; gap: 10px;">
+
+				<label>Fecha a cambiar:</label>
+				<input type="date" name="fechaTurno" required class="form-control" />
+
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+					<div>
+						<label>Entrada 1:</label>
+						<input type="time" name="horaEntradaPropuesta" required class="form-control" />
+					</div>
+					<div>
+						<label>Salida 1:</label>
+						<input type="time" name="horaSalidaPropuesta" required class="form-control" />
+					</div>
+					<div>
+						<label>Entrada 2:</label>
+						<input type="time" name="horaEntradaPropuesta2" class="form-control" />
+					</div>
+					<div>
+						<label>Salida 2:</label>
+						<input type="time" name="horaSalidaPropuesta2" class="form-control" />
+					</div>
 				</div>
-		        
-		        <label>Razón del cambio:</label>
-		        <textarea name="motivo" placeholder="Ej: Cambio de turno por motivos personales..." required style="height: 60px;"></textarea>
-		        
-		        <div style="display: flex; gap: 10px; margin-top: 10px;">
-		            <button type="submit" class="btn-primary">Enviar Solicitud</button>
-		            <button type="button" onclick="document.getElementById('modalSolicitud').style.display='none'" class="btn-secondary">Cancelar</button>
-		        </div>
-		    </form>
+
+				<label>Razón del cambio:</label>
+				<textarea name="motivo" placeholder="Ej: Cambio de turno por motivos personales..." required
+					style="height: 60px;"></textarea>
+
+				<div style="display: flex; gap: 10px; margin-top: 10px;">
+					<button type="submit" class="btn-primary">Enviar Solicitud</button>
+					<button type="button" onclick="document.getElementById('modalSolicitud').style.display='none'"
+						class="btn-secondary">Cancelar</button>
+				</div>
+			</form>
 		</div>
 	</main>
 	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-	    var calendarEl = document.getElementById('calendar');
+		document.addEventListener('DOMContentLoaded', function () {
+			var calendarEl = document.getElementById('calendar');
 
-	    if (!calendarEl) {
-	        console.error("Error: No se encontró el elemento #calendar");
-	        return;
-	    }
+			if (!calendarEl) {
+				console.error("Error: No se encontró el elemento #calendar");
+				return;
+			}
 
-	    var calendar = new FullCalendar.Calendar(calendarEl, {
-	        initialView: 'dayGridWeek',
-	        locale: 'es',
-	        firstDay: 1,
-	        height: 'auto',
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+				initialView: 'dayGridWeek',
+				locale: 'es',
+				firstDay: 1,
+				height: 'auto',
 
-	        buttonText: {
-	            today:    'Hoy',
-	            month:    'Mes',
-	            week:     'Semana',
-	            day:      'Día'
-	        },
-	        
-	        eventOrder: "start", 
+				buttonText: {
+					today: 'Hoy',
+					month: 'Mes',
+					week: 'Semana',
+					day: 'Día'
+				},
 
-	        displayEventTime: false,
+				eventOrder: "start",
 
-	        eventContent: function(arg) {
-	            let texto = arg.event.extendedProps.textoPersonalizado || arg.event.title;
-	            
-	            return {
-	                html: `<div class="evento-celda">
+				displayEventTime: false,
+
+				eventContent: function (arg) {
+					let texto = arg.event.extendedProps.textoPersonalizado || arg.event.title;
+
+					return {
+						html: `<div class="evento-celda">
 	                        <span>${texto}</span>
 	                       </div>`
-	            };
-	        },
+					};
+				},
 
-	        eventSources: [
-	            {
-	                // Esto garantiza que se envíen las fechas al controlador
-	                url: '/web/horarios-reales/mis-turnos',
-	                method: 'GET',
-	                failure: function() {
-	                    console.error('Error al cargar mis turnos');
-	                }
-	            },
-	            {
-	                url: '/web/horarios-reales/mis-festivos',
-	                method: 'GET'
-	            }
-	        ],
-	        eventDidMount: function(info) {
-	            console.log("Evento cargado:", info.event.title);
-	        },
-	        
-	        headerToolbar: {
-	            left: 'prev,next today',
-	            center: 'title',
-	            right: 'dayGridMonth,dayGridWeek'
-	        }
-	    });
+				eventSources: [
+					{
+						// Esto garantiza que se envíen las fechas al controlador
+						url: '/web/horarios-reales/mis-turnos',
+						method: 'GET',
+						failure: function () {
+							console.error('Error al cargar mis turnos');
+						}
+					},
+					{
+						url: '/web/horarios-reales/mis-festivos',
+						method: 'GET'
+					}
+				],
+				eventDidMount: function (info) {
+					console.log("Evento cargado:", info.event.title);
+				},
 
-	    calendar.render();
-	});
+				headerToolbar: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'dayGridMonth,dayGridWeek'
+				}
+			});
 
-	function abrirModal() {
-        document.getElementById('modalSolicitud').style.display = 'block';
-    }
+			calendar.render();
+		});
 
-    function exportarPDF() {
-        
-    	const inicio = document.getElementById('fechaInicio').value;
-        const fin = document.getElementById('fechaFin').value;
-        window.location.href = `/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
-    }
-</script>
-<script th:src="@{/common.js}" defer></script>
+		function abrirModal() {
+			document.getElementById('modalSolicitud').style.display = 'block';
+		}
+
+		function exportarPDF() {
+
+			const inicio = document.getElementById('fechaInicio').value;
+			const fin = document.getElementById('fechaFin').value;
+			window.location.href = `/horarios/pdf/descargar?inicio=${inicio}&fin=${fin}`;
+		}
+	</script>
+	<script th:src="@{/common.js}" defer></script>
+	<script th:src="@{/ayuda.js}" defer></script>
+	<div id="modalAyuda"
+		style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+		<div
+			style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+			<h2 style="margin-top:0; color:#0d6efd;">¿Cómo funciona esta página?</h2>
+			<p>Esta página te permite consultar y gestionar tu horario de trabajo asignado</p>
+			<ul style="padding-left:20px; line-height:1.6;">
+				<li><strong>Calendario</strong> Visualiza tus turnos asignados en formato semanal o mensual.
+					Los eventos en color indican tus tramos de trabajo y los festivos aparecen marcados.</li>
+				<li><strong>Saldo:</strong> En la parte superior derecha verás tu balance acumulado de horas
+					(positivo en verde si has trabajado de más, negativo en rojo si debes horas).</li>
+				<li><strong>Solicitar Cambio:</strong> Pulsa el botón "Solicitar Cambio" para pedir una modificación en
+					tu horario. Indica la fecha, las nuevas horas de entrada y salida y el motivo del cambio.</li>
+				<li><strong>Exportar PDF:</strong> Selecciona un rango de fechas ("Desde" / "Hasta") y pulsa "Exportar
+					PDF"
+					para descargar tu horario en formato PDF.</li>
+			</ul>
+			<button id="cerrarAyuda"
+				style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
+		</div>
+	</div>
 </body>
+
 </html>

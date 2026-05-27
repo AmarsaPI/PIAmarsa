@@ -8,33 +8,59 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
-	<style>
-		.report-table {
-		    width: 100%;
-		    border-collapse: separate;
-		    border-spacing: 0;
-		    background: white;
-		    border-radius: 12px;
-		    overflow: hidden;
-		    border: 1px solid #eee;
-		    table-layout: fixed;
-		}
-		.report-table th, .report-table td {
-		    padding: 12px 15px; 
-		    text-align: left; 
-		    overflow: hidden;
-		    text-overflow: ellipsis;
-		    border-bottom: 1px solid #f0f0f0;
-		}
-		.report-table thead { background: #f8f9fa; font-weight: bold; }
-		
-		/* Clases para los badges */
-		.badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; }
-		.bg-danger { background: #fee2e2; color: #dc3545; }
-		.bg-success { background: #d1e7dd; color: #198754; }
-		.text-danger { color: #dc3545; font-weight: bold; }
-		.text-success { color: #198754; font-weight: bold; }
-	</style>
+  <style>
+    .report-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #eee;
+      table-layout: fixed;
+    }
+
+    .report-table th,
+    .report-table td {
+      padding: 12px 15px;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .report-table thead {
+      background: #f8f9fa;
+      font-weight: bold;
+    }
+
+    /* Clases para los badges */
+    .badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .bg-danger {
+      background: #fee2e2;
+      color: #dc3545;
+    }
+
+    .bg-success {
+      background: #d1e7dd;
+      color: #198754;
+    }
+
+    .text-danger {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .text-success {
+      color: #198754;
+      font-weight: bold;
+    }
+  </style>
   <link rel="stylesheet" th:href="@{/styles.css}" />
 </head>
 
@@ -98,39 +124,41 @@
             </ul>
           </div>
         </section>
-		<div id="mainContent">
-            <h2>📊 Balance de Horas por Empleado</h2>
-            
-            <div class="table-responsive">
-                <table class="report-table">
-                    <thead>
-                        <tr>
-                            <th>Empleado</th>
-                            <th>Trabajadas</th>
-                            <th>Previstas</th>
-                            <th>Balance</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="emp : ${listaEmpleados}">
-                            <td class="fw-bold" th:text="${emp.nombre}">Nombre</td>
-                            <td th:text="${emp.horasTrabajadas}">0</td>
-                            <td th:text="${emp.horasPrevistas}">0</td>
-                            
-                            <td th:with="balance=${emp.horasTrabajadas - emp.horasPrevistas}">
-                                <span th:class="${balance < 0 ? 'text-danger' : 'text-success'}"
-                                      th:text="${balance > 0 ? '+' + balance : balance}">+0</span>
-                            </td>
-                            
-                            <td>
-                                <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) < 0}" class="badge bg-danger">Debe</span>
-                                <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) >= 0}" class="badge bg-success">Ok</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div id="mainContent">
+          <h2>📊 Balance de Horas por Empleado</h2>
+
+          <div class="table-responsive">
+            <table class="report-table">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Trabajadas</th>
+                  <th>Previstas</th>
+                  <th>Balance</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="emp : ${listaEmpleados}">
+                  <td class="fw-bold" th:text="${emp.nombre}">Nombre</td>
+                  <td th:text="${#numbers.formatDecimal(emp.horasTrabajadas, 1, 2)}"></td>
+                  <td th:text="${#numbers.formatDecimal(emp.horasPrevistas, 1, 2)}"></td>
+
+                  <td th:with="balance=${emp.horasTrabajadas - emp.horasPrevistas}">
+                    <span th:class="${balance < 0 ? 'text-danger' : 'text-success'}" th:text="${balance > 0 
+										                ? '+' + #numbers.formatDecimal(balance, 1, 2) 
+										                : #numbers.formatDecimal(balance, 1, 2)}">
+                    </span>
+                  </td>
+
+                  <td>
+                    <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) < 0}" class="badge bg-danger">Debe</span>
+                    <span th:if="${(emp.horasTrabajadas - emp.horasPrevistas) >= 0}" class="badge bg-success">Ok</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <aside class="management-panel">
           <div class="management-head" style="background: #2c3e50;">

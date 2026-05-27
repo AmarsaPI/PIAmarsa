@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,14 +8,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" th:href="@{/styles.css}" />
   <style>
-    .styled-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-    .styled-table thead { background-color: #133b91; color: white; }
-    .styled-table th, .styled-table td { padding: 15px 20px; text-align: left; }
-    .styled-table tbody tr:nth-of-type(even) { background-color: #f8f9fa; }
-    .btn-edit { background-color: #133b91; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 0.85rem; }
-    .btn-delete { background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .styled-table thead {
+      background-color: #133b91;
+      color: white;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 15px 20px;
+      text-align: left;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa;
+    }
+
+    .btn-edit {
+      background-color: #133b91;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
+
 <body th:data-home="@{/admin/index}">
   <main class="app-shell">
     <section class="workspace">
@@ -31,54 +70,60 @@
         <section class="left-zone">
           <ul id="mainMenu" class="menu-dropdown" style="display: block;">
             <li style="border-left: 4px solid #133b91; background: #f0f4ff;">
-              <a th:href="@{/admin/listado_usuarios}" style="color: #133b91; font-weight: 700; padding: 12px; display: block; text-decoration: none;">👥 Gestión de Empleados</a>
+              <a th:href="@{/admin/listado_usuarios}"
+                style="color: #133b91; font-weight: 700; padding: 12px; display: block; text-decoration: none;">👥
+                Gestión de Empleados</a>
             </li>
-            <li><a th:href="@{/admin/calendarios_laborales}" style="padding: 12px; display: block; text-decoration: none; color: inherit;">🗓️ Calendarios</a></li>
-            <li><a th:href="@{/logout}" style="color: #dc3545; padding: 12px; display: block; text-decoration: none; border-top: 1px solid #eee;">🚪 Salir</a></li>
+            <li><a th:href="@{/admin/calendarios_laborales}"
+                style="padding: 12px; display: block; text-decoration: none; color: inherit;">🗓️ Calendarios</a></li>
+            <li><a th:href="@{/logout}"
+                style="color: #dc3545; padding: 12px; display: block; text-decoration: none; border-top: 1px solid #eee;">🚪
+                Salir</a></li>
           </ul>
         </section>
 
         <section class="main-content" style="flex: 2; padding: 0 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2>Listado de Plantilla</h2>
-            <a th:href="@{/admin/agregar_usuario}" class="btn-nuevo" style="background: #133b91; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600;">➕ Añadir Empleado</a>
+            <a th:href="@{/admin/agregar_usuario}" class="btn-nuevo"
+              style="background: #133b91; color: white; padding: 10px 15px; border-radius: 8px; text-decoration: none; font-weight: 600;">➕
+              Añadir Empleado</a>
           </div>
 
           <div style="margin-bottom: 20px;">
-			    <a th:href="@{/admin/listado_usuarios(mostrarTodos=${!mostrarTodos})}" 
-			       class="btn-edit" 
-			       th:text="${mostrarTodos} ? 'Ver solo activos' : 'Ver inactivos'"
-			       style="background-color: #6c757d;">
-			    </a>
-			</div>
-			
-			<table class="styled-table">
-			    <tbody>
-			        <tr th:if="${#lists.isEmpty(empleados)}">
-			            <td colspan="4" style="text-align:center;">No hay empleados para mostrar.</td>
-			        </tr>
-			        
-			        <tr th:each="e : ${empleados}">
-			            <td th:text="${e.nombre}">Juan</td>
-			            <td th:text="${e.email}">juan@test.com</td>
-			            <td>
-			                <span th:text="${e.activo} ? '🟢 Activo' : '🔴 Inactivo'"></span>
-			            </td>
-			            <td>
-			                <a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}" class="btn-edit">Editar</a>
-			                
-			                <form th:if="${e.activo}" th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}" 
-			                      method="post" style="display:inline;" 
-			                      onsubmit="return confirm('¿Seguro que desea dar de baja este empleado?');">
-			                    <button type="submit" class="btn-delete">Dar de Baja</button>
-			                </form>
-			            </td>
-			        </tr>
-			    </tbody>
-			</table>
+            <a th:href="@{/admin/listado_usuarios(mostrarTodos=${!mostrarTodos})}" class="btn-edit"
+              th:text="${mostrarTodos} ? 'Ver solo activos' : 'Ver inactivos'" style="background-color: #6c757d;">
+            </a>
+          </div>
+
+          <table class="styled-table">
+            <tbody>
+              <tr th:if="${#lists.isEmpty(empleados)}">
+                <td colspan="4" style="text-align:center;">No hay empleados para mostrar.</td>
+              </tr>
+
+              <tr th:each="e : ${empleados}">
+                <td th:text="${e.nombre}">Juan</td>
+                <td th:text="${e.email}">juan@test.com</td>
+                <td>
+                  <span th:text="${e.activo} ? '🟢 Activo' : '🔴 Inactivo'"></span>
+                </td>
+                <td>
+                  <a th:href="@{/admin/empleados/editar/{id}(id=${e.id})}" class="btn-edit">Editar</a>
+
+                  <form th:if="${e.activo}" th:action="@{/admin/gestion/eliminar/{id}(id=${e.id})}" method="post"
+                    style="display:inline;" onsubmit="return confirm('¿Seguro que desea dar de baja este empleado?');">
+                    <button type="submit" class="btn-delete">Dar de Baja</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </section>
       </div>
     </section>
   </main>
+  <script th:src="@{/common.js}"></script>
 </body>
+
 </html>

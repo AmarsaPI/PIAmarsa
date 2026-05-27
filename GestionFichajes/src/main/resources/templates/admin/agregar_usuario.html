@@ -166,7 +166,7 @@
 
 							<div>
 								<label for="calendario" style="margin-top: 0;">Calendario Laboral</label>
-								<select id="calendario" th:field="*{calendario}" required>
+								<select id="calendario" th:field="*{calendario}">
 									<option value="">Seleccione un calendario...</option>
 									<option th:each="cal : ${listaCalendarios}" th:value="${cal.id}"
 										th:text="${cal.nombre + ' (' + cal.anyo + ')'}">
