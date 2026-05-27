@@ -24,7 +24,7 @@ public class Fichaje implements Serializable {
 
     /** Fecha y hora de salida (puede ser null mientras está trabajando). */
     @Column(name = "fecha_salida")
-    private LocalDateTime fechaSalida = LocalDateTime.MIN;
+    private LocalDateTime fechaSalida;
 
     /** Empleado que realiza el fichaje. */
     @ManyToOne(fetch = FetchType.LAZY)
