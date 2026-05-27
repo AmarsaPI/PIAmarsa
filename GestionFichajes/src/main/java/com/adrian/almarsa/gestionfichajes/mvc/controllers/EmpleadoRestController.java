@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import com.adrian.almarsa.gestionfichajes.mvc.models.dto.EmpleadoLoginDTO;
 import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 
@@ -173,15 +174,10 @@ public class EmpleadoRestController {
                         empleado.getRol()
                 );
 
-        return new ResponseEntity<>(
-                Map.of(
-                        "token",
-                        token,
-                        "empleado",
-                        empleado
-                ),
-                HttpStatus.OK
-        );
+        return ResponseEntity.ok(Map.of(
+                "token", token, 
+                "empleado", new EmpleadoLoginDTO(empleado)
+        ));
     }
 
     /**

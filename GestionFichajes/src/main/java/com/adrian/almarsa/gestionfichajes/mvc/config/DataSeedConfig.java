@@ -90,5 +90,23 @@ public class DataSeedConfig implements CommandLineRunner {
             System.out.println("#  Pass:  pass.amarsa                             #");
             System.out.println("###################################################");
         }
+        
+        if (empleadoDAO.findByEmail("juan@piamarsa.com").isEmpty()) {
+            Empleado juan = new Empleado();
+            juan.setNombre("Juan Perez");
+            juan.setEmail("juan@piamarsa.com");
+            juan.setPassword(passwordEncoder.encode("1234")); 
+            juan.setRol(Rol.EMPLEADO);
+            empleadoDAO.save(juan);
+        }
+        
+        if (empleadoDAO.findByEmail("pablo@piamarsa.com").isEmpty()) {
+            Empleado juan = new Empleado();
+            juan.setNombre("Pablo Sanz");
+            juan.setEmail("pablo@piamarsa.com");
+            juan.setPassword(passwordEncoder.encode("1234")); 
+            juan.setRol(Rol.EMPLEADO);
+            empleadoDAO.save(juan);
+        }
     }
 }
