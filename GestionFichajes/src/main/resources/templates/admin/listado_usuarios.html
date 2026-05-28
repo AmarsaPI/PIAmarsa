@@ -69,16 +69,28 @@
       <div class="content-grid">
         <section class="left-zone">
           <ul id="mainMenu" class="menu-dropdown" style="display: block;">
+            <li><a th:href="@{/admin/index}"
+                style="padding: 12px; display: block; text-decoration: none; color: inherit;">⬅️ Volver</a></li>
             <li style="border-left: 4px solid #133b91; background: #f0f4ff;">
               <a th:href="@{/admin/listado_usuarios}"
                 style="color: #133b91; font-weight: 700; padding: 12px; display: block; text-decoration: none;">👥
                 Gestión de Empleados</a>
             </li>
             <li><a th:href="@{/admin/calendarios_laborales}"
-                style="padding: 12px; display: block; text-decoration: none; color: inherit;">🗓️ Calendarios</a></li>
+                style="padding: 12px; display: block; text-decoration: none; color: inherit;">🗓️ Calendarios
+                laborales</a></li>
+            <li><a th:href="@{/convenio}"
+                style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                📜 Convenio Laboral </a></li>
+            <li>
+              <a th:href="@{/admin/asignar_ausencia}"
+                style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
+                Bajas y Permisos
+              </a>
+            </li>
             <li><a th:href="@{/logout}"
                 style="color: #dc3545; padding: 12px; display: block; text-decoration: none; border-top: 1px solid #eee;">🚪
-                Salir</a></li>
+                Cerrar Sesión</a></li>
           </ul>
         </section>
 

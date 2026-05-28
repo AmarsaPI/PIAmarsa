@@ -89,7 +89,10 @@
         <aside class="left-zone" th:if="${rol == 'ADMIN'}">
           <div class="menu-wrap">
             <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
-              <li><a th:href="@{/admin/gestion}"
+              <li><a th:href="@{/admin/index}"
+                  style="padding: 12px; display: block; text-decoration: none; color: inherit;">⬅️
+                  Volver</a></li>
+              <li><a th:href="@{/admin/listado_usuarios}"
                   style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
                   👥 Gestión de Empleados </a></li>
               <li>
@@ -106,9 +109,6 @@
                   Bajas y Permisos
                 </a>
               </li>
-              <li><a th:href="@{/admin/informes}"
-                  style="text-decoration: none; color: inherit; display: block; padding: 12px;">
-                  📊 Informes y Horas </a></li>
               <li><a th:href="@{/logout}"
                   style="text-decoration: none; color: #dc3545; display: block; padding: 12px; border-top: 1px solid #eee; margin-top: 10px;">
                   🚪 Cerrar Sesión </a></li>

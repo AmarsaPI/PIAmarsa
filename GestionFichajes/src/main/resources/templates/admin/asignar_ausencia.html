@@ -52,10 +52,9 @@
 
             <div class="top-tools"
                 style="display: flex; align-items: center; justify-content: center; position: relative;">
+                <span> 🛠️ Modo Administrador: Gestor Principal</span>
                 <h1 class="management-title" style="color: rgb(255, 255, 255); margin: 0;">Asignar Bajas y Permisos</h1>
-                <div style="position: absolute; right: 20px; font-weight: 600; color: rgb(255, 255, 255);">
-                    Usuario: <span th:text="${usuario.nombre}">Gestor Principal</span>
-                </div>
+
             </div>
 
             <div id="logo-amarsa">
@@ -66,6 +65,9 @@
                 <section class="left-zone">
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown" style="display: block;">
+                            <li><a th:href="@{/admin/index}"
+                                    style="padding: 12px; display: block; text-decoration: none; color: inherit;">⬅️
+                                    Volver</a></li>
                             <li><a th:href="@{/admin/listado_usuarios}"
                                     style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">👥
                                     Gestión de Empleados</a></li>
@@ -174,12 +176,12 @@
                             </form>
                         </div>
                     </div>
-				</section>
+                </section>
             </div>
             <script th:src="@{/common.js}"></script>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         </section>
-	</main>
+    </main>
 </body>
 
 </html>
