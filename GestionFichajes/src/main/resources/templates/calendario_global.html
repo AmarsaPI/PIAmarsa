@@ -118,6 +118,7 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
+							<li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">← Volver</a></li>
 							<li data-submenu="none"><a th:href="@{/index}"
 									style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li th:if="${usuario.rol.name() == 'ADMINISTRADOR'}" data-submenu="none"><a

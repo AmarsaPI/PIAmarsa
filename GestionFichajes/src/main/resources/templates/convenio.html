@@ -84,13 +84,13 @@
       </div>
 
 
-      <div class="content-grid" th:style="${rol == 'ADMIN'} ? '' : 'grid-template-columns: 1fr;'">
+      <div class="content-grid">
         <!-- Menú Lateral -->
         <aside class="left-zone" th:if="${rol == 'ADMIN'}">
           <div class="menu-wrap">
             <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
               <li><a th:href="@{/admin/index}"
-                  style="padding: 12px; display: block; text-decoration: none; color: inherit;">⬅️
+                  style="padding: 12px; display: block; text-decoration: none; color: inherit;">←
                   Volver</a></li>
               <li><a th:href="@{/admin/listado_usuarios}"
                   style="text-decoration: none; color: inherit; display: block; padding: 12px; font-weight: 600;">
@@ -124,8 +124,16 @@
             </div>
           </article>
         </aside>
+        <aside class="left-zone" th:unless="${rol == 'ADMIN'}">
+          <div class="menu-wrap">
+            <ul id="mainMenu" class="menu-dropdown" style="display: block; list-style: none; padding: 0;">
+              <li><a th:href="@{/index}" style="padding: 12px; display: block; text-decoration: none; color: inherit;">←
+                  Volver</a></li>
+            </ul>
+          </div>
+        </aside>
 
-        <article class="viewer-container" th:style="${rol == 'ADMIN'} ? '' : 'grid-column: 1;'">
+        <article class="viewer-container">
 
           <div th:if="${existeArchivo}" style="height: 100%; display: flex; flex-direction: column;">
             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
