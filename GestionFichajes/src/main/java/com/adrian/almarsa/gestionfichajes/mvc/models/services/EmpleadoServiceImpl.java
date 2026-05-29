@@ -107,4 +107,17 @@ public class EmpleadoServiceImpl implements IEmpleadoService {
         emp.setActivo(false);
         empleadoDAO.save(emp);
     }
+
+    /**
+     * Actualiza la contraseña de un empleado.
+     */
+    @Override
+    @Transactional
+    public void actualizarPassword(Long id, String nuevaEnClaro) {
+        Empleado emp = empleadoDAO.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
+        emp.setPassword(passwordEncoder.encode(nuevaEnClaro));
+        empleadoDAO.save(emp);
+    }
 }
