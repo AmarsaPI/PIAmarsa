@@ -47,4 +47,11 @@ public interface IEmpleadoService {
      * @return lista completa de empleados
      */
     List<Empleado> findAllIncluyendoInactivos();
+
+    /**
+     * Actualiza la contraseña de un empleado.
+     * @param id identificador del empleado
+     * @param nuevaEnClaro nueva contraseña sin cifrar
+     */
+    void actualizarPassword(Long id, String nuevaEnClaro);
 }
