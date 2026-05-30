@@ -148,7 +148,7 @@ public class SecurityConfig {
 	            .deleteCookies("JSESSIONID")
 
 	            .permitAll()
-	        );
+	        ).formLogin(form -> form.loginPage("/login"));
 
 	    return http.build();
 	}

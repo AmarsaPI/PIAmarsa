@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -82,6 +83,7 @@ public class Empleado implements Serializable, UserDetails {
      * Lista de fichajes realizados por el empleado.
      */
     @OneToMany(mappedBy = "empleado", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("empleado")
     private List<Fichaje> fichajes;
 
     /**
@@ -89,7 +91,8 @@ public class Empleado implements Serializable, UserDetails {
      */
     @ManyToOne
     @JoinColumn(name = "calendario_id")
-    private CalendarioLaboral calendario;
+    @JsonIgnoreProperties("empleados")
+    private CalendarioLaboral calendario = new CalendarioLaboral();
 
     /**
      * Lista de contratos laborales del empleado.

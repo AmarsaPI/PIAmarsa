@@ -1,11 +1,13 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.adrian.almarsa.gestionfichajes.mvc.models.dto.RangoFechasDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.*;
@@ -178,11 +180,13 @@ public class FichajeRestController {
      * @param empleadoId id del empleado
      * @return 200 con lista o 404 si vacío
      */
-    @GetMapping("/fichajes/empleado/{empleadoId}/SemanaActual")
-    public ResponseEntity<?> fichajesPorEmpleadoSemanaActual(@PathVariable Long empleadoId) {
+    @PostMapping("/fichajes/empleado/{empleadoId}/SemanaActual")
+    public ResponseEntity<?> fichajesPorEmpleadoSemanaActual(@PathVariable Long empleadoId,
+                                                             @RequestBody RangoFechasDTO rango) {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Fichaje> fichajes = fichajeService.findByEmpleadoSemanaActual(empleadoId);
+            List<Fichaje> fichajes = fichajeService.findByEmpleadoSemanaActual(empleadoId,
+                    rango.getStart(), rango.getEnd());
             if (fichajes.isEmpty()) {
                 response.put("mensaje", "No hay fichajes para el empleado ID: " + empleadoId);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

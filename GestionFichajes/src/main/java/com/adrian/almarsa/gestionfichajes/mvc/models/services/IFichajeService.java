@@ -84,5 +84,5 @@ public interface IFichajeService {
      * Obtiene los fichajes de la semana actual.
      * @return lista de fichajes de la semana
      */
-    List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId);
+    List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId, LocalDate start, LocalDate end);
 }

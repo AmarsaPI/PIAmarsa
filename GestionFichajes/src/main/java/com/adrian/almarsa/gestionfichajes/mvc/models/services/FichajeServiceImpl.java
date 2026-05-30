@@ -123,18 +123,18 @@ public class FichajeServiceImpl implements IFichajeService {
      * @return lista de fichajes de la semana
      */
     @Transactional(readOnly = true)
-    public List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId) {
-        LocalDateTime monday = LocalDateTime.now()
+    public List<Fichaje> findByEmpleadoSemanaActual(Long empleadoId, LocalDate start, LocalDate end) {
+        LocalDate monday = start
                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .minusDays(1);
 
-        LocalDateTime sunday = LocalDateTime.now()
+        LocalDate sunday = end
                 .with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
                 .plusDays(1);
 
         return fichajeDAO.findByEmpleado_Id(empleadoId).stream()
-                .filter(f -> f.getFechaEntrada().isAfter(monday)
-                          && f.getFechaEntrada().isBefore(sunday))
+                .filter(f -> f.getFechaEntrada().toLocalDate().isAfter(monday)
+                          && f.getFechaEntrada().toLocalDate().isBefore(sunday))
                 .toList();
     }
 

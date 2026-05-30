@@ -1,7 +1,9 @@
 package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +20,7 @@ import jakarta.validation.constraints.NotNull;
  */
 @Entity
 @Table(name = "festivos")
-public class Festivo {
+public class Festivo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,7 @@ public class Festivo {
     /** Calendario al que pertenece el festivo. */
     @ManyToOne
     @JoinColumn(name = "calendario_id")
+    @JsonIgnoreProperties({"festivos", "empleados"})
     private CalendarioLaboral calendario;
 
     /** Constructor vacío requerido por JPA. */

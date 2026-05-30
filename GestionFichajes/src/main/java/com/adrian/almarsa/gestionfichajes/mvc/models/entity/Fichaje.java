@@ -3,6 +3,7 @@ package com.adrian.almarsa.gestionfichajes.mvc.models.entity;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 /**
@@ -29,6 +30,7 @@ public class Fichaje implements Serializable {
     /** Empleado que realiza el fichaje. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empleado_id", nullable = false)
+    @JsonIgnoreProperties("fichajes")
     private Empleado empleado;
 
     /** Constructor vacío requerido por JPA. */

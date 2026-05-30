@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,6 +53,7 @@ public class CalendarioLaboral implements Serializable {
      * Se eliminan automáticamente si se elimina el calendario.
      */
     @OneToMany(mappedBy = "calendario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("calendario")
     private List<Festivo> festivos;
 
     /**
@@ -65,12 +67,13 @@ public class CalendarioLaboral implements Serializable {
      * Empleados que están asociados a este calendario laboral.
      */
     @OneToMany(mappedBy = "calendario")
+    @JsonIgnoreProperties("calendario")
     private List<Empleado> empleados;
 
     /**
      * Constructor vacío requerido por JPA.
      */
-    public CalendarioLaboral() {}
+    public CalendarioLaboral() { }
 
     /**
      * Constructor principal para crear un calendario laboral.
@@ -79,10 +82,11 @@ public class CalendarioLaboral implements Serializable {
      * @param anyo año del calendario
      * @param festivos lista de festivos asociados
      */
-    public CalendarioLaboral(String nombre, Integer anyo, List<Festivo> festivos) {
+    public CalendarioLaboral(String nombre, Integer anyo, List<Festivo> festivos, List<Empleado> empleados) {
         this.nombre = nombre;
         this.anyo = anyo;
         this.festivos = festivos;
+        this.empleados = empleados;
     }
 
     /** @return identificador único del calendario */
