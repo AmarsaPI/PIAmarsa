@@ -27,6 +27,7 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
+							<li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">← Volver</a></li>
 							<li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li class="active-menu">Fichajes</li>
 							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
@@ -167,7 +168,8 @@
 			<ul style="padding-left:20px; line-height:1.6;">
 				<li><strong>Historial:</strong> Estás viendo tu historial de fichajes agrupados por mes.
 					Puedes gestionar una solicitud desde aquí.</li>
-				<li><strong>Navegación mensual:</strong> Usa las flechas junto al nombre del mes para ir al mes anterior o
+				<li><strong>Navegación mensual:</strong> Usa las flechas junto al nombre del mes para ir al mes anterior
+					o
 					siguiente.</li>
 				<li> En la columna de acción puedes solicitar un cambio de fichaje si has registrado mal las horas.</li>
 			</ul>

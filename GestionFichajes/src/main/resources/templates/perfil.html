@@ -27,6 +27,7 @@
                 <section class="left-zone">
                     <div class="menu-wrap">
                         <ul id="mainMenu" class="menu-dropdown">
+                            <li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">← Volver</a></li>
                             <li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
                             <li class="active-menu">Perfil</li>
                             <li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
@@ -36,23 +37,50 @@
 
                 <div id="mainContent" style="padding: 10px; flex: 1; margin-right: 50px;">
                     <h2>Mi Perfil</h2>
-                    <div class="content-grid" style="padding: 20px;">
+                    <div th:if="${success}" th:text="${success}"
+                        style="width:600px; max-width:100%; box-sizing:border-box; background:#e8f5e9; color:#198754; padding:14px 18px; border-radius:8px; margin:10px 0; font-weight:bold;">
+                    </div>
 
-                        <section style="background: white; padding: 25px; border-radius: 12px;">
-                            <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
-                            <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
-                            <p><strong>Rol:</strong> <span th:text="${usuario.rol}"></span></p>
+                    <section
+                        style="width:600px; max-width:100%; box-sizing:border-box; background:white; padding:35px 40px; border-radius:12px; margin-top:10px; box-shadow:0 4px 14px rgba(0,0,0,0.08);">
+                        <p><strong>Nombre:</strong> <span th:text="${usuario.nombre}"></span></p>
+                        <p><strong>Email:</strong> <span th:text="${usuario.email}"></span></p>
+                        <p><strong>Rol:</strong> <span th:text="${usuario.rol}"></span></p>
 
-                            <hr>
+                        <hr style="margin:20px 0;">
 
-                            <h3>Seguridad</h3>
-                            <form>
+                        <h3>Seguridad</h3>
+                        <button type="button" id="btnCambiarContraseña"
+                            style="background: #0d6efd; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                            Cambiar contraseña
+                        </button>
+                    </section>
+                </div>
+                <div id="cambiarContraseñaForm"
+                    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+                    <div
+                        style="background:white; padding:35px 40px; border-radius:14px; width:480px; max-width:92%; box-shadow:0 8px 25px rgba(0,0,0,0.3);">
+                        <h3 style="margin-top:0; color:#0d6efd;">Cambiar contraseña</h3>
+                        <div th:if="${error}" th:text="${error}"
+                            style="background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin-bottom:15px; font-weight:bold;">
+                        </div>
+                        <form th:action="@{/perfil/password}" method="post" id="formCambiarContraseña">
+                            <label for="actual">Contraseña actual</label>
+                            <input type="password" name="actual" id="actual" required
+                                style="width:100%; padding:10px; margin:6px 0 14px; border:1px solid #ccc; border-radius:8px; box-sizing:border-box;">
+                            <label for="nueva">Nueva contraseña</label>
+                            <input type="password" name="nueva" id="nueva" required
+                                style="width:100%; padding:10px; margin:6px 0 14px; border:1px solid #ccc; border-radius:8px; box-sizing:border-box;">
+                            <label for="repetir">Confirmar nueva contraseña</label>
+                            <input type="password" name="repetir" id="repetir" required
+                                style="width:100%; padding:10px; margin:6px 0 20px; border:1px solid #ccc; border-radius:8px; box-sizing:border-box;">
+                            <div style="display:flex; gap:10px;">
                                 <button type="submit"
-                                    style="background: #0d6efd; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-                                    Enviar enlace de cambio de contraseña a mi email (Próximamente)
-                                </button>
-                            </form>
-                        </section>
+                                    style="flex:1; padding:11px; background:#0d6efd; color:white; border:none; border-radius:8px; cursor:pointer;">Enviar</button>
+                                <button type="button" id="cancelarCambioPass"
+                                    style="flex:1; padding:11px; background:#6c757d; color:white; border:none; border-radius:8px; cursor:pointer;">Cancelar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -94,6 +122,27 @@
     <script th:src="@{/app.js}"></script>
     <script th:src="@{/common.js}"></script>
     <script th:src="@{/ayuda.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const abrir = document.getElementById("btnCambiarContraseña");
+            const modal = document.getElementById("cambiarContraseñaForm");
+            const cancelar = document.getElementById("cancelarCambioPass");
+
+            if (abrir) abrir.addEventListener("click", () => modal.style.display = "flex");
+            if (cancelar) cancelar.addEventListener("click", () => modal.style.display = "none");
+
+            // Cierra el modal si se hace clic en el fondo oscuro
+            window.addEventListener("click", (e) => {
+                if (e.target === modal) modal.style.display = "none";
+            });
+        });
+    </script>
+    <!-- Si hubo error, reabre el modal automáticamente tras recargar -->
+    <script th:if="${error}">
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("cambiarContraseñaForm").style.display = "flex";
+        });
+    </script>
 </body>
 
 </html>

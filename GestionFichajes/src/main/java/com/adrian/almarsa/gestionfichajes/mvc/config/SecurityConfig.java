@@ -116,7 +116,8 @@ public class SecurityConfig {
 	            		"/horarios/pdf/**",
 	            		"/web/**",
 	            		"/historial_fichajes/pendientes/**",
-	            		"/perfil"
+	            		"/perfil",
+	            		"/perfil/**"
 	            ).permitAll()
 
 	            // Recursos estáticos permitidos
