@@ -1,13 +1,20 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.awt.*;
+import java.time.*;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.*;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -23,16 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.adrian.almarsa.gestionfichajes.mvc.models.dto.EventoCalendarioDTO;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Empleado;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.PlantillaHorario;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.SolicitudCambio;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.IPlantillaHorarioService;
-import com.adrian.almarsa.gestionfichajes.mvc.models.services.ISolicitudCambioService;
 import com.lowagie.text.pdf.PdfPCell;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -56,6 +53,9 @@ public class HorarioController {
 	
 	@Autowired
 	private ISolicitudCambioService solicitudCambioService;
+
+	@Autowired
+	private IAusenciaService ausenciaService;
 	
 	//Para leer correctamente el json
 	@Autowired
@@ -82,8 +82,8 @@ public class HorarioController {
 	        for (EventoCalendarioDTO dto : eventosDTO) {
 	            OffsetDateTime odtInicio = OffsetDateTime.parse(dto.getStart());
 	            OffsetDateTime odtFin = OffsetDateTime.parse(dto.getEnd());
-	            LocalDateTime inicioDT = odtInicio.atZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalDateTime();
-	            LocalDateTime finDT = odtFin.atZoneSameInstant(java.time.ZoneId.systemDefault()).toLocalDateTime();
+	            LocalDateTime inicioDT = odtInicio.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+	            LocalDateTime finDT = odtFin.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 	            PlantillaHorario horario = new PlantillaHorario();
 	            horario.setNombrePlantilla(nombre);
 	            
@@ -214,8 +214,8 @@ public class HorarioController {
 	        System.out.println("============================");
 
 	        // Convertimos los Strings "yyyy-MM-dd" directamente a objetos LocalDate
-	        java.time.LocalDate start = java.time.LocalDate.parse(startStr);
-	        java.time.LocalDate end = java.time.LocalDate.parse(endStr);
+	        LocalDate start = LocalDate.parse(startStr);
+	        LocalDate end = LocalDate.parse(endStr);
 	        
 	        // 1. Buscamos todos los horarios del empleado seleccionado
 	        List<Horario> horariosEmpleado = horarioService.findByEmpleado(empleadoId);
@@ -284,8 +284,8 @@ public class HorarioController {
 	        String startLimpio = (start != null && start.length() >= 10) ? start.substring(0, 10) : start;
 	        String endLimpio = (end != null && end.length() >= 10) ? end.substring(0, 10) : end;
 
-	        java.time.LocalDate fechaInicio = java.time.LocalDate.parse(startLimpio);
-	        java.time.LocalDate fechaFin = java.time.LocalDate.parse(endLimpio);
+	        LocalDate fechaInicio = LocalDate.parse(startLimpio);
+	        LocalDate fechaFin = LocalDate.parse(endLimpio);
 	        
 	        List<Horario> listaHorarios = horarioService.findAll(); 
 	        List<Map<String, Object>> eventos = new ArrayList<>(); 
@@ -373,8 +373,8 @@ public class HorarioController {
 	        String startLimpio = (start != null && start.length() >= 10) ? start.substring(0, 10) : start;
 	        String endLimpio = (end != null && end.length() >= 10) ? end.substring(0, 10) : end;
 
-	        java.time.LocalDate fechaInicio = java.time.LocalDate.parse(startLimpio);
-	        java.time.LocalDate fechaFin = java.time.LocalDate.parse(endLimpio);
+	        LocalDate fechaInicio = LocalDate.parse(startLimpio);
+	        LocalDate fechaFin = LocalDate.parse(endLimpio);
 	        
 	        List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId); 
 	        List<Map<String, Object>> eventos = new ArrayList<>(); 
@@ -467,7 +467,7 @@ public class HorarioController {
 	            List<Horario> horariosExistentes = horarioService.findByEmpleado(horario.getEmpleado().getId());
 	            
 	            // Filtramos para ver si alguno coincide exactamente con la fecha que intentamos guardar
-	            java.util.Optional<Horario> horarioDuplicado = horariosExistentes.stream()
+	            Optional<Horario> horarioDuplicado = horariosExistentes.stream()
 	                .filter(h -> h.getFecha().isEqual(horario.getFecha()))
 	                .findFirst();
 	            
@@ -536,14 +536,14 @@ public class HorarioController {
 	        @RequestParam(required = false) String end) { 
 	    
 	    Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
-	    
+
 	    if (empleadoId == null) {
 	        return new ResponseEntity<>(Map.of("mensaje", "No hay sesión"), HttpStatus.UNAUTHORIZED);
 	    }
 
 	    // Buscamos los horarios del empleado
 	    List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId);
-	    List<Map<String, Object>> eventos = new java.util.ArrayList<>(); 
+	    List<Map<String, Object>> eventos = new ArrayList<>();
 
 	    for (Horario h : listaHorarios) {
 	        // Opcional: Si quieres filtrar por rango de fechas recibido (start/end)
@@ -576,6 +576,41 @@ public class HorarioController {
 	            eventos.add(turno2);
 	        }
 	    }
+
+		Empleado empleado = empleadoService.findById(empleadoId);
+		List<Ausencia> ausencias = ausenciaService.obtenerAusenciasPorEmpleado(empleado);
+
+		Map<LocalDate, TipoAusencia> diasAusencias = new HashMap<>();
+		ausencias.forEach(ausencia -> {
+			for (LocalDate fecha = ausencia.getFechaInicio();
+				 fecha.isBefore(ausencia.getFechaFin()) || fecha.isEqual(ausencia.getFechaFin());
+				 fecha = fecha.plusDays(1)) {
+				diasAusencias.put(fecha, ausencia.getTipo());
+			}
+		});
+
+		diasAusencias.forEach( (fecha, tipo) -> {
+			Map<String, Object> evento = new HashMap<>();
+			evento.put("id", "1");
+			evento.put("start", fecha.toString());
+			evento.put("allDay", true);
+			evento.put("title",
+					switch (tipo) {
+						case VACACIONES -> "V";
+                        case BAJA_MEDICA -> "B";
+                        case PERMISO_RETRIBUIDO -> "PR";
+                    }
+			);
+			evento.put("backgroundColor",
+					switch (tipo) {
+						case VACACIONES -> "#28a745";
+						case BAJA_MEDICA -> "#C90707";
+						case PERMISO_RETRIBUIDO -> "#072FC9";
+					});
+			evento.put("textColor", "#ffffff");
+			eventos.add(evento);
+		});
+
 	    return new ResponseEntity<>(eventos, HttpStatus.OK);
 	}
 
@@ -627,24 +662,24 @@ public class HorarioController {
 	    response.setHeader("Content-Disposition", "attachment; filename=mi_horario.pdf");
 
 	    // 3. Crear el documento
-	    com.lowagie.text.Document document = new com.lowagie.text.Document();
-	    com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
+	    Document document = new Document();
+	    PdfWriter.getInstance(document, response.getOutputStream());
 
 	    document.open();
 
 	 // Título
-	 document.add(new com.lowagie.text.Paragraph("Mi Horario Semanal"));
-	 document.add(new com.lowagie.text.Paragraph(" ")); 
+	 document.add(new Paragraph("Mi Horario Semanal"));
+	 document.add(new Paragraph(" "));
 
-	 com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(7);
+	 PdfPTable table = new PdfPTable(7);
 	 table.setWidthPercentage(100);
 
 	 // 1. Encabezados
 	 String[] dias = {"Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
 	 for (String dia : dias) {
-	     PdfPCell cell = new PdfPCell(new com.lowagie.text.Paragraph(dia));
-	     cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
-	     cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+	     PdfPCell cell = new PdfPCell(new Paragraph(dia));
+	     cell.setBackgroundColor(Color.LIGHT_GRAY);
+	     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 	     table.addCell(cell);
 	 }
 
@@ -665,9 +700,9 @@ public class HorarioController {
 	         
 	         // Creamos una celda que tenga ambos datos
 	         PdfPCell cell = new PdfPCell(
-	             new com.lowagie.text.Paragraph(fechaStr + "\n" + horarioStr)
+	             new Paragraph(fechaStr + "\n" + horarioStr)
 	         );
-	         cell.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
+	         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 	         table.addCell(cell);
 	     }
 	 }
@@ -687,12 +722,12 @@ public class HorarioController {
 	    response.setContentType("application/pdf");
 	    response.setHeader("Content-Disposition", "attachment; filename=Cuadrante_Mensual_Vertical.pdf");
 
-	    com.lowagie.text.Document document = new com.lowagie.text.Document(com.lowagie.text.PageSize.A4);
-	    com.lowagie.text.pdf.PdfWriter.getInstance(document, response.getOutputStream());
+	    Document document = new Document(PageSize.A4);
+	    PdfWriter.getInstance(document, response.getOutputStream());
 	    document.open();
 
-	    LocalDate inicioMes = LocalDate.now().with(java.time.temporal.TemporalAdjusters.firstDayOfMonth());
-	    LocalDate finMes = inicioMes.with(java.time.temporal.TemporalAdjusters.lastDayOfMonth());
+	    LocalDate inicioMes = LocalDate.now().with(TemporalAdjusters.firstDayOfMonth());
+	    LocalDate finMes = inicioMes.with(TemporalAdjusters.lastDayOfMonth());
 
 	    // 1. Creamos un array con los nombres de los meses en español
 	    String[] mesesEsp = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
@@ -703,25 +738,25 @@ public class HorarioController {
 	    String nombreMes = mesesEsp[indiceMes];
 
 	    // 3. Añadimos el título al documento
-	    document.add(new com.lowagie.text.Paragraph("Cuadrante: " + nombreMes + " " + inicioMes.getYear()));
-	    document.add(new com.lowagie.text.Paragraph(" "));
+	    document.add(new Paragraph("Cuadrante: " + nombreMes + " " + inicioMes.getYear()));
+	    document.add(new Paragraph(" "));
 
 
 	    // 2. Iterar por semanas (cada semana es un bloque)
-	    LocalDate lunes = inicioMes.with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
+	    LocalDate lunes = inicioMes.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 	    
 	    while (lunes.isBefore(finMes.plusDays(7))) {
 	    	String nombreMesSemana = mesesEsp[lunes.getMonthValue() - 1];
-	    	document.add(new com.lowagie.text.Paragraph("Semana del " + lunes.getDayOfMonth() + " de " + nombreMesSemana));
+	    	document.add(new Paragraph("Semana del " + lunes.getDayOfMonth() + " de " + nombreMesSemana));
 	        
-	        com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(8);
+	        PdfPTable table = new PdfPTable(8);
 	        table.setWidthPercentage(100);
 	        
 	        // Encabezados
 	        String[] cabeceras = {"Empleado", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
 	        for (String h : cabeceras) {
-	            com.lowagie.text.pdf.PdfPCell cell = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph(h));
-	            cell.setBackgroundColor(java.awt.Color.LIGHT_GRAY);
+	            PdfPCell cell = new PdfPCell(new Paragraph(h));
+	            cell.setBackgroundColor(Color.LIGHT_GRAY);
 	            table.addCell(cell);
 	        }
 
@@ -735,11 +770,11 @@ public class HorarioController {
 	                Horario h = horarioService.findByEmpleadoIdAndFecha(emp.getId(), fechaDia);
 	                
 	                String texto = (h != null) ? h.getHoraInicio().toString().substring(0, 5) : "-";
-	                table.addCell(new com.lowagie.text.Paragraph(texto));
+	                table.addCell(new Paragraph(texto));
 	            }
 	        }
 	        document.add(table);
-	        document.add(new com.lowagie.text.Paragraph(" ")); // Espacio entre semanas
+	        document.add(new Paragraph(" ")); // Espacio entre semanas
 	        
 	        lunes = lunes.plusWeeks(1); // Saltar a la siguiente semana
 	    }

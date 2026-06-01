@@ -176,7 +176,7 @@ public class EmpleadoRestController {
 
         return ResponseEntity.ok(Map.of(
                 "token", token, 
-                "empleado", new EmpleadoLoginDTO(empleado)
+                "empleado", empleado
         ));
     }
 

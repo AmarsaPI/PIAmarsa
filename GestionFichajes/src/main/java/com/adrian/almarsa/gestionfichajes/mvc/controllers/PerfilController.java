@@ -45,6 +45,19 @@ public class PerfilController {
         return "perfil";
     }
 
+
+    /**
+     * Permite al usuario cambiar su contraseña.
+     * Verifica que la contraseña actual sea correcta, que las nuevas contraseñas
+     * coincidan y que cumplan con el requisito de longitud mínima antes de actualizar.
+     *
+     * @param actual contraseña actual ingresada por el usuario
+     * @param nueva nueva contraseña ingresada por el usuario
+     * @param repetir confirmación de la nueva contraseña
+     * @param session sesión actual del usuario
+     * @param flash atributos para mensajes de éxito o error
+     * @return redirección a la página de perfil después de intentar cambiar la contraseña
+     */
     @PostMapping("/perfil/password")
     public String cambiarPassword(
         @RequestParam String actual,

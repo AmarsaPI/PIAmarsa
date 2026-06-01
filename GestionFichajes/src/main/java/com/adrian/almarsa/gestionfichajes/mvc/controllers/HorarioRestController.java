@@ -1,11 +1,15 @@
 package com.adrian.almarsa.gestionfichajes.mvc.controllers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.adrian.almarsa.gestionfichajes.mvc.models.entity.*;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IAusenciaService;
+import com.adrian.almarsa.gestionfichajes.mvc.models.services.IEmpleadoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Festivo;
-import com.adrian.almarsa.gestionfichajes.mvc.models.entity.Horario;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IFestivoService;
 import com.adrian.almarsa.gestionfichajes.mvc.models.services.IHorarioService;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +37,12 @@ public class HorarioRestController {
     
     @Autowired
     private IFestivoService festivoService;
+
+    @Autowired
+    private IEmpleadoService empleadoService;
+
+    @Autowired
+    private IAusenciaService ausenciaService;
 
     /**
      * Devuelve el listado completo de horarios registrados.
@@ -266,17 +274,18 @@ public class HorarioRestController {
             String startLimpio = (start != null && start.length() >= 10) ? start.substring(0, 10) : start;
             String endLimpio = (end != null && end.length() >= 10) ? end.substring(0, 10) : end;
 
-            java.time.LocalDate fechaInicio = java.time.LocalDate.parse(startLimpio);
-            java.time.LocalDate fechaFin = java.time.LocalDate.parse(endLimpio);
+            LocalDate fechaInicio = LocalDate.parse(startLimpio);
+            LocalDate fechaFin = LocalDate.parse(endLimpio);
             
-            List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId); 
+            List<Horario> listaHorarios = horarioService.findByEmpleado(empleadoId);
+
             List<Map<String, Object>> eventos = new ArrayList<>(); 
 
             for (Horario h : listaHorarios) {
                 // Filtro de rango de fechas
                 if ((h.getFecha().isEqual(fechaInicio) || h.getFecha().isAfter(fechaInicio)) && 
                     (h.getFecha().isEqual(fechaFin) || h.getFecha().isBefore(fechaFin))) {
-                    
+
                     Map<String, Object> evento = new HashMap<>();
                     evento.put("id", h.getId().toString());
                     evento.put("start", h.getFecha().toString());
@@ -295,11 +304,46 @@ public class HorarioRestController {
                     }
                     
                     evento.put("title", textoTitulo); 
-                    evento.put("backgroundColor", "#28a745"); 
+                    evento.put("backgroundColor", "#00ffffff");
                     evento.put("textColor", "#ffffff");
                     eventos.add(evento);
                 }
             }
+
+            Empleado empleado = empleadoService.findById(empleadoId);
+            List<Ausencia> ausencias = ausenciaService.obtenerAusenciasPorEmpleado(empleado);
+
+            Map<LocalDate, TipoAusencia> diasAusencias = new HashMap<>();
+            ausencias.forEach(ausencia -> {
+                for (LocalDate fecha = ausencia.getFechaInicio();
+                     fecha.isBefore(ausencia.getFechaFin()) || fecha.isEqual(ausencia.getFechaFin());
+                     fecha = fecha.plusDays(1)) {
+                    diasAusencias.put(fecha, ausencia.getTipo());
+                }
+            });
+
+            diasAusencias.forEach( (fecha, tipo) -> {
+                Map<String, Object> evento = new HashMap<>();
+                evento.put("id", "1");
+                evento.put("start", fecha.toString());
+                evento.put("allDay", true);
+                evento.put("title",
+                        switch (tipo) {
+                            case VACACIONES -> "V";
+                            case BAJA_MEDICA -> "B";
+                            case PERMISO_RETRIBUIDO -> "PR";
+                        }
+                );
+                evento.put("backgroundColor",
+                        switch (tipo) {
+                            case VACACIONES -> "#28a745";
+                            case BAJA_MEDICA -> "#CCC90707";
+                            case PERMISO_RETRIBUIDO -> "#BB072FC9";
+                        });
+                evento.put("textColor", "#ffffff");
+                eventos.add(evento);
+            });
+
             return new ResponseEntity<>(eventos, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
