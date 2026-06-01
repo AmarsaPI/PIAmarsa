@@ -36,4 +36,8 @@ public interface IPlantillaHorarioService {
      * @return lista de plantillas coincidentes
      */
     List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla);
+    
+    void eliminarPlantillaPorNombre(String nombrePlantilla);
+    
+    boolean existePlantilla(String nombre);
 }

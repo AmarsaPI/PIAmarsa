@@ -85,6 +85,19 @@ body {
 					<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
 						<div>
 							<h4 class="fw-bold text-dark mb-1">🛠️ Panel de Configuración de Plantillas</h4>
+							<div class="container mt-3">
+							    <div th:if="${mensajeExito}" class="alert alert-success alert-dismissible fade show" role="alert">
+							        <i class="bi bi-check-circle-fill"></i> 
+							        <span th:text="${mensajeExito}"></span>
+							        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							    </div>
+							
+							    <div th:if="${mensajeError}" class="alert alert-danger alert-dismissible fade show" role="alert">
+							        <i class="bi bi-exclamation-triangle-fill"></i> 
+							        <span th:text="${mensajeError}"></span>
+							        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							    </div>
+							</div>
 							<p class="text-muted small mb-0">Visualiza, organiza o elimina los modelos horarios diarios y semanales del sistema.</p>
 						</div>
 						<div>
@@ -137,9 +150,12 @@ body {
 											</div>
 										</td>
 										<td class="text-center">
-											<button type="button" class="btn btn-danger btn-sm px-3 fw-bold" th:data-nombre="${p.nombrePlantilla}" onclick="confirmarYBorrarPlantilla(this)">
-												<i class="bi bi-trash3-fill"></i> Borrar
-											</button>
+											<form th:action="@{/plantillas/borrar}" method="post" onsubmit="return confirm('¿Estás seguro de eliminar esta plantilla?');">
+											    <input type="hidden" name="nombrePlantilla" th:value="${p.nombrePlantilla}" />
+											    <button type="submit" class="btn btn-danger btn-sm px-3 fw-bold">
+											        <i class="bi bi-trash3-fill"></i> Borrar
+											    </button>
+											</form>
 										</td>
 									</tr>
 								</tbody>
@@ -152,38 +168,5 @@ body {
 	</main>
 
 	<script th:src="@{/common.js}"></script>
-	<script>
-        function confirmarYBorrarPlantilla(boton) {
-            const nombrePlantilla = boton.getAttribute('data-nombre');
-            
-            if (confirm(`⚠️ ¿Estás completamente seguro de que quieres eliminar la plantilla "${nombrePlantilla}"?\n\nEsto borrará todos los días de la semana asociados a ella y ya no aparecerá en el asignador de horarios.`)) {
-                const urlDestino = `/api/plantillas/nombre/${encodeURIComponent(nombrePlantilla)}`;
-                
-                fetch(urlDestino, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error("No se pudo eliminar la plantilla");
-                    return response.json();
-                })
-                .then(data => {
-                    const idFila = 'fila-' + nombrePlantilla.replace(/ /g, '_');
-                    const fila = document.getElementById(idFila);
-                    if(fila) {
-                        fila.remove();
-                    }
-                    alert(`¡La plantilla "${nombrePlantilla}" se ha eliminado correctamente!`);
-                    
-                    if(document.querySelectorAll('tbody tr').length === 0) {
-                        window.location.reload();
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert("Hubo un error al intentar eliminar la plantilla completa del servidor.");
-                });
-            }
-        }
-    </script>
 </body>
 </html>

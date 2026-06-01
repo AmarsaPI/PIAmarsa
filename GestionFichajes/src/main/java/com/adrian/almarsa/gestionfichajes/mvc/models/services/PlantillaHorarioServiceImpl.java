@@ -68,4 +68,16 @@ public class PlantillaHorarioServiceImpl implements IPlantillaHorarioService {
     public List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla) {
         return horarioDAO.findByNombrePlantilla(nombrePlantilla);
     }
+    
+    @Override
+    @Transactional 
+    public void eliminarPlantillaPorNombre(String nombrePlantilla) {
+        horarioDAO.deleteByNombrePlantilla(nombrePlantilla);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existePlantilla(String nombre) {
+        return horarioDAO.existsByNombrePlantilla(nombre);
+    }
 }

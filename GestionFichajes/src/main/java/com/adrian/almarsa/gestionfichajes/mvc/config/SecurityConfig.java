@@ -103,7 +103,7 @@ public class SecurityConfig {
 	            		"/api/**",
 	            		"/crear_plantilla",
 	            		"/asignar_horario",
-	            		"/plantillas/guardar",
+	            		"/plantillas/**",
 	            		"/gestion_plantillas",
 	            		"/vacaciones/**",
 	            		"/calendario-global",

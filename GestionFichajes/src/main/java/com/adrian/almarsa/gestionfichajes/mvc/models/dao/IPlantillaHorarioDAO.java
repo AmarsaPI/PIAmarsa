@@ -22,4 +22,8 @@ public interface IPlantillaHorarioDAO extends CrudRepository<PlantillaHorario, L
      * @return lista de turnos asociados a esa plantilla
      */
     List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla);
+    
+    void deleteByNombrePlantilla(String nombrePlantilla);
+    
+    boolean existsByNombrePlantilla(String nombrePlantilla);
 }

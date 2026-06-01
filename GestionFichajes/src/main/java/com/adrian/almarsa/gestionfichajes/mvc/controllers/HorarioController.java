@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.adrian.almarsa.gestionfichajes.mvc.models.dto.EventoCalendarioDTO;
 import com.lowagie.text.pdf.PdfPCell;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,29 +76,42 @@ public class HorarioController {
 	@PostMapping("/plantillas/guardar")
 	public String guardarPlantilla(
 	        @RequestParam("nombrePlantilla") String nombre,
-	        @RequestParam("datosHorarioJSON") String json) {
+	        @RequestParam("datosHorarioJSON") String json,
+	        RedirectAttributes redirectAttributes) {
+	    
+	    if (plantillaService.existePlantilla(nombre)) {
+	        redirectAttributes.addFlashAttribute("mensajeError", 
+	            "El nombre '" + nombre + "' ya está en uso. Por favor, elige uno diferente.");
+	        return "redirect:/crear_plantilla";
+	    }
+	    
 	    try {
-	        // Convertimos el JSON a nuestra lista de DTOs
 	        List<EventoCalendarioDTO> eventosDTO = objectMapper.readValue(json, 
 	                new TypeReference<List<EventoCalendarioDTO>>() {});
+	        
 	        for (EventoCalendarioDTO dto : eventosDTO) {
 	            OffsetDateTime odtInicio = OffsetDateTime.parse(dto.getStart());
 	            OffsetDateTime odtFin = OffsetDateTime.parse(dto.getEnd());
 	            LocalDateTime inicioDT = odtInicio.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 	            LocalDateTime finDT = odtFin.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+	            
 	            PlantillaHorario horario = new PlantillaHorario();
 	            horario.setNombrePlantilla(nombre);
-	            
 	            horario.setDiaSemana(inicioDT.getDayOfWeek()); 
 	            horario.setHoraInicio(inicioDT.toLocalTime()); 
 	            horario.setHoraFin(finDT.toLocalTime());       
+	            
 	            plantillaService.save(horario);
 	        }
+	        
+	        redirectAttributes.addFlashAttribute("mensajeExito", "Plantilla '" + nombre + "' creada correctamente.");
+	        return "redirect:/gestion_plantillas"; 
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	        return "redirect:/crear_plantilla?error";
+	        redirectAttributes.addFlashAttribute("mensajeError", "Error al procesar los datos: " + e.getMessage());
+	        return "redirect:/crear_plantilla";
 	    }
-	    return "redirect:/crear_plantilla?success";
 	}
 	
 	/**
@@ -119,6 +134,26 @@ public class HorarioController {
 	    model.addAttribute("empleados", empleadoService.findAll());
 	    
 	    return "crear_plantilla"; 
+	}
+	
+	@PostMapping("/plantillas/borrar")
+	public String borrarPlantilla(@RequestParam("nombrePlantilla") String nombrePlantilla, 
+	                              RedirectAttributes redirectAttributes, 
+	                              HttpSession session) {
+	    
+	    Long empleadoId = (Long) session.getAttribute("usuarioLogueadoId");
+	    if (empleadoId == null) {
+	        return "redirect:/login"; 
+	    }
+	    
+	    try {
+	        plantillaService.eliminarPlantillaPorNombre(nombrePlantilla);
+	        redirectAttributes.addFlashAttribute("mensajeExito", "La plantilla '" + nombrePlantilla + "' ha sido eliminada correctamente.");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("mensajeError", "Error al intentar borrar la plantilla.");
+	    }
+	    
+	    return "redirect:/gestion_plantillas";
 	}
 	
 	/**

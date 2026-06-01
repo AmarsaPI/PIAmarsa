@@ -48,14 +48,16 @@
 
 <body th:data-home="@{/admin/index}">
     <main class="app-shell">
-        <section class="workspace">
+		<section class="workspace">
 
-            <div class="top-tools"
-                style="display: flex; align-items: center; justify-content: center; position: relative;">
-                <span> 🛠️ Modo Administrador: Gestor Principal</span>
-                <h1 class="management-title" style="color: rgb(255, 255, 255); margin: 0;">Asignar Bajas y Permisos</h1>
+			<div class="top-tools">
+				<button class="menu-toggle" id="menuToggle">☰ Panel Admin ▾</button>
+				<div style="margin-left: 10px; font-weight: bold; color: #2c3e50;">
+					🛠️ Modo Administrador: <span th:text="${usuario.nombre}">Admin</span>
+				</div>
 
-            </div>
+
+			</div>
 
             <div id="logo-amarsa">
                 <img th:src="@{/logo.png}" alt="Logo del gestor" class="brand-logo" />
@@ -101,9 +103,10 @@
                     </div>
 
                     <div class="card shadow-sm"
-                        style="width: 100%; max-width: 800px; border: 3px solid #3f3a34; border-radius: 12px; overflow: hidden;">
+                        style="width: 100%; max-width: 800px; border: 3px solid #0d47a1; border-radius: 12px; overflow: hidden;">
                         <div
-                            class="card-header bg-dark text-white d-flex justify-content-between align-content-center py-3">
+                            class="card-header bg-dark text-white d-flex justify-content-between align-content-center py-3"
+                            style="background-color: #0d47a1 !important; border-bottom: 3px solid #0a3d91;">
                             <h5 class="mb-0">💼 Panel de Gestión: Asignar Bajas y Permisos</h5>
                             <a th:href="@{/admin/calendarios_laborales}" class="btn btn-sm btn-outline-light">Volver a
                                 Calendarios</a>
@@ -169,7 +172,7 @@
 
                                 <!-- Botón de Envío -->
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-dark btn-lg fs-6 fw-bold">Registrar y Grabar en
+                                    <button type="submit" class="btn btn-primary btn-lg fs-6 fw-bold">Registrar y Grabar en
                                         Calendario</button>
                                 </div>
 
