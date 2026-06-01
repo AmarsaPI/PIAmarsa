@@ -69,12 +69,24 @@ public class PlantillaHorarioServiceImpl implements IPlantillaHorarioService {
         return horarioDAO.findByNombrePlantilla(nombrePlantilla);
     }
     
+    /**
+     * Borra un registro de la plantilla de horarios identificada
+     * por su nombre.  
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     */
     @Override
     @Transactional 
     public void eliminarPlantillaPorNombre(String nombrePlantilla) {
         horarioDAO.deleteByNombrePlantilla(nombrePlantilla);
     }
     
+    /**
+     * Permite comprobar si existe una plantilla 
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     * @return lista de turnos asociados a esa plantilla
+     */
     @Override
     @Transactional(readOnly = true)
     public boolean existePlantilla(String nombre) {

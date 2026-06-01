@@ -64,18 +64,16 @@ public class FichajeServiceImpl implements IFichajeService {
         Optional<Fichaje> fichajeAbierto =
                 fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId);
 
+        LocalDateTime ahora = LocalDateTime.now();
         if (fichajeAbierto.isPresent()) {
             Fichaje activo = fichajeAbierto.get();
-            LocalDateTime ahora = LocalDateTime.now();
-
             boolean esDeHoy = activo.getFechaEntrada().toLocalDate().equals(ahora.toLocalDate());
             if (esDeHoy) {
                 throw new RuntimeException("Ya tienes una jornada iniciada hoy.");
             }
         }
-
         if (fichaje.getFechaEntrada() == null) {
-            fichaje.setFechaEntrada(LocalDateTime.now());
+            fichaje.setFechaEntrada(ahora);
         }
         return fichajeDAO.save(fichaje);
     }
@@ -146,6 +144,7 @@ public class FichajeServiceImpl implements IFichajeService {
     @Transactional(readOnly = true)
     public Fichaje findUltimoSinCerrar(Long empleadoId) {
         return fichajeDAO.findFirstByEmpleadoIdAndFechaSalidaIsNullOrderByIdDesc(empleadoId)
+                .filter(f -> f.getFechaEntrada().toLocalDate().equals(LocalDate.now()))
                 .orElse(null);
     }
 

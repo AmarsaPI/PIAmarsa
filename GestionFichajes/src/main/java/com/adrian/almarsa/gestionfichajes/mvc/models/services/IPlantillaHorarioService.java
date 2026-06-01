@@ -37,7 +37,19 @@ public interface IPlantillaHorarioService {
      */
     List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla);
     
+    /**
+     * Borra un registro de la plantilla de horarios identificada
+     * por su nombre.  
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     */
     void eliminarPlantillaPorNombre(String nombrePlantilla);
     
+    /**
+     * Permite comprobar si existe una plantilla 
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     * @return lista de turnos asociados a esa plantilla
+     */
     boolean existePlantilla(String nombre);
 }

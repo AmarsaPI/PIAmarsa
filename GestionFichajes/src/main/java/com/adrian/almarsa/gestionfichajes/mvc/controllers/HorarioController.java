@@ -136,6 +136,14 @@ public class HorarioController {
 	    return "crear_plantilla"; 
 	}
 	
+	/**
+	 * Permite borrar registros de la entidad plantilla.
+	 *
+	 * @param nombrePlantilla nombre de la plantilla a borrar
+	 * @param session sesión actual (requiere usuario logueado)
+	 * @param session redirectAttributes muestra los mensajes de éxito o error al realizar la acción
+	 * @return vista gestion_plantillas o redirect a login si no hay sesión
+	 */
 	@PostMapping("/plantillas/borrar")
 	public String borrarPlantilla(@RequestParam("nombrePlantilla") String nombrePlantilla, 
 	                              RedirectAttributes redirectAttributes, 

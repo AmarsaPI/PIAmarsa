@@ -23,7 +23,19 @@ public interface IPlantillaHorarioDAO extends CrudRepository<PlantillaHorario, L
      */
     List<PlantillaHorario> findByNombrePlantilla(String nombrePlantilla);
     
+    /**
+     * Borra un registro de la plantilla de horarios identificada
+     * por su nombre.  
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     */
     void deleteByNombrePlantilla(String nombrePlantilla);
     
+    /**
+     * Permite comprobar si existe una plantilla 
+     *
+     * @param nombrePlantilla nombre de la plantilla
+     * @return lista de turnos asociados a esa plantilla
+     */
     boolean existsByNombrePlantilla(String nombrePlantilla);
 }
