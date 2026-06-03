@@ -303,7 +303,7 @@ public class HorarioRestController {
                         textoTitulo += " | " + inicio2Str + " - " + fin2Str;
                     }
                     
-                    evento.put("title", textoTitulo); 
+                    evento.put("title", "Horario de trabajo/" + textoTitulo);
                     evento.put("backgroundColor", "#00ffffff");
                     evento.put("textColor", "#ffffff");
                     eventos.add(evento);
@@ -313,29 +313,29 @@ public class HorarioRestController {
             Empleado empleado = empleadoService.findById(empleadoId);
             List<Ausencia> ausencias = ausenciaService.obtenerAusenciasPorEmpleado(empleado);
 
-            Map<LocalDate, TipoAusencia> diasAusencias = new HashMap<>();
+            Map<LocalDate, Ausencia> diasAusencias = new HashMap<>();
             ausencias.forEach(ausencia -> {
                 for (LocalDate fecha = ausencia.getFechaInicio();
                      fecha.isBefore(ausencia.getFechaFin()) || fecha.isEqual(ausencia.getFechaFin());
                      fecha = fecha.plusDays(1)) {
-                    diasAusencias.put(fecha, ausencia.getTipo());
+                    diasAusencias.put(fecha, ausencia);
                 }
             });
 
-            diasAusencias.forEach( (fecha, tipo) -> {
+            diasAusencias.forEach( (fecha, ausencia) -> {
                 Map<String, Object> evento = new HashMap<>();
                 evento.put("id", "1");
                 evento.put("start", fecha.toString());
                 evento.put("allDay", true);
                 evento.put("title",
-                        switch (tipo) {
-                            case VACACIONES -> "V";
-                            case BAJA_MEDICA -> "B";
-                            case PERMISO_RETRIBUIDO -> "PR";
+                        switch (ausencia.getTipo()) {
+                            case VACACIONES -> "Motivo/Vacaciones";
+                            case BAJA_MEDICA -> "Baja Médica/" + ausencia.getObservaciones();
+                            case PERMISO_RETRIBUIDO -> "Permiso Retribuido/" + ausencia.getObservaciones();
                         }
                 );
                 evento.put("backgroundColor",
-                        switch (tipo) {
+                        switch (ausencia.getTipo()) {
                             case VACACIONES -> "#28a745";
                             case BAJA_MEDICA -> "#CCC90707";
                             case PERMISO_RETRIBUIDO -> "#BB072FC9";
