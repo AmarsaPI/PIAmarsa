@@ -12,7 +12,6 @@
 
 <body th:data-home="@{/index}">
 	<main class="app-shell">
-
 		<section class="workspace">
 			<div class="top-tools">
 				<button id="menuToggle" class="menu-toggle">☰ Menú ▾</button>
@@ -28,8 +27,7 @@
 				<section class="left-zone">
 					<div class="menu-wrap">
 						<ul id="mainMenu" class="menu-dropdown">
-							<li><a th:href="@{/historial_fichajes}" style="text-decoration: none; color: inherit;">←
-									Volver</a></li>
+							<li><a th:href="@{/historial_fichajes}" style="text-decoration: none; color: inherit;">← Volver</a></li>
 							<li><a th:href="@{/index}" style="text-decoration: none; color: inherit;">Inicio</a></li>
 							<li class="active-menu">Fichajes</li>
 							<li><a th:href="@{/logout}" style="color: red; text-decoration: none;">Salir</a></li>
@@ -40,10 +38,8 @@
 				<div id="mainContent" style="padding: 10px; flex: 1;">
 					<h2 style="margin-top: 0; padding-top: 0;">Fichajes Pendientes de Cerrar</h2>
 
-					<section
-						style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-						<table class="compact-table"
-							style="width: 100%; border-collapse: collapse; border: 1px solid #dee2e6;">
+					<section style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e1e8ed; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+						<table class="compact-table" style="width: 100%; border-collapse: collapse; border: 1px solid #dee2e6;">
 							<thead>
 								<tr style="background: #0d6efd; color: white; text-align: left;">
 									<th style="padding: 12px; border-bottom: 2px solid #055160;">Día</th>
@@ -53,31 +49,28 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr th:each="f : ${historial}" th:if="${f.fechaSalida == null}"
-									style="border-bottom: 1px solid #f0f0f0;">
-									<td style="padding: 10px;"
-										th:text="${#temporals.format(f.fechaEntrada, 'dd/MM/yyyy')}"></td>
-									<td style="padding: 10px;" th:text="${#temporals.format(f.fechaEntrada, 'HH:mm')}">
-									</td>
+								<tr th:each="f : ${historial}" th:if="${f.fechaSalida == null}" style="border-bottom: 1px solid #f0f0f0;">
+									<td style="padding: 10px;" th:text="${#temporals.format(f.fechaEntrada, 'dd/MM/yyyy')}"></td>
+									<td style="padding: 10px;" th:text="${#temporals.format(f.fechaEntrada, 'HH:mm')}"></td>
 									<td style="padding: 10px;">
-										<span
-											style="background: #e7f1ff; color: #0d6efd; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">
+										<span style="background: #e7f1ff; color: #0d6efd; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">
 											⚠ Pendiente
 										</span>
 									</td>
 									<td style="padding: 10px;">
-										<button class="btn-solicitar"
-											th:onclick="'abrirModalSolicitud(' + ${f.id} + ')'"
-											style="background: #0d6efd; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.3s;">
-											Registrar Salida
+										<button class="btn-solicitar" 
+										        th:data-id="${f.id}" 
+										        th:data-hora="${#temporals.format(f.fechaEntrada, 'HH:mm')}"
+										        onclick="abrirModalSolicitud(this)"
+										        style="background: #0d6efd; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: background 0.3s;">
+										    Registrar Salida
 										</button>
 									</td>
 								</tr>
 							</tbody>
 						</table>
 
-						<div th:if="${#lists.isEmpty(historial)}"
-							style="text-align: center; padding: 40px; color: #888;">
+						<div th:if="${#lists.isEmpty(historial)}" style="text-align: center; padding: 40px; color: #888;">
 							<p>¡Todo al día! No tienes fichajes abiertos.</p>
 						</div>
 					</section>
@@ -100,35 +93,59 @@
 				</aside>
 			</div>
 		</section>
+
+		<div id="modalSolicitud" style="display:none; position:fixed; top:15%; left:30%; width:40%; background:white; padding:25px; border:1px solid #ddd; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000;">
+			<h3>Solicitar corrección de fichaje</h3>
+			<p style="font-size: 0.9rem; color: #666;">Indica las horas correctas que debiste registrar:</p>
+			<form th:action="@{/solicitar-cambio}" method="post" style="display: flex; flex-direction: column; gap: 10px;">
+				<input type="hidden" name="fichajeId" id="fichajeIdInput" />
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+					<div>
+						<label>Nueva Entrada:</label>
+						<input type="time" name="horaEntradaPropuesta" required class="form-control" />
+					</div>
+					<div>
+						<label>Nueva Salida:</label>
+						<input type="time" name="horaSalidaPropuesta" required class="form-control" />
+					</div>
+				</div>
+				<label>Observaciones / Motivo:</label>
+				<textarea name="motivo" placeholder="Ej: Olvidé fichar la salida por urgencia..." required style="height: 80px; padding: 8px;"></textarea>
+				<div style="display: flex; gap: 10px; margin-top: 10px;">
+					<button type="submit" style="flex: 2; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Enviar Solicitud</button>
+					<button type="button" onclick="cerrarModal()" style="flex: 1; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Cancelar</button>
+				</div>
+			</form>
+		</div>
 	</main>
+
 	<script>
 		function cerrarModal() {
 			document.getElementById('modalSolicitud').style.display = 'none';
 		}
+		function abrirModalSolicitud(btn) {
+	        const id = btn.getAttribute('data-id');
+	        const horaEntrada = btn.getAttribute('data-hora');
 
-		function abrirModalSolicitud(id) {
-			document.getElementById('fichajeIdInput').value = id;
-			document.getElementById('modalSolicitud').style.display = 'flex';
+	        document.getElementById('fichajeIdInput').value = id;
+	        document.querySelector('input[name="horaEntradaPropuesta"]').value = horaEntrada;
+
+	        document.getElementById('modalSolicitud').style.display = 'flex';
 		}
 	</script>
 	<script th:src="@{/app.js}"></script>
 	<script th:src="@{/common.js}"></script>
 	<script th:src="@{/ayuda.js}"></script>
 
-	<div id="modalAyuda"
-		style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
-		<div
-			style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+	<div id="modalAyuda" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+		<div style="background:white; padding:30px; border-radius:12px; width:400px; max-width:90%; position:relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
 			<h2 style="margin-top:0; color:#0d6efd;">¿Cómo funciona esta página?</h2>
 			<p>Bienvenido a Amarsa.</p>
 			<ul style="padding-left:20px; line-height:1.6;">
-				<li><strong>Historial:</strong> Estás viendo tu historial de fichajes sin resolver.
-					Puedes gestionar una solicitud desde aquí.</li>
+				<li><strong>Historial:</strong> Estás viendo tu historial de fichajes sin resolver.</li>
 			</ul>
-			<button onclick="cerrarAyuda()"
-				style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
+			<button onclick="cerrarAyuda()" style="width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer;">Entendido</button>
 		</div>
 	</div>
 </body>
-
 </html>

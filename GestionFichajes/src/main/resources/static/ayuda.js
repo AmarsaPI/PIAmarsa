@@ -1,19 +1,30 @@
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelector(".help-btn").addEventListener("click", abrirAyuda);
-    document.getElementById("cerrarAyuda").addEventListener("click", cerrarAyuda);
+    // Buscamos los elementos de forma segura
+    const btnAyuda = document.querySelector(".help-btn");
+    const btnCerrar = document.getElementById("cerrarAyuda");
+    const modal = document.getElementById("modalAyuda");
+
+    if (btnAyuda) {
+        btnAyuda.addEventListener("click", abrirAyuda);
+    }
+
+    if (btnCerrar) {
+        btnCerrar.addEventListener("click", cerrarAyuda);
+    }
 
     window.addEventListener("click", function (event) {
-        const modal = document.getElementById('modalAyuda');
-        if (event.target == modal) {
+        if (modal && event.target === modal) {
             modal.style.display = 'none';
         }
     });
 });
 
 function abrirAyuda() {
-    document.getElementById('modalAyuda').style.display = 'flex';
+    const modal = document.getElementById('modalAyuda');
+    if (modal) modal.style.display = 'flex';
 }
 
 function cerrarAyuda() {
-    document.getElementById('modalAyuda').style.display = 'none';
+    const modal = document.getElementById('modalAyuda');
+    if (modal) modal.style.display = 'none';
 }
